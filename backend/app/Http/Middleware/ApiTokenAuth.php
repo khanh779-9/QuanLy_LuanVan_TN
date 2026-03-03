@@ -20,18 +20,42 @@ class ApiTokenAuth
             ], 401);
         }
 
-        $userId = Cache::get('api_token:' . $token);
+        $tokenStore = Cache::store('file');
+        $payload = $tokenStore->get('api_token:' . $token);
 
-        if (!$userId) {
+        if (!$payload) {
             return response()->json([
                 'message' => 'Token không hợp lệ hoặc đã hết hạn.',
             ], 401);
         }
 
-        $user = User::find($userId);
+        $role = 'lecturer';
+        $user = null;
+
+        if (is_array($payload)) {
+            $role = (string) ($payload['role'] ?? 'lecturer');
+
+            if ($role === 'admin') {
+                $user = (object) [
+                    'maGV' => 'admin',
+                    'tenGV' => 'Admin',
+                    'email' => null,
+                    'soDienThoai' => null,
+                    'hocVi' => null,
+                ];
+            } else {
+                $maGV = (string) ($payload['maGV'] ?? '');
+                if ($maGV !== '') {
+                    $user = User::where('maGV', $maGV)->first();
+                }
+            }
+        } else {
+            $maGV = (string) $payload;
+            $user = User::where('maGV', $maGV)->first();
+        }
 
         if (!$user) {
-            Cache::forget('api_token:' . $token);
+            $tokenStore->forget('api_token:' . $token);
 
             return response()->json([
                 'message' => 'Người dùng không tồn tại.',
@@ -39,6 +63,7 @@ class ApiTokenAuth
         }
 
         $request->attributes->set('auth_user', $user);
+        $request->attributes->set('auth_role', $role);
         $request->attributes->set('api_token', $token);
 
         return $next($request);
