@@ -9,58 +9,63 @@ use App\Models\Student;
 
 class Topic extends Model
 {
+    protected $table = 'detai';
+
+    protected $primaryKey = 'maDeTai';
+
+    public $timestamps = false;
+
     protected $fillable = [
-        'code',
-        'subject_name',
-        'name',
-        'lecturer_id',
-        'reviewer_id',
-        'council_id',
-        'description',
-        'reviewer_note',
-        'midterm_score',
-        'midterm_status',
-        'midterm_comment',
-        'advisor_score',
-        'defense_score',
-        'defense_comment',
-        'council_score',
-        'council_comment',
-        'final_score',
-        'letter_grade',
-        'council_status'
+        'maMH',
+        'tenMonHoc',
+        'tenDeTai',
+        'maGV_HD',
+        'maGV_PB',
+        'maHoiDong',
+        'ghiChu',
+        'ghiChu_PB',
+        'diemGiuaKy',
+        'trangThaiGiuaKy',
+        'nhanXetGiuaKy',
+        'diemHuongDan',
+        'diemPhanBien',
+        'nhanXetPhanBien',
+        'diemHoiDong',
+        'nhanXetHoiDong',
+        'diemTongKet',
+        'diemChu',
+        'trangThaiHoiDong'
     ];
 
     protected $guarded = [];
 
+    public function getRouteKeyName(): string
+    {
+        return 'maDeTai';
+    }
+
     public function scopeForUser($query, $user)
     {
-        if ($user->role !== 'admin') {
-            return $query->where(function ($q) use ($user) {
-                $q->where('lecturer_id', $user->id)
-                    ->orWhere('reviewer_id', $user->id);
-            });
-        }
         return $query;
     }
 
     public function lecturer()
     {
-        return $this->belongsTo(User::class, 'lecturer_id');
+        return $this->belongsTo(User::class, 'maGV_HD', 'maGV');
     }
 
     public function reviewer()
     {
-        return $this->belongsTo(User::class, 'reviewer_id');
+        return $this->belongsTo(User::class, 'maGV_PB', 'maGV');
     }
 
     public function council()
     {
-        return $this->belongsTo(Council::class);
+        return $this->belongsTo(Council::class, 'maHoiDong', 'maHoiDong');
     }
 
     public function students()
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class, 'maDeTai', 'maDeTai');
     }
 }

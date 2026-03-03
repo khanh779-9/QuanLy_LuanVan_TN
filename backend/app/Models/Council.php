@@ -6,15 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class Council extends Model
 {
-    protected $fillable = ['name', 'location'];
+    protected $table = 'hoidong';
+
+    protected $primaryKey = 'maHoiDong';
+
+    public $timestamps = false;
+
+    protected $fillable = ['tenHoiDong', 'diaDiem'];
+
+    public function getRouteKeyName(): string
+    {
+        return 'maHoiDong';
+    }
 
     public function members()
     {
-        return $this->belongsToMany(User::class, 'council_members')->withPivot('role');
+        return $this->belongsToMany(User::class, 'thanhvienhoidong', 'maHoiDong', 'maGV', 'maHoiDong', 'maGV')
+            ->withPivot('vaiTro');
     }
 
     public function topics()
     {
-        return $this->hasMany(Topic::class);
+        return $this->hasMany(Topic::class, 'maHoiDong', 'maHoiDong');
     }
 }

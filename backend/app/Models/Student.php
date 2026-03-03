@@ -6,11 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-    protected $fillable = ['mssv', 'name', 'class', 'email', 'phone', 'topic_id'];
+    protected $table = 'sinhvien';
+
+    protected $primaryKey = 'mssv';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
+    public $timestamps = false;
+
+    protected $fillable = ['mssv', 'hoTen', 'lop', 'email', 'soDienThoai', 'maDeTai'];
+
+    public function getRouteKeyName(): string
+    {
+        return 'mssv';
+    }
 
     public function topic()
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(Topic::class, 'maDeTai', 'maDeTai');
     }
     //
 }

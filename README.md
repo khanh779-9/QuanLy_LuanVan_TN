@@ -1,4 +1,13 @@
-# Lar_Monopre - Tách cứng BE/FE (đều dùng Laravel)
+# Quản lý luận văn tốt nghiệp
+
+| MSSV       | Họ ên            | Lớp     |
+| ---------- | ------------------ | -------- |
+| DH52111470 | Lê Tiến Phát    | D22_TH01 |
+| DH52200332 | Nguyễn Tuấn Anh  | D22_TH08 |
+| DH52201225 | Võ Thiên Phú    | D22_TH08 |
+| DH52200887 | Trần Quốc Khánh | D22_TH15 |
+| DH52201264 | Hồ Khôil Phục   | D22_TH15 |
+| LT05250031 | Siêu Ngọc Tài   | L25_TH01 |
 
 ## Cấu trúc
 
