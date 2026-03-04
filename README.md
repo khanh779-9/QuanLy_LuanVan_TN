@@ -16,10 +16,10 @@
 - `backend/`: Laravel API.
 - `frontend/`: Giao diện người dùng.
 
-## Thông ti chi tiết
+## Thông tin chi tiết
 
-- Backend: xem [backend/readme.md](backend/readme.md)
-- Frontend: xem [frontend/readme.md](frontend/readme.md)
+- Backend: xem [backend/README.md](backend/README.md)
+- Frontend: xem [frontend/README.md](frontend/README.md)
 
 ## Chạy nhanh local
 

@@ -1,6 +1,5 @@
 # Frontend
 
-Frontend hiện chưa triển khai code chính thức.
+Fornend hiện tại chưa có
 
-- Mục tiêu: giao diện quản lý luận văn.
-- Sẽ cập nhật hướng dẫn chạy sau khi hoàn thiện mã nguồn.
+Front-end đc thiết kế ở đường link riêng, nên phải giao tiếp với API theo 1 đường link khác của Backend mới có thể khai thác đc
