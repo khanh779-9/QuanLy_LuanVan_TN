@@ -1,17 +1,43 @@
-FROM node:20-bookworm-slim
+FROM php:8.2-apache
 
-WORKDIR /app
+WORKDIR /var/www/html
 
-# Install backend dependencies
-COPY package.json ./
-RUN npm install --omit=dev
+RUN apt-get update && apt-get install -y \
+	git \
+	unzip \
+	libzip-dev \
+	libicu-dev \
+	libpng-dev \
+	libjpeg62-turbo-dev \
+	libfreetype6-dev \
+	libxml2-dev \
+	libonig-dev \
+	libcurl4-openssl-dev \
+	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
+	&& docker-php-ext-install -j"$(nproc)" \
+		pdo_mysql \
+		bcmath \
+		mbstring \
+		xml \
+		intl \
+		zip \
+		gd \
+		exif \
+		pcntl \
+	&& a2enmod rewrite \
+	&& rm -rf /var/lib/apt/lists/*
 
-# Copy backend source
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 COPY . .
 
-ENV NODE_ENV=production
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
+	&& chown -R www-data:www-data storage bootstrap/cache
 
-# Render injects PORT automatically
-EXPOSE 8080
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+	&& sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-CMD ["npm", "run", "start"]
+EXPOSE 10000
+
+CMD ["sh", "-c", "PORT=${PORT:-10000}; sed -ri \"s/Listen 80/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -ri \"s/:80>/:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; apache2-foreground"]
