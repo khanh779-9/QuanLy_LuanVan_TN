@@ -15,6 +15,10 @@ services:
         value: "false"
       - key: LOG_CHANNEL
         value: stack
+      - key: CACHE_STORE
+        value: file
+      - key: SESSION_DRIVER
+        value: file
       - key: APP_KEY
         sync: false
       - key: APP_URL
