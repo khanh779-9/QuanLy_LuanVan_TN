@@ -16,6 +16,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 	&& mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
 	&& chown -R www-data:www-data storage bootstrap/cache
 
+ENV SESSION_DRIVER=file
+ENV CACHE_STORE=file
+
 EXPOSE 10000
 
 CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
