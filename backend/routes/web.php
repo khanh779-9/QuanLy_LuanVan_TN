@@ -7,5 +7,6 @@ Route::get('/', function () {
         'message' => 'Backend is running',
         'api' => url('/api'),
         'health' => url('/up'),
+        ''=> url('/api'),
     ]);
 });
