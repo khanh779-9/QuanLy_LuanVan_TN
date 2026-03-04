@@ -21,4 +21,4 @@ ENV CACHE_STORE=file
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-c", "SESSION_DRIVER=file CACHE_STORE=file php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]

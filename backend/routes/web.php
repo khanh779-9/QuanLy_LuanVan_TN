@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -7,6 +8,5 @@ Route::get('/', function () {
         'message' => 'Backend is running',
         'api' => url('/api'),
         'health' => url('/up'),
-        ''=> url('/api'),
     ]);
-});
+})->withoutMiddleware([StartSession::class]);
