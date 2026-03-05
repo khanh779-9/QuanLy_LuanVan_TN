@@ -18,8 +18,8 @@
 
 ## Thông tin chi tiết
 
-- Backend: xem [backend/README.md](backend/README.md)
-- Frontend: xem [frontend/README.md](frontend/README.md)
+- Backend: xem [backend/README.md](backend/readme.md)
+- Frontend: xem [frontend/README.md](frontend/readme.md)
 
 ## Chạy nhanh local
 
