@@ -20,7 +20,7 @@
 | 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Tạo giao diện **quản lý sinh viên**, form **đăng ký đề tài**, bảng danh sách sinh viên, kết nối API sinh viên |
 | 4   | **Võ Thiên Phú**    | Frontend Developer    | Tinh chỉnh giao diện, responsive, layout hệ thống (Navbar, Sidebar), kết nối API đăng nhập, phối hợp với Tuấn ANh                                        |
 | 5   | **Hồ Khôi Phục**    | Frontend Developer    | Tinh chỉnh giao diện, kiểm tra hoạt động chức năng **search, filter, pagination, ...**, kết nối API liên quan, phối hợp với Tuấn Anh                  |
-| 6   | **Siêu Ngọc Tài**   | DevOps + Tester       | Kiểm tra các câu hình **Docker/ deploy server**, kiểm thử API và giao diện, viết **README, tài liệu cài đặt** và nhắn lại nhóm nếu có sai xót cần sửa |
+| 6   | **Siêu Ngọc Tài**   | DevOps + Tester       | Kiểm tra các câu hình **Docker, Web, môi trường (.env)**, kiểm thử API và giao diện, viết **README, tài liệu cài đặt** và nhắn lại nhóm nếu có sai xót cần sửa |
 
 ## Cấu trúc dự án
 
