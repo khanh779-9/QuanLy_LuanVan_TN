@@ -2,6 +2,10 @@
 
 API backend được xây bằng Laravel 12 (PHP 8.3).
 
+**Thực hiện test api (vd bảng users)**
+
+<tên địa chỉ backend>/users
+
 ## 1) Chạy local
 
 ```bash
@@ -69,13 +73,13 @@ Authorization: Bearer <token>
 ## 5) Chuẩn phản hồi
 
 - Thành công thường có dạng:
-	- `{ "data": ... }`
-	- hoặc `{ "message": "..." }`
-	- hoặc cả `message` + `data`
+  - `{ "data": ... }`
+  - hoặc `{ "message": "..." }`
+  - hoặc cả `message` + `data`
 - Lỗi xác thực/validate:
-	- `401`: sai token/sai thông tin đăng nhập
-	- `422`: dữ liệu không hợp lệ hoặc sai điều kiện nghiệp vụ
-	- body thường có `message`, và với validate sẽ có thêm `errors`
+  - `401`: sai token/sai thông tin đăng nhập
+  - `422`: dữ liệu không hợp lệ hoặc sai điều kiện nghiệp vụ
+  - body thường có `message`, và với validate sẽ có thêm `errors`
 
 Ví dụ lỗi 422:
 
