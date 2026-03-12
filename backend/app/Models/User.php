@@ -17,53 +17,27 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $table = 'giangvien';
+    protected $table = 'users';
 
-    protected $primaryKey = 'maGV';
+    protected $primaryKey = 'id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
-    protected $keyType = 'string';
+    protected $keyType = 'int';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'maGV',
-        'tenGV',
-        'email',
-        'soDienThoai',
-        'hocVi',
-        'matKhau',
+        'id',
+        'name',
     ];
 
     protected $hidden = [
-        'matKhau',
         'remember_token',
     ];
 
     public function getRouteKeyName(): string
     {
-        return 'maGV';
-    }
-
-    public function getAuthPassword(): string
-    {
-        return $this->matKhau;
-    }
-
-    public function topics()
-    {
-        return $this->hasMany(Topic::class, 'maGV_HD', 'maGV');
-    }
-
-    public function reviewTopics()
-    {
-        return $this->hasMany(Topic::class, 'maGV_PB', 'maGV');
-    }
-
-    public function councils()
-    {
-        return $this->belongsToMany(Council::class, 'thanhvienhoidong', 'maGV', 'maHoiDong', 'maGV', 'maHoiDong')
-            ->withPivot('vaiTro');
+        return 'id';
     }
 }

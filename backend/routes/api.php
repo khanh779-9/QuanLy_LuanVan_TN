@@ -7,6 +7,7 @@ use App\Models\CouncilMember;
 use App\Models\Score;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -63,7 +64,7 @@ Route::post('/login', function (Request $request) {
         ]);
     }
 
-    $user = User::where('maGV', $username)->first();
+    $user = Teacher::where('maGV', $username)->first();
 
     if (!$user) {
         return response()->json([
@@ -302,11 +303,11 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
 
     Route::get('/lecturers', function () {
         return response()->json([
-            'data' => User::orderBy('maGV', 'desc')->get(),
+            'data' => Teacher::orderBy('maGV', 'desc')->get(),
         ]);
     });
 
-    Route::get('/lecturers/{lecturer}', function (User $lecturer) {
+    Route::get('/lecturers/{lecturer}', function (Teacher $lecturer) {
         return response()->json([
             'data' => $lecturer,
         ]);
@@ -324,14 +325,14 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
 
         $validated['matKhau'] = Hash::make($validated['matKhau']);
 
-        $lecturer = User::create($validated);
+        $lecturer = Teacher::create($validated);
 
         return response()->json([
             'data' => $lecturer,
         ], 201);
     });
 
-    Route::put('/lecturers/{lecturer}', function (Request $request, User $lecturer) {
+    Route::put('/lecturers/{lecturer}', function (Request $request, Teacher $lecturer) {
         $validated = $request->validate([
             'maGV' => ['required', 'string', 'max:20', Rule::unique('giangvien', 'maGV')->ignore($lecturer->maGV, 'maGV')],
             'tenGV' => 'required|string|max:100',
@@ -354,7 +355,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-    Route::delete('/lecturers/{lecturer}', function (User $lecturer) {
+    Route::delete('/lecturers/{lecturer}', function (Teacher $lecturer) {
         $lecturer->delete();
 
         return response()->json([
@@ -882,7 +883,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
 
     Route::get('/options', function () {
         return response()->json([
-            'giangvien' => User::orderBy('tenGV')->get(['maGV', 'tenGV']),
+            'giangvien' => Teacher::orderBy('tenGV')->get(['maGV', 'tenGV']),
             'sinhvien' => Student::whereNull('maDeTai')->orderBy('hoTen')->get(['mssv', 'hoTen']),
             'hoidong' => Council::orderBy('tenHoiDong')->get(['maHoiDong', 'tenHoiDong']),
         ]);

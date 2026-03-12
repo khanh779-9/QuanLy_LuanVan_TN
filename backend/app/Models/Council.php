@@ -21,7 +21,7 @@ class Council extends Model
 
     public function members()
     {
-        return $this->belongsToMany(User::class, 'thanhvienhoidong', 'maHoiDong', 'maGV', 'maHoiDong', 'maGV')
+        return $this->belongsToMany(Teacher::class, 'thanhvienhoidong', 'maHoiDong', 'maGV', 'maHoiDong', 'maGV')
             ->withPivot('vaiTro');
     }
 
