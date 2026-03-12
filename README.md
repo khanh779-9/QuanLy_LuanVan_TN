@@ -22,6 +22,8 @@
 | 5   | **Hồ Khôi Phục**    | Frontend Developer    | Tinh chỉnh giao diện, kiểm tra hoạt động chức năng **search, filter, pagination, ...**, kết nối API liên quan, phối hợp với Tuấn Anh                  |
 | 6   | **Siêu Ngọc Tài**   | DevOps + Tester       | Kiểm tra các câu hình **Docker, Web, môi trường (.env)**, kiểm thử API và giao diện, viết **README, tài liệu cài đặt** và nhắn lại nhóm nếu có sai xót cần sửa |
 
+- Lưu ý, cả BE và FE phải push kèm file ``.env.example`` và bổ sung nội dung cho file readme trong be hoặc fe
+
 ## Cấu trúc dự án
 
 - `backend/`: Laravel API.
