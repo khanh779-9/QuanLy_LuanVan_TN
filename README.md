@@ -15,7 +15,7 @@
 
 | STT | Thành viên                 | Vai trò              | Công việc chính                                                                                                                         |
 | --- | ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Trần Quốc Khánh** | Team Leader + Backend | Chuyển đổi, xây dựng database, API, authentication (login/logout), phân quyền (admin/giảng viên/sinh viên)                                 |
+| 1   | **Trần Quốc Khánh** | Team Leader + Backend | Chuyển đổi, xây dựng database, API, authentication (login/logout), phân quyền (admin/giảng viên/sinh viên), các module                                 |
 | 2   | **Lê Tiến Phát**    | Backend Developer     | Xây dựng & check module **quản lý đề tài luận văn** (CRUD), các API, chức năng duyệt hoặc từ chối đề tài           |
 | 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Tạo giao diện **dự trên mẫu cũ**, kết nối API |
 | 4   | **Võ Thiên Phú**    | Frontend Developer    | Tinh chỉnh giao diện, responsive, layout hệ thống (Navbar, Sidebar), check kết nối API, phối hợp với Tuấn ANh                                        |
