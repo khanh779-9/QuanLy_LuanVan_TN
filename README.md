@@ -17,7 +17,7 @@
 | --- | ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1   | **Trần Quốc Khánh** | Team Leader + Backend | Chuyển đổi, database, API, authentication (login/logout), phân quyền (admin/giảng viên/sinh viên)                                 |
 | 2   | **Lê Tiến Phát**    | Backend Developer     | Xây dựng & check module **quản lý đề tài luận văn** (CRUD), các API, chức năng duyệt hoặc từ chối đề tài           |
-| 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Tạo giao diện **dự trên mẫu cũ**, bảng danh sách sinh viên, kết nối API sinh viên |
+| 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Tạo giao diện **dự trên mẫu cũ**, kết nối API |
 | 4   | **Võ Thiên Phú**    | Frontend Developer    | Tinh chỉnh giao diện, responsive, layout hệ thống (Navbar, Sidebar), kết nối API đăng nhập, phối hợp với Tuấn ANh                                        |
 | 5   | **Hồ Khôi Phục**    | Frontend Developer    | Tinh chỉnh giao diện, kiểm tra hoạt động chức năng **search, filter, pagination, ...**, kết nối API liên quan, phối hợp với Tuấn Anh                  |
 | 6   | **Siêu Ngọc Tài**   | DevOps + Tester       | Kiểm tra các câu hình **Docker, Web, môi trường (.env)**, kiểm thử API và giao diện, viết **README, tài liệu cài đặt** và nhắn lại nhóm nếu có sai xót cần sửa |
