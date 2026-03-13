@@ -7,7 +7,8 @@ API backend được xây bằng Laravel 12 (PHP 8.3).
 ``<địa chỉ backend>/users``
 
 - Bao gồm chức năng xem danh sách, thêm, sửa, xóa
-- Mục đích để cho thầy test
+- Mục đích: để cho **thầy và nhóm test**
+- Lưu ý: Front-End nên thiết kế ở Form hoặc ở 1 trang riêng nào đó độc lập ko phụ thuộc vào các chức năng khác của đồ án
 
 ## 1) Chạy local
 
