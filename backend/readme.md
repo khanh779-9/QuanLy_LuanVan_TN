@@ -4,7 +4,10 @@ API backend được xây bằng Laravel 12 (PHP 8.3).
 
 **Thực hiện test api (vd bảng users)**
 
-<tên địa chỉ backend>/users
+``<địa chỉ backend>/users``
+
+- Bao gồm chức năng xem danh sách, thêm, sửa, xóa
+- Mục đích để cho thầy test
 
 ## 1) Chạy local
 
