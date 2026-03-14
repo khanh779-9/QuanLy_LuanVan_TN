@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8888/QuanLy_LuanVan_TN-main/backend/public";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://quanly-luanvan-tn-backend-ae78.onrender.com/users";
 
 async function parseResponse(response, defaultErrorMessage) {
   const payload = await response.json().catch(() => ({}));
