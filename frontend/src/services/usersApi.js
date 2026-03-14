@@ -12,7 +12,7 @@ async function parseResponse(response, defaultErrorMessage) {
 
 export async function fetchUsers() {
   const response = await fetch(`${API_BASE_URL}/users`);
-  const payload = await parseResponse(response, "Khong the tai danh sach users.");
+  const payload = await parseResponse(response, "Không thể tải danh sách users.");
   return Array.isArray(payload.data) ? payload.data : [];
 }
 
@@ -25,7 +25,7 @@ export async function createUser(input) {
     body: JSON.stringify(input)
   });
 
-  const payload = await parseResponse(response, "Khong the luu user.");
+  const payload = await parseResponse(response, "Không thể lưu user.");
   return payload.data;
 }
 
@@ -38,7 +38,7 @@ export async function updateUser(userId, input) {
     body: JSON.stringify(input)
   });
 
-  const payload = await parseResponse(response, "Khong the luu user.");
+  const payload = await parseResponse(response, "Không thể lưu user.");
   return payload.data;
 }
 
@@ -47,5 +47,5 @@ export async function deleteUser(userId) {
     method: "DELETE"
   });
 
-  await parseResponse(response, "Khong the xoa user.");
+  await parseResponse(response, "Không thể xóa user.");
 }

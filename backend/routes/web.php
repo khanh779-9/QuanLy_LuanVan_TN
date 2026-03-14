@@ -36,6 +36,7 @@ Route::get('/users/{id}', function (int $id) {
 Route::post('/users', function (Request $request) {
     $validated = $request->validate([
         'name' => 'required|string|max:50',
+        'email' => 'nullable|email|max:100|unique:users,email',
     ]);
 
     $user = User::create($validated);
@@ -56,6 +57,7 @@ Route::put('/users/{id}', function (Request $request, int $id) {
 
     $validated = $request->validate([
         'name' => 'required|string|max:50',
+        'email' => ['nullable', 'email', 'max:100', \Illuminate\Validation\Rule::unique('users', 'email')->ignore($id, 'id')],
     ]);
 
     $user->update($validated);
