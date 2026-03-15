@@ -25,8 +25,8 @@ class TopicController extends Controller
             'success' => true,
             'data' => $topics,
             'meta' => [
-                'lecturers' => User::where('role', 'lecturer')->orderBy('name')->get(),
-                'freeStudents' => Student::whereNull('maDeTai')->orderBy('name')->get(), // Sửa thành maDeTai
+                'lecturers' => User::where('role', 'lecturer')->orderBy('tenGV')->get(),
+                'freeStudents' => Student::whereNull('maDeTai')->orderBy('hoTen')->get(),
                 'mode' => $request->get('type', 'HD')
             ]
         ], 200);
@@ -38,15 +38,15 @@ class TopicController extends Controller
         // Logic "Create Group" (Phân công GV):
         if ($request->has('student_1')) {
             $topic = Topic::create([
-                'tenDeTai' => 'Chưa cập nhật tên đề tài', // Sửa từ name
-                'maGV_HD' => $request->lecturer_id,       // Sửa từ lecturer_id sang maGV_HD
-                'trangThaiGiuaKy' => 'Được làm tiếp',     // Sửa từ midterm_status sang trangThaiGiuaKy
+                'tenDeTai' => 'Chưa cập nhật tên đề tài',
+                'maGV_HD' => $request->lecturer_id,
+                'trangThaiGiuaKy' => 'Được làm tiếp',
             ]);
 
             // Gán sinh viên vào đề tài
-            Student::where('id', $request->student_1)->update(['maDeTai' => $topic->maDeTai]);
+            Student::where('mssv', $request->student_1)->update(['maDeTai' => $topic->maDeTai]);
             if ($request->has('student_2') && $request->student_2) {
-                Student::where('id', $request->student_2)->update(['maDeTai' => $topic->maDeTai]);
+                Student::where('mssv', $request->student_2)->update(['maDeTai' => $topic->maDeTai]);
             }
 
             return response()->json([
@@ -79,12 +79,11 @@ class TopicController extends Controller
     // 4. XÓA ĐỀ TÀI
     public function destroy(Topic $topic)
     {
-        // Gỡ sinh viên ra khỏi đề tài (Sửa topic_id thành maDeTai)
+        // Gỡ sinh viên ra khỏi đề tài
         Student::where('maDeTai', $topic->maDeTai)->update(['maDeTai' => null]);
         $topic->delete();
-        
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Xóa đề tài thành công'
         ], 200);
     }

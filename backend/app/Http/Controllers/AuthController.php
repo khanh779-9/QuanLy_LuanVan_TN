@@ -17,15 +17,15 @@ class AuthController extends Controller
         // Plaintext password authentication (temporary)
         $user = \App\Models\User::where('username', $credentials['username'])->first();
 
-        if ($user && $user->password === $credentials['password']) {
+        if ($user && $user->matKhau === $credentials['password']) {
             Auth::login($user);
             $request->session()->regenerate();
             return redirect()->intended('dashboard');
         }
 
         return back()->withErrors([
-            'username' => 'Thông tin đăng nhập không chính xác.',
-        ])->onlyInput('username');
+            'maGV' => 'Thông tin đăng nhập không chính xác.',
+        ])->onlyInput('maGV');
     }
 
     public function logout(Request $request)

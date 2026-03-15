@@ -17,19 +17,19 @@ class LecturerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required|unique:users',
-            'name' => 'required',
+            'maGV' => 'required|unique:users',
+            'tenGV' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:3',
+            'matKhau' => 'required|min:3',
         ]);
 
         User::create([
-            'username' => $request->username,
-            'name' => $request->name,
+            'maGV' => $request->maGV,
+            'tenGV' => $request->tenGV,
             'email' => $request->email,
-            'phone' => $request->phone,
-            'degree' => $request->degree,
-            'password' => $request->password, // Plaintext password
+            'soDienThoai' => $request->soDienThoai,
+            'hocVi' => $request->hocVi,
+            'matKhau' => $request->matKhau, // Plaintext password
             'role' => 'lecturer',
         ]);
 
@@ -39,14 +39,16 @@ class LecturerController extends Controller
     public function update(Request $request, User $lecturer)
     {
         $request->validate([
-            'username' => 'required|unique:users,username,' . $lecturer->id,
-            'name' => 'required',
+            'maGV' => 'required|unique:users,maGV,' . $lecturer->id,
+            'tenGV' => 'required',
             'email' => 'required|email|unique:users,email,' . $lecturer->id,
+            'soDienThoai' => 'nullable',
+            'hocVi' => 'nullable',
         ]);
 
-        $data = $request->except('password');
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+        $data = $request->except('matKhau');
+        if ($request->filled('matKhau')) {
+            $data['matKhau'] = Hash::make($request->matKhau);
         }
 
         $lecturer->update($data);

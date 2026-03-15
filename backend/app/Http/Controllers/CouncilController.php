@@ -16,12 +16,12 @@ class CouncilController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'location' => 'required',
+            'tenHoiDong' => 'required',
+            'diaDiem' => 'required',
             'members' => 'array', // [user_id => role]
         ]);
 
-        $council = Council::create($request->only('name', 'location'));
+        $council = Council::create($request->only('tenHoiDong', 'diaDiem'));
 
         if ($request->has('members')) {
             // Logic to attach members
@@ -34,7 +34,7 @@ class CouncilController extends Controller
 
     public function update(Request $request, Council $council)
     {
-        $council->update($request->only('name', 'location'));
+        $council->update($request->only('tenHoiDong', 'diaDiem'));
         return back()->with('success', 'Cập nhật hội đồng thành công');
     }
 

@@ -17,11 +17,11 @@ class StudentController extends Controller
     {
         $request->validate([
             'mssv' => 'required|unique:students',
-            'name' => 'required',
-            'class' => 'required',
+            'hoTen' => 'required',
+            'lop' => 'required',
         ]);
 
-        Student::create($request->all());
+        Student::create($request->only(['mssv', 'hoTen', 'lop', 'email', 'soDienThoai', 'maDeTai']));
         return back()->with('success', 'Thêm sinh viên thành công');
     }
 
@@ -29,10 +29,11 @@ class StudentController extends Controller
     {
         $request->validate([
             'mssv' => 'required|unique:students,mssv,' . $student->id,
-            'name' => 'required',
+            'hoTen' => 'required',
+            'lop' => 'required',
         ]);
 
-        $student->update($request->all());
+        $student->update($request->only(['mssv', 'hoTen', 'lop', 'email', 'soDienThoai', 'maDeTai']));
         return back()->with('success', 'Cập nhật sinh viên thành công');
     }
 

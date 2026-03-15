@@ -13,8 +13,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $setting = Setting::firstOrCreate([], ['stage' => 1]);
-        $stage = $setting->stage;
+        $setting = Setting::firstOrCreate([], ['giaiDoan' => 1]);
+        $giaiDoan = $setting->giaiDoan;
 
         $stats = [
             'students' => 0,
@@ -28,16 +28,16 @@ class DashboardController extends Controller
             $stats['councils'] = Council::count();
         }
 
-        return view('dashboard', compact('stage', 'stats'));
+        return view('dashboard', compact('giaiDoan', 'stats'));
     }
 
     public function updateStage(Request $request)
     {
         $setting = Setting::first();
         if ($request->has('next_stage')) {
-            $setting->increment('stage');
+            $setting->increment('giaiDoan');
         } elseif ($request->has('reset_stage')) {
-            $setting->update(['stage' => 1]);
+            $setting->update(['giaiDoan' => 1]);
         }
         return back()->with('success', 'Cập nhật giai đoạn thành công!');
     }

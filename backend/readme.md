@@ -40,14 +40,15 @@ php artisan serve --port=8000
 
 ### Đăng nhập
 
+
 `POST /api/login`
 
 Request body:
 
 ```json
 {
-	"username": "admin",
-	"password": "123"
+    "maGV": "MA2431",
+    "matKhau": "123"
 }
 ```
 
@@ -55,14 +56,14 @@ Response thành công:
 
 ```json
 {
-	"message": "Đăng nhập thành công.",
-	"token": "uuid-token",
-	"token_type": "Bearer",
-	"user": {
-		"role": "admin",
-		"maGV": "admin",
-		"tenGV": "Admin"
-	}
+    "message": "Đăng nhập thành công.",
+    "token": "uuid-token",
+    "token_type": "Bearer",
+    "user": {
+        "maGV": "MA2431",
+        "tenGV": "Trần Văn Hùng",
+        "role": "lecturer"
+    }
 }
 ```
 
