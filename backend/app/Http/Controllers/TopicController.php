@@ -12,61 +12,99 @@ use App\Http\Requests\UpdateTopicRequest;
 
 class TopicController extends Controller
 {
+    // 1. LẤY DANH SÁCH (Đã chuyển sang JSON)
     public function index(Request $request)
     {
         $user = Auth::user();
 
         $topics = Topic::with(['lecturer', 'reviewer', 'council', 'students'])
             ->forUser($user)
-            ->orderBy('code')
             ->paginate(20);
 
-        // Data for Modals (Admin only usually, but passed anyway)
-        $lecturers = User::where('role', 'lecturer')->orderBy('name')->get();
-        $freeStudents = Student::whereNull('topic_id')->orderBy('name')->get();
-        $mode = $request->get('type', 'HD'); // HD or PB
-
-        return view('topics.index', compact('topics', 'lecturers', 'freeStudents', 'mode'));
+        return response()->json([
+            'success' => true,
+            'data' => $topics,
+            'meta' => [
+                'lecturers' => User::where('role', 'lecturer')->orderBy('name')->get(),
+                'freeStudents' => Student::whereNull('maDeTai')->orderBy('name')->get(), // Sửa thành maDeTai
+                'mode' => $request->get('type', 'HD')
+            ]
+        ], 200);
     }
 
+    // 2. THÊM ĐỀ TÀI & TẠO NHÓM
     public function store(StoreTopicRequest $request)
     {
-        // Validated data is available via $request->validated()
-
-        // Logic for "Create Group" (Phân công GV):
+        // Logic "Create Group" (Phân công GV):
         if ($request->has('student_1')) {
             $topic = Topic::create([
-                'name' => 'Chưa cập nhật tên đề tài',
-                'code' => $request->code,
-                'lecturer_id' => $request->lecturer_id,
-                'midterm_status' => 'Được làm tiếp',
+                'tenDeTai' => 'Chưa cập nhật tên đề tài', // Sửa từ name
+                'maGV_HD' => $request->lecturer_id,       // Sửa từ lecturer_id sang maGV_HD
+                'trangThaiGiuaKy' => 'Được làm tiếp',     // Sửa từ midterm_status sang trangThaiGiuaKy
             ]);
 
-            // Assign students
-            Student::where('id', $request->student_1)->update(['topic_id' => $topic->id]);
+            // Gán sinh viên vào đề tài
+            Student::where('id', $request->student_1)->update(['maDeTai' => $topic->maDeTai]);
             if ($request->has('student_2') && $request->student_2) {
-                Student::where('id', $request->student_2)->update(['topic_id' => $topic->id]);
+                Student::where('id', $request->student_2)->update(['maDeTai' => $topic->maDeTai]);
             }
 
-            return back()->with('success', 'Tạo nhóm thành công');
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo nhóm và phân công thành công',
+                'data' => $topic
+            ], 201);
         }
 
         // Standard Store
-        Topic::create($request->validated());
-        return back()->with('success', 'Thêm đề tài thành công');
+        $topic = Topic::create($request->validated());
+        return response()->json([
+            'success' => true, 
+            'message' => 'Thêm đề tài thành công',
+            'data' => $topic
+        ], 201);
     }
 
+    // 3. SỬA ĐỀ TÀI
     public function update(UpdateTopicRequest $request, Topic $topic)
     {
         $topic->update($request->validated());
-        return back()->with('success', 'Cập nhật đề tài thành công');
+        return response()->json([
+            'success' => true, 
+            'message' => 'Cập nhật đề tài thành công',
+            'data' => $topic
+        ], 200);
     }
 
+    // 4. XÓA ĐỀ TÀI
     public function destroy(Topic $topic)
     {
-        // Unassign students first
-        Student::where('topic_id', $topic->id)->update(['topic_id' => null]);
+        // Gỡ sinh viên ra khỏi đề tài (Sửa topic_id thành maDeTai)
+        Student::where('maDeTai', $topic->maDeTai)->update(['maDeTai' => null]);
         $topic->delete();
-        return back()->with('success', 'Xóa đề tài thành công');
+        
+        return response()->json([
+            'success' => true, 
+            'message' => 'Xóa đề tài thành công'
+        ], 200);
+    }
+
+    // 5. CHỨC NĂNG DUYỆT / TỪ CHỐI ĐỀ TÀI
+    public function updateStatus(Request $request, Topic $topic)
+    {
+        $request->validate([
+            'status' => 'required|string'
+        ]);
+
+        // Cập nhật đúng vào cột trạng thái tiếng Việt
+        $topic->update([
+            'trangThaiGiuaKy' => $request->status 
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật trạng thái duyệt thành công!',
+            'data' => $topic
+        ], 200);
     }
 }

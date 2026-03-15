@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
+class ComposerStaticInitca2caabb9f7e50c7c83308479befd2e0
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -578,7 +578,6 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'App\\Http\\Controllers\\LegacyIOController' => __DIR__ . '/../..' . '/app/Http/Controllers/LegacyIOController.php',
         'App\\Http\\Controllers\\StudentController' => __DIR__ . '/../..' . '/app/Http/Controllers/StudentController.php',
         'App\\Http\\Controllers\\TopicController' => __DIR__ . '/../..' . '/app/Http/Controllers/TopicController.php',
-        'App\\Http\\Middleware\\AllowFrontendCors' => __DIR__ . '/../..' . '/app/Http/Middleware/AllowFrontendCors.php',
         'App\\Http\\Middleware\\ApiTokenAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/ApiTokenAuth.php',
         'App\\Http\\Requests\\StoreTopicRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreTopicRequest.php',
         'App\\Http\\Requests\\UpdateTopicRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateTopicRequest.php',
@@ -587,6 +586,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'App\\Models\\Score' => __DIR__ . '/../..' . '/app/Models/Score.php',
         'App\\Models\\Setting' => __DIR__ . '/../..' . '/app/Models/Setting.php',
         'App\\Models\\Student' => __DIR__ . '/../..' . '/app/Models/Student.php',
+        'App\\Models\\Teacher' => __DIR__ . '/../..' . '/app/Models/Teacher.php',
         'App\\Models\\Topic' => __DIR__ . '/../..' . '/app/Models/Topic.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
@@ -7815,9 +7815,9 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitca2caabb9f7e50c7c83308479befd2e0::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitca2caabb9f7e50c7c83308479befd2e0::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitca2caabb9f7e50c7c83308479befd2e0::$classMap;
 
         }, null, ClassLoader::class);
     }

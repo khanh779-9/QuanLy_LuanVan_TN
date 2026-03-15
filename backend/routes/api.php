@@ -637,6 +637,21 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'data' => $topic->fresh(),
         ]);
     });
+    // API Duyệt / Từ chối đề tài (Phát chèn thêm)
+    Route::patch('/topics/{topic}/status', function (Request $request, Topic $topic) {
+        $validated = $request->validate([
+            'status' => 'required|in:Được làm tiếp,Đình chỉ,Cảnh cáo,Chờ duyệt' // Mày có thể sửa các trạng thái này tùy logic nhóm
+        ]);
+
+        $topic->update([
+            'trangThaiGiuaKy' => $validated['status'] 
+        ]);
+
+        return response()->json([
+            'message' => 'Cập nhật trạng thái duyệt thành công!',
+            'data' => $topic->fresh(),
+        ]);
+    });
 
     Route::post('/topics/assign-hoidong', function (Request $request) {
         $validated = $request->validate([
