@@ -2,6 +2,14 @@
 
 API backend được xây bằng Laravel 12 (PHP 8.3).
 
+**Thực hiện test api (vd bảng users)**
+
+``<địa chỉ backend>/users``
+
+- Bao gồm chức năng xem danh sách, thêm, sửa, xóa
+- Mục đích: để cho **thầy và nhóm test**
+- Lưu ý: Front-End nên thiết kế ở Form hoặc ở 1 trang riêng nào đó độc lập ko phụ thuộc vào các chức năng khác của đồ án
+
 ## 1) Chạy local
 
 ```bash
@@ -69,13 +77,13 @@ Authorization: Bearer <token>
 ## 5) Chuẩn phản hồi
 
 - Thành công thường có dạng:
-	- `{ "data": ... }`
-	- hoặc `{ "message": "..." }`
-	- hoặc cả `message` + `data`
+  - `{ "data": ... }`
+  - hoặc `{ "message": "..." }`
+  - hoặc cả `message` + `data`
 - Lỗi xác thực/validate:
-	- `401`: sai token/sai thông tin đăng nhập
-	- `422`: dữ liệu không hợp lệ hoặc sai điều kiện nghiệp vụ
-	- body thường có `message`, và với validate sẽ có thêm `errors`
+  - `401`: sai token/sai thông tin đăng nhập
+  - `422`: dữ liệu không hợp lệ hoặc sai điều kiện nghiệp vụ
+  - body thường có `message`, và với validate sẽ có thêm `errors`
 
 Ví dụ lỗi 422:
 

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use App\Models\Teacher;
 use App\Models\Council;
 use App\Models\Student;
 
@@ -51,12 +51,12 @@ class Topic extends Model
 
     public function lecturer()
     {
-        return $this->belongsTo(User::class, 'maGV_HD', 'maGV');
+        return $this->belongsTo(Teacher::class, 'maGV_HD', 'maGV');
     }
 
     public function reviewer()
     {
-        return $this->belongsTo(User::class, 'maGV_PB', 'maGV');
+        return $this->belongsTo(Teacher::class, 'maGV_PB', 'maGV');
     }
 
     public function council()

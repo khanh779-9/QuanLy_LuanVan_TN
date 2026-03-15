@@ -26,6 +26,22 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `users`, dùng để test
+--
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  'email' varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `users` (`id`, `name`, `email`) VALUES
+(1, 'John Doe','john.doe@example.com'),
+(2, 'Jane Smith','jane.smith@example.com'),
+(3, 'Alice Johnson','alice.johnson@example.com');
+
+--
 -- Table structure for table `cauhinh`
 --
 

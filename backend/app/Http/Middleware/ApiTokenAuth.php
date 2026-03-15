@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
+use App\Models\Teacher;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -46,12 +46,12 @@ class ApiTokenAuth
             } else {
                 $maGV = (string) ($payload['maGV'] ?? '');
                 if ($maGV !== '') {
-                    $user = User::where('maGV', $maGV)->first();
+                    $user = Teacher::where('maGV', $maGV)->first();
                 }
             }
         } else {
             $maGV = (string) $payload;
-            $user = User::where('maGV', $maGV)->first();
+            $user = Teacher::where('maGV', $maGV)->first();
         }
 
         if (!$user) {

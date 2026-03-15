@@ -27,6 +27,6 @@ class Score extends Model
 
     public function lecturer()
     {
-        return $this->belongsTo(User::class, 'maGV', 'maGV');
+        return $this->belongsTo(Teacher::class, 'maGV', 'maGV');
     }
 }

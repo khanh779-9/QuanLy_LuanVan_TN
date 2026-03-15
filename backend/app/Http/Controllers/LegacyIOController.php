@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Council;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\Topic;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -395,7 +395,7 @@ class LegacyIOController extends Controller
         $templateProcessorClass = 'PhpOffice\\PhpWord\\TemplateProcessor';
         $templateProcessor = new $templateProcessorClass($templateFile);
         $templateProcessor->setValue('tenDeTai', $topic->tenDeTai ?? '');
-        $templateProcessor->setValue('tenGVHD', User::where('maGV', $topic->maGV_HD)->value('tenGV') ?? '');
+        $templateProcessor->setValue('tenGVHD', Teacher::where('maGV', $topic->maGV_HD)->value('tenGV') ?? '');
         $templateProcessor->setValue('ngayCham', now()->format('d/m/Y'));
         $templateProcessor->setValue('maxPhanTich', (string) $maxPhanTich);
         $templateProcessor->setValue('maxThietKe', (string) $maxThietKe);
@@ -518,7 +518,7 @@ class LegacyIOController extends Controller
         $templateProcessorClass = 'PhpOffice\\PhpWord\\TemplateProcessor';
         $templateProcessor = new $templateProcessorClass($templateFile);
         $templateProcessor->setValue('tenDeTai', $topic->tenDeTai ?? '');
-        $templateProcessor->setValue('tenGVPB', User::where('maGV', $topic->maGV_PB)->value('tenGV') ?? '');
+        $templateProcessor->setValue('tenGVPB', Teacher::where('maGV', $topic->maGV_PB)->value('tenGV') ?? '');
         $templateProcessor->setValue('ngayCham', now()->format('d/m/Y'));
         $templateProcessor->setValue('maxPhanTich', (string) $maxPhanTich);
         $templateProcessor->setValue('maxThietKe', (string) $maxThietKe);
