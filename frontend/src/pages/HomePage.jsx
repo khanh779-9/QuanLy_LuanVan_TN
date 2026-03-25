@@ -13,6 +13,9 @@ function HomePage() {
           <Link className="link-button" to="/users">
             Mở trang users (chỉ test)
           </Link>
+          <Link className="link-button" to="/thesis">
+            Đến trang quản lý luận văn
+          </Link>
         </div>
       </section>
     </main>

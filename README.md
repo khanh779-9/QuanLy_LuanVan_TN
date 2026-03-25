@@ -15,12 +15,12 @@
 
 | STT | Thành viên                 | Vai trò              | Công việc chính                                                                                                                         |
 | --- | ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Trần Quốc Khánh** | Team Leader + Backend | Chuyển đổi, xây dựng database, API, authentication (login/logout), phân quyền (admin/giảng viên/sinh viên), các module (CRUD)  |
-| 2   | **Lê Tiến Phát**    | Backend Developer     | Xây dựng & check module (CRUD), các API, chức năng duyệt hoặc từ chối đề tài           |
-| 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Tạo giao diện **dự trên mẫu cũ**, kết nối API |
-| 4   | **Võ Thiên Phú**    | Frontend Developer    | Tinh chỉnh giao diện, responsive, layout hệ thống (Navbar, Sidebar), check kết nối API, phối hợp với Tuấn ANh                                        |
-| 5   | **Hồ Khôi Phục**    | Frontend Developer    | Tinh chỉnh giao diện, kiểm tra hoạt động chức năng **search, filter, pagination, ...**, kết nối API liên quan, phối hợp với Tuấn Anh                  |
-| 6   | **Siêu Ngọc Tài**   | DevOps + Tester       | Kiểm tra các câu hình **Docker, Web, môi trường (.env)**, kiểm thử API và giao diện, viết **README, tài liệu cài đặt** và nhắn lại nhóm nếu có sai xót cần sửa |
+| 1   | **Trần Quốc Khánh** | Team Leader + Backend | Chuyển đổi, xây dựng database, API, authentication, phân quyền, các module (CRUD)                                                 |
+| 2   | **Lê Tiến Phát**    | Backend Developer     | Kiểm tra, sửa lỗi và hoàn thiện các module, API                                                                                     |
+| 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Xây dựng giao diện dựa trên thiết kế, thực hiện kết nối API                                                                     |
+| 4   | **Võ Thiên Phú**    | Frontend Developer    | Tinh chỉnh giao diện, responsive, layout                                                                                                 |
+| 5   | **Hồ Khôi Phục**    | Frontend Developer    | Kiểm tra hoạt động chức năng**search, filter, pagination, ...**                                                               |
+| 6   | **Siêu Ngọc Tài**   | DevOps + Tester       | Kiểm tra các câu hình**Docker, Web, môi trường (.env)**, kiểm thử API và UI, viết **README, tài liệu cài đặt** |
 
 - Lưu ý, cả BE và FE phải push kèm file ``.env.example`` và bổ sung nội dung cho file ``readme.md`` trong BE hoặc FE
 

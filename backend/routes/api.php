@@ -941,16 +941,49 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-    Route::post('/students/import-excel', [LegacyIOController::class, 'importStudentsExcel']);
 
-    Route::get('/exports/midterm', [LegacyIOController::class, 'exportMidterm']);
-    Route::get('/exports/hoidong', [LegacyIOController::class, 'exportCouncil']);
-    Route::get('/exports/phanbien', [LegacyIOController::class, 'exportReviewer']);
-    Route::get('/exports/tongket', [LegacyIOController::class, 'exportSummary']);
 
-    Route::post('/exports/word/assignment', [LegacyIOController::class, 'exportWordAssignment']);
-    Route::post('/exports/word/gvhd/{topic}', [LegacyIOController::class, 'exportWordGvhd']);
-    Route::post('/exports/word/gvpb/{topic}', [LegacyIOController::class, 'exportWordGvpb']);
+    // Các route import/export Excel/Word tạm thời trả về lỗi 501 Not Implemented
+    Route::any('/students/import-excel', function () {
+        return response()->json([
+            'message' => 'Chức năng import Excel chưa được hỗ trợ.'
+        ], 501);
+    });
+    Route::any('/exports/midterm', function () {
+        return response()->json([
+            'message' => 'Chức năng export midterm chưa được hỗ trợ.'
+        ], 501);
+    });
+    Route::any('/exports/hoidong', function () {
+        return response()->json([
+            'message' => 'Chức năng export hội đồng chưa được hỗ trợ.'
+        ], 501);
+    });
+    Route::any('/exports/phanbien', function () {
+        return response()->json([
+            'message' => 'Chức năng export phản biện chưa được hỗ trợ.'
+        ], 501);
+    });
+    Route::any('/exports/tongket', function () {
+        return response()->json([
+            'message' => 'Chức năng export tổng kết chưa được hỗ trợ.'
+        ], 501);
+    });
+    Route::any('/exports/word/assignment', function () {
+        return response()->json([
+            'message' => 'Chức năng export Word assignment chưa được hỗ trợ.'
+        ], 501);
+    });
+    Route::any('/exports/word/gvhd/{topic}', function () {
+        return response()->json([
+            'message' => 'Chức năng export Word GVHD chưa được hỗ trợ.'
+        ], 501);
+    });
+    Route::any('/exports/word/gvpb/{topic}', function () {
+        return response()->json([
+            'message' => 'Chức năng export Word GVPB chưa được hỗ trợ.'
+        ], 501);
+    });
 
     Route::get('/options', function () {
         return response()->json([
