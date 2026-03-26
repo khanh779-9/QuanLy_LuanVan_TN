@@ -53,7 +53,7 @@ export default function Midterm() {
   return (
     <div className="midterm-page">
       <Toast open={toast.open} message={toast.message} type={toast.type} onClose={() => setToast(t => ({...t, open: false}))} />
-      <h2 className='pb[10px]'>Chấm điểm giữa kỳ</h2>
+      <h2 className='pb-[10px]'>Chấm điểm giữa kỳ</h2>
       {loading ? <div>Đang tải...</div> : (
         <table className="thesis-table">
           <thead>
