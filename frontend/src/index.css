@@ -1,3 +1,76 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #B6E2FD;
+  --button: 
+  --warning: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+}
+
+@theme {
+    --font-sans: "Plus Jakarta Sans", sans-serif;
+    --animate-slideInLeft: slideInLeft 1s ease-out forwards;
+    --animate-slideBottom: slideBottom 1s ease-out forwards;
+    --animate-slideTop: slideTop 1s ease-out forwards;
+    --animate-spinSlow: spin 6s linear infinite; 
+
+  }
+
+@keyframes slideInLeft {
+    from { 
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to { 
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+        }
+    to {
+        transform: translateY(0);
+         opacity: 1;
+        }
+  }
+
+  @keyframes slideTop{
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+        }
+    to {
+        transform: translateY(0);
+         opacity: 1;
+        }
+  }
+
+
+  
+@keyframes wave {
+    from { 
+        backgroundPositionX: 0
+    }
+
+    to {
+         backgroundPositionX: 200%
+        }
+}
+
 /* Modern custom select (combobox) style */
 .custom-select {
   width: 100%;
@@ -42,40 +115,50 @@
 }
 /* Sidebar Navigation */
 .sidebar {
-  width: 220px;
-  background: #1e293b;
-  color: #fff;
-  padding: 0;
+  width: 280px;
+  background: #fff;
+  color: #64748b;
+  padding: 5px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  box-shadow: 10px 23px 20px rgba(15, 23, 42, 0.1);
 }
 .sidebar-header {
   padding: 24px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid #c4c4c4;
 }
 .sidebar-header h2 {
-  color: #fff;
+  color: #64748b;
   font-size: 20px;
   margin: 0;
 }
 .sidebar-link {
   display: block;
-  color: #fff;
+  color: #64748b;
   padding: 16px 24px;
   text-decoration: none;
   font-weight: 500;
   transition: background 0.15s, color 0.15s;
 }
 .sidebar-link:hover {
-  background: #334155;
+  background: #f1f1f1;
   color: #38bdf8;
 }
 .sidebar-link-active {
-  background: #334155;
+  background: #ffffff;
   color: #38bdf8;
   border-left: 4px solid #38bdf8;
 }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 24px;
+  border-top: 1px solid #c4c4c4;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
 /* Utility class for center text */
 .text-center {
   text-align: center;
@@ -104,7 +187,7 @@
 .thesis-table th, .thesis-table td {
   border-bottom: 1px solid #e2e8f0;
   text-align: left;
-  padding: 12px 14px;
+  padding: 8px 10px;
 }
 .thesis-table th {
   background: #f1f5f9;

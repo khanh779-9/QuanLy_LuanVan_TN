@@ -44,7 +44,7 @@ export default function Assignment() {
   return (
     <div className="assignment-page">
       <Toast open={toast.open} message={toast.message} type={toast.type} onClose={() => setToast(t => ({...t, open: false}))} />
-      <h2>Phân công giảng viên</h2>
+      <h2 className='pb-[10px]'>Phân công giảng viên</h2>
       {loading ? <div>Đang tải...</div> : (
         <table className="thesis-table">
           <thead>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 
 const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
   <table className="thesis-table">
@@ -25,14 +25,14 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
           <td>{row.reviewer?.tenGV}</td>
           <td>{row.diemTong || '-'}</td>
           <td>{row.trangThai || '-'}</td>
-          <td style={{display: 'flex', gap: 5}}>
-            <button className="btn btn-info" title="Chi tiết" onClick={() => onDetail(row)}>
-              <FaSearch />
+          <td>
+            <button className="btn btn-info mt-2" title="Chi tiết" onClick={() => onDetail(row)}>
+              <FaEye />
             </button>
-            <button className="btn btn-warning" title="Sửa" onClick={() => onEdit(row)}>
+            <button className="btn btn-warning mt-2" title="Sửa" onClick={() => onEdit(row)}>
               <FaEdit />
             </button>
-            <button className="btn btn-danger" title="Xóa" onClick={() => onDelete(row)}>
+            <button className="btn btn-danger mt-2" title="Xóa" onClick={() => onDelete(row)}>
               <FaTrash />
             </button>
           </td>

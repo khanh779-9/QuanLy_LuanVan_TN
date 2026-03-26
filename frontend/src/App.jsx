@@ -1,3 +1,13 @@
+import {
+  faBook,
+  faGavel,
+  faHouse,
+  faListCheck,
+  faPeopleGroup,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import UsersPage from "./pages/users/UsersPage";
@@ -12,25 +22,100 @@ import Review from "./pages/thesis/Review";
 import Council from "./pages/thesis/Council";
 import { Outlet, Navigate, NavLink } from "react-router-dom";
 import React from "react";
+import StuLogo from "../public/assets/Logo_STU.png";
 
 function ThesisLayout() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
     return <Navigate to="/thesis/login" replace />;
   }
   return (
-    <div style={{display:'flex',minHeight:'100vh'}}>
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <h2>Quản lý LVTN</h2>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <aside
+        className="sidebar"
+        style={{ boxShadow: "2px 0px 10px rgba(0,0,0,0.2)" }}
+      >
+        <div className="sidebar-header flex items-center gap-4">
+          <img
+            src={StuLogo}
+            alt="STU Logo"
+            className="object-contain drop-shadow-sm"
+            style={{ width: "80px" }}
+          />
+          <div>
+            <h2 className="mt-[10px] font-bold">MANAGING</h2>
+            <h3>Graduation Theses</h3>
+          </div>
         </div>
-        <NavLink to="/thesis/dashboard" className={({isActive})=>isActive?"sidebar-link sidebar-link-active":"sidebar-link"}>Dashboard</NavLink>
-        <NavLink to="/thesis/assignment" className={({isActive})=>isActive?"sidebar-link sidebar-link-active":"sidebar-link"}>Phân công</NavLink>
-        <NavLink to="/thesis/midterm" className={({isActive})=>isActive?"sidebar-link sidebar-link-active":"sidebar-link"}>Giữa kỳ</NavLink>
-        <NavLink to="/thesis/review" className={({isActive})=>isActive?"sidebar-link sidebar-link-active":"sidebar-link"}>Phản biện</NavLink>
-        <NavLink to="/thesis/council" className={({isActive})=>isActive?"sidebar-link sidebar-link-active":"sidebar-link"}>Hội đồng</NavLink>
+        <div className="mt-5"></div>
+        <NavLink
+          to="/thesis/dashboard"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
+          }
+        >
+          <FontAwesomeIcon icon={faHouse} className="pr-3" />
+          Dashboard
+        </NavLink>
+        <NavLink
+          to="/thesis/assignment"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
+          }
+        >
+          <FontAwesomeIcon icon={faListCheck} className="pr-3" />
+          Topic Management
+        </NavLink>
+        <NavLink
+          to="/thesis/midterm"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
+          }
+        >
+          <FontAwesomeIcon icon={faBook} className="pr-3" />
+          Midterm
+        </NavLink>
+        <NavLink
+          to="/thesis/review"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
+          }
+        >
+          <FontAwesomeIcon icon={faGavel} className="pr-3" />
+          Counter-Argument
+        </NavLink>
+        <NavLink
+          to="/thesis/council"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
+          }
+        >
+          <FontAwesomeIcon icon={faPeopleGroup} className="pr-3" />
+          Council
+        </NavLink>
+
+        <div className="sidebar-footer">
+          <div
+            to=""
+            className="w-full text-left font-bold text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+            onClick={() => {
+              localStorage.removeItem("token");
+              window.location.href = "/thesis/login";
+            }}
+          >
+            <FontAwesomeIcon icon={faRightFromBracket} className="pr-3" />
+            Logout
+          </div>
+        </div>
       </aside>
-      <main style={{flex:1,background:'#f5f6fa',padding:24}}>
+      <main
+        // style={{ flex: 1, background: "#f5f6fa", padding: 24 }}
+        style={{
+          flex: 1,
+          background: "url('../public/assets/background.jpg')",
+          padding: 24,
+        }}
+      >
         <Outlet />
       </main>
     </div>
@@ -43,7 +128,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/users" element={<UsersPage />} />
 
-      <Route path="/thesis" >
+      <Route path="/thesis">
         <Route path="login" element={<LoginPage />} />
         <Route element={<ThesisLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
@@ -54,7 +139,7 @@ function App() {
           <Route index element={<Dashboard />} />
         </Route>
       </Route>
-      
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
