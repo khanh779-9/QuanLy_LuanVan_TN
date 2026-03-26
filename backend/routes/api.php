@@ -165,6 +165,7 @@ Route::post('/login', function (Request $request) {
     ]);
 });
 
+// BẮT ĐẦU KHU VỰC CẦN TOKEN (BẢO MẬT)
 Route::middleware(ApiTokenAuth::class)->group(function () {
     Route::get('/me', function (Request $request) {
         $user = $request->attributes->get('auth_user');
@@ -637,10 +638,11 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'data' => $topic->fresh(),
         ]);
     });
+
     // API Duyệt / Từ chối đề tài (Phát chèn thêm)
     Route::patch('/topics/{topic}/status', function (Request $request, Topic $topic) {
         $validated = $request->validate([
-            'status' => 'required|in:Được làm tiếp,Đình chỉ,Cảnh cáo,Chờ duyệt' // Mày có thể sửa các trạng thái này tùy logic nhóm
+            'status' => 'required|in:Được làm tiếp,Đình chỉ,Cảnh cáo,Chờ duyệt'
         ]);
 
         $topic->update([
@@ -992,4 +994,28 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'hoidong' => Council::orderBy('tenHoiDong')->get(['maHoiDong', 'tenHoiDong']),
         ]);
     });
-});
+
+    // API LƯU DỮ LIỆU CÁC LOẠI FORM (Bảng form_submissions) - NẰM TRONG VÙNG BẢO MẬT
+    Route::post('/forms/submit', function (Request $request) {
+        $validated = $request->validate([
+            'maDeTai' => 'required|integer',
+            'tenForm' => 'required|string',
+            'noiDung' => 'required|array' // Bắt buộc là mảng dữ liệu (JSON)
+        ]);
+
+        // 2. Lưu thẳng vào bảng mới tạo (Không đụng chạm DB cũ)
+        $id = DB::table('form_submissions')->insertGetId([
+            'maDeTai' => $validated['maDeTai'],
+            'tenForm' => $validated['tenForm'],
+            'noiDung' => json_encode($validated['noiDung'], JSON_UNESCAPED_UNICODE), 
+            'ngayNop' => now()
+        ]);
+
+        // 3. Báo cáo thành công về cho Frontend
+        return response()->json([
+            'message' => 'Lưu dữ liệu Form thành công!',
+            'form_id' => $id
+        ], 201);
+    });
+
+}); 
