@@ -24,61 +24,6 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/users', function () {
-    return response()->json([
-        'data' => User::orderBy('id', 'asc')->get(),
-    ]);
-});
-
-Route::post('/users', function (Request $request) {
-    $validated = $request->validate([
-        'name' => 'required|string|max:50',
-        'email' => 'nullable|email|max:100|unique:users,email',
-    ]);
-
-    $user = User::create($validated);
-
-    return response()->json([
-        'data' => $user,
-    ], 201);
-});
-
-Route::put('/users/{id}', function (Request $request, int $id) {
-    $user = User::find($id);
-
-    if (!$user) {
-        return response()->json([
-            'message' => 'Không tìm thấy người dùng.',
-        ], 404);
-    }
-
-    $validated = $request->validate([
-        'name' => 'required|string|max:50',
-        'email' => ['nullable', 'email', 'max:100', Rule::unique('users', 'email')->ignore($id, 'id')],
-    ]);
-
-    $user->update($validated);
-
-    return response()->json([
-        'data' => $user,
-    ]);
-});
-
-Route::delete('/users/{id}', function (int $id) {
-    $user = User::find($id);
-
-    if (!$user) {
-        return response()->json([
-            'message' => 'Không tìm thấy người dùng.',
-        ], 404);
-    }
-
-    $user->delete();
-
-    return response()->json([
-        'message' => 'Đã xóa người dùng.',
-    ]);
-});
 
 Route::post('/login', function (Request $request) {
     $tokenStore = Cache::store('file');
@@ -91,57 +36,23 @@ Route::post('/login', function (Request $request) {
         ], 422);
     }
 
-    if ($username === 'admin') {
-        $adminPassword = (string) $tokenStore->get('legacy_admin_password', '123');
-        if (!hash_equals($adminPassword, $password)) {
-            return response()->json([
-                'message' => 'Thông tin đăng nhập không chính xác.',
-            ], 401);
-        }
-
-        $token = (string) Str::uuid();
-        $tokenStore->put('api_token:' . $token, [
-            'role' => 'admin',
-            'username' => 'Admin',
-        ], now()->addDays(7));
-
-        return response()->json([
-            'message' => 'Đăng nhập thành công.',
-            'token' => $token,
-            'token_type' => 'Bearer',
-            'user' => [
-                'role' => 'admin',
-                'maGV' => 'admin',
-                'tenGV' => 'Admin',
-                'email' => null,
-                'soDienThoai' => null,
-                'hocVi' => null,
-            ],
-        ]);
-    }
-
     $user = Teacher::where('maGV', $username)->first();
 
     if (!$user) {
         return response()->json([
-            'message' => 'Thông tin đăng nhập không chính xác.',
+            'message' => 'Thông tin đăng nhập giảng viên không chính xác.',
         ], 401);
     }
 
     $storedPassword = (string) $user->matKhau;
-    $isLegacyPlainText = hash_equals($storedPassword, $password);
-    $isValidPassword = Hash::check($password, $storedPassword) || $isLegacyPlainText;
+    // $isLegacyPlainText = hash_equals($storedPassword, $password);
+    // $isValidPassword = Hash::check($password, $storedPassword) || $isLegacyPlainText;
+    $isValidPassword = $password === $storedPassword;
 
     if (!$isValidPassword) {
         return response()->json([
             'message' => 'Thông tin đăng nhập không chính xác.',
         ], 401);
-    }
-
-    if ($isLegacyPlainText) {
-        $user->update([
-            'matKhau' => Hash::make($password),
-        ]);
     }
 
     $token = (string) Str::uuid();
@@ -284,78 +195,13 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-    Route::get('/students', function (Request $request) {
-        $query = Student::with('topic')->orderBy('mssv', 'desc');
-
-        if ($request->filled('q')) {
-            $search = $request->string('q')->toString();
-            $query->where(function ($builder) use ($search) {
-                $builder->where('mssv', 'like', "%{$search}%")
-                    ->orWhere('hoTen', 'like', "%{$search}%")
-                    ->orWhere('lop', 'like', "%{$search}%");
-            });
-        }
-
-        return response()->json([
-            'data' => $query->get(),
-        ]);
-    });
-
-    Route::get('/students/{student}', function (Student $student) {
-        return response()->json([
-            'data' => $student->load('topic'),
-        ]);
-    });
-
-    Route::post('/students', function (Request $request) {
-        $validated = $request->validate([
-            'mssv' => 'required|string|max:20|unique:sinhvien,mssv',
-            'hoTen' => 'required|string|max:100',
-            'lop' => 'nullable|string|max:50',
-            'email' => 'nullable|email|max:100',
-            'soDienThoai' => 'nullable|string|max:15',
-            'maDeTai' => 'nullable|exists:detai,maDeTai',
-        ]);
-
-        $student = Student::create($validated);
-
-        return response()->json([
-            'data' => $student,
-        ], 201);
-    });
-
-    Route::put('/students/{student}', function (Request $request, Student $student) {
-        $validated = $request->validate([
-            'mssv' => ['required', 'string', 'max:20', Rule::unique('sinhvien', 'mssv')->ignore($student->mssv, 'mssv')],
-            'hoTen' => 'required|string|max:100',
-            'lop' => 'nullable|string|max:50',
-            'email' => 'nullable|email|max:100',
-            'soDienThoai' => 'nullable|string|max:15',
-            'maDeTai' => 'nullable|exists:detai,maDeTai',
-        ]);
-
-        $student->update($validated);
-
-        return response()->json([
-            'data' => $student,
-        ]);
-    });
-
-    Route::delete('/students/{student}', function (Student $student) {
-        $student->delete();
-
-        return response()->json([
-            'message' => 'Đã xóa sinh viên',
-        ]);
-    });
-
-    Route::delete('/students', function () {
-        Student::truncate();
-
-        return response()->json([
-            'message' => 'Đã xóa tất cả sinh viên',
-        ]);
-    });
+    // Students API RESTful
+    Route::get('/students', [\App\Http\Controllers\StudentController::class, 'index']);
+    Route::get('/students/{student}', [\App\Http\Controllers\StudentController::class, 'show']);
+    Route::post('/students', [\App\Http\Controllers\StudentController::class, 'store']);
+    Route::put('/students/{student}', [\App\Http\Controllers\StudentController::class, 'update']);
+    Route::delete('/students/{student}', [\App\Http\Controllers\StudentController::class, 'destroy']);
+    Route::delete('/students', [\App\Http\Controllers\StudentController::class, 'destroyAll']);
 
     Route::get('/lecturers', function () {
         return response()->json([
@@ -570,72 +416,12 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     });
 
     Route::delete('/topics', function () {
-        DB::transaction(function () {
-            Student::query()->update(['maDeTai' => null]);
-            Topic::truncate();
-        });
-
-        return response()->json([
-            'message' => 'Đã xóa tất cả đề tài.',
-        ]);
-    });
-
-    Route::post('/topics/{topic}/assign-gv', function (Request $request, Topic $topic) {
-        $validated = $request->validate([
-            'maGV' => 'required|exists:giangvien,maGV',
-            'role_assign' => 'required|in:HD,PB',
-        ]);
-
-        if ($validated['role_assign'] === 'HD') {
-            $topic->update(['maGV_HD' => $validated['maGV']]);
-        } else {
-            $topic->update(['maGV_PB' => $validated['maGV']]);
-        }
-
-        return response()->json([
-            'message' => 'Phân công thành công.',
-            'data' => $topic->fresh()->load(['lecturer', 'reviewer']),
-        ]);
-    });
-
-    Route::post('/topics/{topic}/assign-reviewer', function (Request $request, Topic $topic) {
-        $validated = $request->validate([
-            'maGV_PB' => 'required|exists:giangvien,maGV',
-            'ghiChu_PB' => 'nullable|string',
-        ]);
-
-        $topic->update([
-            'maGV_PB' => $validated['maGV_PB'],
-            'ghiChu_PB' => $validated['ghiChu_PB'] ?? null,
-        ]);
-
-        return response()->json([
-            'message' => 'Gán phản biện thành công.',
-            'data' => $topic->fresh()->load('reviewer'),
-        ]);
-    });
-
-    Route::put('/topics/{topic}/midterm', function (Request $request, Topic $topic) {
-        $setting = Setting::firstOrCreate(['id' => 1], ['trangThaiChamGK' => 0, 'giaiDoan' => 1]);
-
-        if ((int) $setting->trangThaiChamGK === 0) {
-            return response()->json([
-                'message' => 'Hệ thống chấm điểm giữa kỳ đang đóng.',
-            ], 422);
-        }
-
-        $validated = $request->validate([
-            'diemGiuaKy' => 'nullable|numeric|min:0|max:100',
-            'trangThaiGiuaKy' => 'required|in:Được làm tiếp,Đình chỉ,Cảnh cáo',
-            'nhanXetGiuaKy' => 'nullable|string',
-        ]);
-
-        $topic->update($validated);
-
-        return response()->json([
-            'message' => 'Cập nhật giữa kỳ thành công.',
-            'data' => $topic->fresh(),
-        ]);
+        // Lecturers API RESTful
+        Route::get('/lecturers', [\App\Http\Controllers\LecturerController::class, 'index']);
+        Route::get('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'show']);
+        Route::post('/lecturers', [\App\Http\Controllers\LecturerController::class, 'store']);
+        Route::put('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'update']);
+        Route::delete('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'destroy']);
     });
     // API Duyệt / Từ chối đề tài (Phát chèn thêm)
     Route::patch('/topics/{topic}/status', function (Request $request, Topic $topic) {
@@ -644,7 +430,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
 
         $topic->update([
-            'trangThaiGiuaKy' => $validated['status'] 
+            'trangThaiGiuaKy' => $validated['status']
         ]);
 
         return response()->json([
@@ -991,5 +777,28 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'sinhvien' => Student::whereNull('maDeTai')->orderBy('hoTen')->get(['mssv', 'hoTen']),
             'hoidong' => Council::orderBy('tenHoiDong')->get(['maHoiDong', 'tenHoiDong']),
         ]);
+    });
+
+     // API LƯU DỮ LIỆU CÁC LOẠI FORM (Bảng form_submissions) - NẰM TRONG VÙNG BẢO MẬT
+    Route::post('/forms/submit', function (Request $request) {
+        $validated = $request->validate([
+            'maDeTai' => 'required|integer',
+            'tenForm' => 'required|string',
+            'noiDung' => 'required|array' // Bắt buộc là mảng dữ liệu (JSON)
+        ]);
+
+        // 2. Lưu thẳng vào bảng mới tạo (Không đụng chạm DB cũ)
+        $id = DB::table('form_submissions')->insertGetId([
+            'maDeTai' => $validated['maDeTai'],
+            'tenForm' => $validated['tenForm'],
+            'noiDung' => json_encode($validated['noiDung'], JSON_UNESCAPED_UNICODE), 
+            'ngayNop' => now()
+        ]);
+
+        // 3. Báo cáo thành công về cho Frontend
+        return response()->json([
+            'message' => 'Lưu dữ liệu Form thành công!',
+            'form_id' => $id
+        ], 201);
     });
 });

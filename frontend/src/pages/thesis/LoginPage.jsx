@@ -1,111 +1,51 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import LogoSTU from "/assets/LoginPage/Logo_STU.png";
-import { login, saveToken } from "../../services/authApi";
+import React, { useState } from 'react';
+
+const API_URL = import.meta.env.VITE_API_BASE_URL + '/api';
 
 export default function LoginPage() {
-  const [maGV, setMaGV] = useState("");
-  const [matKhau, setMatKhau] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    if (!maGV || !matKhau) {
-      setError("Vui lòng nhập đầy đủ thông tin.");
-      return;
-    }
     setLoading(true);
+    setError('');
     try {
-      const res = await login({ maGV, matKhau });
-      if (res.token) {
-        saveToken(res.token);
-        navigate("/thesis");
-      } else {
-        setError("Đăng nhập thất bại.");
-      }
+      const res = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ maGV: username, matKhau: password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Đăng nhập thất bại');
+      // Lưu token vào localStorage/sessionStorage tuỳ ý
+      localStorage.setItem('token', data.token);
+      // Chuyển hướng sang trang chính hoặc dashboard
+      window.location.href = '/thesis';
     } catch (err) {
-      setError(err.message || "Đăng nhập thất bại.");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-blue-100 to-white"
-      style={{
-        display: "flex",
-        alignContent: "center",
-        justifyContent: "center",
-        padding: "2rem",
-      }}
-    >
-      <div
-        className="bg-white/90 border border-blue-200 rounded-3xl shadow-2xl px-10 py-12 items-center gap-8 animate-fadeIn backdrop-blur-sm"
-        style={{
-          width: "400px",
-          display: "flex",
-          flexDirection: "column",
-          padding: "2rem",
-          border: "1px solid #e0e0e0",
-          boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
-          borderRadius: "2rem",
-        }}
-      >
-        <img
-          src={LogoSTU}
-          alt="STU Logo"
-          // className="w-24 h-24 mb-2 drop-shadow-lg"
-          style={{width: "50px"}}
-        />
-
-        <h1 className="text-3xl font-extrabold text-blue-700 text-center w-full">
-          Đăng nhập hệ thống luận văn
-        </h1>
-
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-            marginTop: "1rem",
-            borderRadius: "1rem",
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Mã giảng viên"
-            className="border border-blue-200 rounded-xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-blue-300 text-base shadow-sm w-full"
-            value={maGV}
-            onChange={(e) => setMaGV(e.target.value)}
-            autoFocus
-          />
-
-          <input
-            type="password"
-            placeholder="Mật khẩu"
-            className="border border-blue-200 rounded-xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-blue-300 text-base shadow-sm w-full"
-            value={matKhau}
-            onChange={(e) => setMatKhau(e.target.value)}
-          />
-
-          {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
-          )}
-
-          <button
-            type="submit"
-            className="bg-blue-600 text-white rounded-xl py-3 font-bold text-lg hover:bg-blue-700 transition disabled:opacity-60 shadow-md"
-            disabled={loading}
-          >
-            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
-          </button>
-        </form>
-      </div>
+    <div className="login-page" style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh',background:'#f5f6fa'}}>
+      <form onSubmit={handleSubmit} style={{background:'#fff',padding:32,borderRadius:8,boxShadow:'0 2px 8px #0001',minWidth:320}}>
+        <h2 style={{marginBottom:24}}>Đăng nhập Giảng viên</h2>
+        <div style={{marginBottom:16}}>
+          <label>Mã giảng viên</label>
+          <input type="text" value={username} onChange={e=>setUsername(e.target.value)} required style={{width:'100%',padding:8,marginTop:4}} />
+        </div>
+        <div style={{marginBottom:16}}>
+          <label>Mật khẩu</label>
+          <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required style={{width:'100%',padding:8,marginTop:4}} />
+        </div>
+        {error && <div style={{color:'red',marginBottom:12}}>{error}</div>}
+        <button type="submit" className="btn btn-primary" style={{width:'100%'}} disabled={loading}>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
+      </form>
     </div>
   );
 }

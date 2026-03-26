@@ -1,3 +1,218 @@
+/* Modern custom select (combobox) style */
+.custom-select {
+  width: 100%;
+  padding: 9px 36px 9px 12px;
+  border: 1px solid #94a3b8;
+  border-radius: 10px;
+  background: #f8fafc url('data:image/svg+xml;utf8,<svg fill="%233481f7" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 12px center/18px 18px;
+  font-size: 15px;
+  color: #1e293b;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.custom-select:focus {
+  outline: 2px solid #3b82f6;
+  border-color: #3b82f6;
+  background-color: #fff;
+}
+.custom-select:disabled {
+  background-color: #e5e7eb;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+/* Modal Form Customization */
+.form-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+.form-modal .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+/* Sidebar Navigation */
+.sidebar {
+  width: 220px;
+  background: #1e293b;
+  color: #fff;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.sidebar-header {
+  padding: 24px;
+  border-bottom: 1px solid #334155;
+}
+.sidebar-header h2 {
+  color: #fff;
+  font-size: 20px;
+  margin: 0;
+}
+.sidebar-link {
+  display: block;
+  color: #fff;
+  padding: 16px 24px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-link:hover {
+  background: #334155;
+  color: #38bdf8;
+}
+.sidebar-link-active {
+  background: #334155;
+  color: #38bdf8;
+  border-left: 4px solid #38bdf8;
+}
+/* Utility class for center text */
+.text-center {
+  text-align: center;
+}
+/* --- Unified Thesis Management UI Styles --- */
+
+.dashboard-page, .assignment-page, .midterm-page, .review-page, .council-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #0001;
+  padding: 32px 28px;
+  min-height: 80vh;
+}
+
+.thesis-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  font-size: 15px;
+}
+.thesis-table th, .thesis-table td {
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  padding: 12px 14px;
+}
+.thesis-table th {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #334155;
+}
+.thesis-table tr:last-child td {
+  border-bottom: none;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  background: #0f766e;
+  color: #fff;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-right: 6px;
+}
+.btn:last-child { margin-right: 0; }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-success { background: #22c55e; }
+.btn-warning { background: #f59e42; }
+.btn-danger { background: #ef4444; }
+.btn-secondary { background: #334155; }
+.btn-primary { background: #3b82f6; }
+.btn-info { background: #38bdf8; }
+.btn:hover:not(:disabled) { filter: brightness(0.95); }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30,41,59,0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px #0002;
+  padding: 32px 28px;
+  min-width: 340px;
+  max-width: 96vw;
+  min-height: 120px;
+  position: relative;
+}
+
+/* Toast Styles */
+.toast {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  z-index: 9999;
+  background: #38bdf8;
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0002;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+  animation: toast-in 0.2s;
+}
+.toast-success { background: #22c55e; }
+.toast-error { background: #ef4444; }
+.toast-info { background: #38bdf8; }
+.toast button {
+  background: #fff2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 10px;
+  cursor: pointer;
+  font-size: 15px;
+  margin-left: 8px;
+}
+.toast button:hover { background: #fff3; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Utility */
+.stat-card {
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 10px;
+  min-width: 180px;
+  box-shadow: 0 1px 4px #0001;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-label { font-size: 14px; color: #888; }
+.stat-value { font-size: 28px; font-weight: 700; }
+
+
 :root {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #0f172a;
@@ -10,11 +225,11 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  /* min-height: 100vh; */
 }
 
 .page {
-  min-height: 100vh;
+  /* min-height: 100vh; */
   padding: 24px;
   display: flex;
   align-items: center;
@@ -90,6 +305,7 @@ input:focus {
   outline: 2px solid #3b82f6;
   border-color: #3b82f6;
 }
+
 
 .actions-row {
   grid-column: 1 / -1;

@@ -3,61 +3,74 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\Teacher;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class LecturerController extends Controller
 {
+    // API: GET /lecturers
     public function index()
     {
-        $lecturers = User::where('role', 'lecturer')->paginate(20);
-        return view('lecturers.index', compact('lecturers'));
+        return response()->json([
+            'data' => Teacher::orderBy('maGV', 'desc')->get(),
+        ]);
     }
 
+    // API: GET /lecturers/{lecturer}
+    public function show(Teacher $lecturer)
+    {
+        return response()->json([
+            'data' => $lecturer,
+        ]);
+    }
+
+    // API: POST /lecturers
     public function store(Request $request)
     {
-        $request->validate([
-            'maGV' => 'required|unique:users',
-            'tenGV' => 'required',
-            'email' => 'required|email|unique:users',
-            'matKhau' => 'required|min:3',
+        $validated = $request->validate([
+            'maGV' => 'required|string|max:20|unique:giangvien,maGV',
+            'tenGV' => 'required|string|max:100',
+            'email' => 'nullable|email|max:100|unique:giangvien,email',
+            'soDienThoai' => 'nullable|string|max:15',
+            'hocVi' => 'nullable|string|max:50',
+            'matKhau' => 'required|string|min:3',
         ]);
-
-        User::create([
-            'maGV' => $request->maGV,
-            'tenGV' => $request->tenGV,
-            'email' => $request->email,
-            'soDienThoai' => $request->soDienThoai,
-            'hocVi' => $request->hocVi,
-            'matKhau' => $request->matKhau, // Plaintext password
-            'role' => 'lecturer',
-        ]);
-
-        return back()->with('success', 'Thêm giảng viên thành công');
+        $validated['matKhau'] = Hash::make($validated['matKhau']);
+        $lecturer = Teacher::create($validated);
+        return response()->json([
+            'data' => $lecturer,
+        ], 201);
     }
 
-    public function update(Request $request, User $lecturer)
+    // API: PUT /lecturers/{lecturer}
+    public function update(Request $request, Teacher $lecturer)
     {
-        $request->validate([
-            'maGV' => 'required|unique:users,maGV,' . $lecturer->id,
-            'tenGV' => 'required',
-            'email' => 'required|email|unique:users,email,' . $lecturer->id,
-            'soDienThoai' => 'nullable',
-            'hocVi' => 'nullable',
+        $validated = $request->validate([
+            'maGV' => ['required', 'string', 'max:20', Rule::unique('giangvien', 'maGV')->ignore($lecturer->maGV, 'maGV')],
+            'tenGV' => 'required|string|max:100',
+            'email' => ['nullable', 'email', 'max:100', Rule::unique('giangvien', 'email')->ignore($lecturer->maGV, 'maGV')],
+            'soDienThoai' => 'nullable|string|max:15',
+            'hocVi' => 'nullable|string|max:50',
+            'matKhau' => 'nullable|string|min:3',
         ]);
-
-        $data = $request->except('matKhau');
-        if ($request->filled('matKhau')) {
-            $data['matKhau'] = Hash::make($request->matKhau);
+        if (!empty($validated['matKhau'])) {
+            $validated['matKhau'] = Hash::make($validated['matKhau']);
+        } else {
+            unset($validated['matKhau']);
         }
-
-        $lecturer->update($data);
-        return back()->with('success', 'Cập nhật giảng viên thành công');
+        $lecturer->update($validated);
+        return response()->json([
+            'data' => $lecturer,
+        ]);
     }
 
-    public function destroy(User $lecturer)
+    // API: DELETE /lecturers/{lecturer}
+    public function destroy(Teacher $lecturer)
     {
         $lecturer->delete();
-        return back()->with('success', 'Xóa giảng viên thành công');
+        return response()->json([
+            'message' => 'Đã xóa giảng viên',
+        ]);
     }
 }

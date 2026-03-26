@@ -32,7 +32,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  'email' varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -376,6 +376,23 @@ INSERT INTO `thanhvienhoidong` (`id`, `maHoiDong`, `maGV`, `vaiTro`) VALUES
 (49, 13, 'MA3214', 'ThuKy'),
 (48, 13, 'MA5642', 'ChuTich');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `form_submissions`
+--
+
+DROP TABLE IF EXISTS `form_submissions`;
+CREATE TABLE IF NOT EXISTS `form_submissions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `maDeTai` int NOT NULL,
+  `tenForm` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `noiDung` json NOT NULL,
+  `ngayNop` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_form_detai` (`maDeTai`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Constraints for dumped tables
 --
@@ -396,10 +413,17 @@ ALTER TABLE `diem`
   ADD CONSTRAINT `fk_diem_giangvien` FOREIGN KEY (`maGV`) REFERENCES `giangvien` (`maGV`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `form_submissions`
+--
+ALTER TABLE `form_submissions`
+  ADD CONSTRAINT `fk_form_detai` FOREIGN KEY (`maDeTai`) REFERENCES `detai` (`maDeTai`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `sinhvien`
 --
 ALTER TABLE `sinhvien`
   ADD CONSTRAINT `fk_sinhvien_detai` FOREIGN KEY (`maDeTai`) REFERENCES `detai` (`maDeTai`) ON DELETE SET NULL ON UPDATE CASCADE;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
