@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchTheses, updateThesis } from '../../services/thesisApi';
 import Toast from '../../components/Toast';
+import LoadingSection from '../../components/LoadingSection';
 
 export default function Review() {
   const [data, setData] = useState([]);

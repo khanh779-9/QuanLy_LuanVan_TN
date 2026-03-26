@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchCouncils } from '../../services/councilsApi';
 import { fetchTheses, updateThesis } from '../../services/thesisApi';
 import Toast from '../../components/Toast';
+import LoadingSection from '../../components/LoadingSection';
 
 export default function Council() {
   const [councils, setCouncils] = useState([]);

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import ThesisTable from "../../components/ThesisTable";
 import ThesisFormModal from "../../components/ThesisFormModal";
 import Toast from "../../components/Toast";
+import LoadingSection from "../../components/LoadingSection";
+
 import {
   fetchTheses,
   createThesis,

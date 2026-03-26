@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchTheses, updateThesis } from '../../services/thesisApi';
 import { fetchLecturers } from '../../services/lecturersApi';
 import Toast from '../../components/Toast';
+import LoadingSection from '../../components/LoadingSection';
 
 export default function Assignment() {
   const [data, setData] = useState([]);
