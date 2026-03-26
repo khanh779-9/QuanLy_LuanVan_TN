@@ -52,7 +52,11 @@ export default function Review() {
     <div className="review-page">
       <Toast open={toast.open} message={toast.message} type={toast.type} onClose={() => setToast(t => ({...t, open: false}))} />
       <h2 className='pb-[10px]'>Chấm điểm phản biện</h2>
-      {loading ? <div>Đang tải...</div> : (
+      {loading ? 
+      <div>
+        {/* Đang tải... */}
+        <LoadingSection />
+      </div> : (
         <table className="thesis-table">
           <thead>
             <tr>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchTheses, updateThesis } from '../../services/thesisApi';
 import Toast from '../../components/Toast';
+import LoadingSection from '../../components/LoadingSection';
 
 const STATUS_OPTIONS = [
   'Được làm tiếp',
@@ -54,7 +55,12 @@ export default function Midterm() {
     <div className="midterm-page">
       <Toast open={toast.open} message={toast.message} type={toast.type} onClose={() => setToast(t => ({...t, open: false}))} />
       <h2 className='pb-[10px]'>Chấm điểm giữa kỳ</h2>
-      {loading ? <div>Đang tải...</div> : (
+      {
+        loading ? 
+      <div>
+        {/* Đang tải... */}
+        <LoadingSection />
+      </div> : (
         <table className="thesis-table">
           <thead>
             <tr>

@@ -45,7 +45,11 @@ export default function Council() {
     <div className="council-page">
       <Toast open={toast.open} message={toast.message} type={toast.type} onClose={() => setToast(t => ({...t, open: false}))} />
       <h2 className='pb-[10px]'>Quản lý hội đồng</h2>
-      {loading ? <div>Đang tải...</div> : (
+      {loading ? 
+      <div>
+        {/* Đang tải... */}
+        <LoadingSection />
+      </div> : (
         <div style={{display:'flex', flexDirection:'column', gap: '10px'}}>
           <div style={{flex:1}}>
             <h3>Danh sách hội đồng</h3>

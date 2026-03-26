@@ -181,7 +181,10 @@ export default function Dashboard() {
         />
       </div>
       {loading ? (
-        <div>Đang tải...</div>
+        <div>
+          {/* Đang tải... */}
+          <LoadingSection />
+        </div>
       ) : (
         <ThesisTable
           data={filtered}
