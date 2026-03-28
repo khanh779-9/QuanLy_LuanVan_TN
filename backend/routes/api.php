@@ -780,4 +780,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'hoidong' => Council::orderBy('tenHoiDong')->get(['maHoiDong', 'tenHoiDong']),
         ]);
     });
+
+    Route::get('/thesis/registerlist')
 });
