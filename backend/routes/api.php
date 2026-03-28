@@ -781,5 +781,5 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-    Route::get('/thesis/registerlist')
+    
 });
