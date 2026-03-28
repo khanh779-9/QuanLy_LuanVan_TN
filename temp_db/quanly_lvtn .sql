@@ -378,24 +378,33 @@ INSERT INTO `thanhvienhoidong` (`id`, `maHoiDong`, `maGV`, `vaiTro`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `form_submissions`
---
+DROP TABLE IF EXISTS `topic_registrations_form`;
+CREATE TABLE topic_registrations_form (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    topic_title VARCHAR(255) NOT NULL,
+    topic_description TEXT NULL,
+    topic_type ENUM('single', 'group') NOT NULL, -- 1 SV / 2 SV
+    student1_id VARCHAR(20) NOT NULL,
+    student1_name VARCHAR(255) NOT NULL,
+    student1_class VARCHAR(50) NOT NULL,
+    student1_email VARCHAR(255) NULL,
+    student2_id VARCHAR(20) NULL,
+    student2_name VARCHAR(255) NULL,
+    student2_class VARCHAR(50) NULL,
+    student2_email VARCHAR(255) NULL,
+    gvhd_code VARCHAR(20) NULL,
+    gvhd_workplace VARCHAR(255) NULL,
+    gvpb_code VARCHAR(20) NULL,
+    note TEXT NULL,
+    source VARCHAR(50) DEFAULT 'google_form',
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    registered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-DROP TABLE IF EXISTS `form_submissions`;
-CREATE TABLE IF NOT EXISTS `form_submissions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `maDeTai` int NOT NULL,
-  `tenForm` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `noiDung` json NOT NULL,
-  `ngayNop` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `fk_form_detai` (`maDeTai`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+ALTER TABLE `topic_registrations_form`
+ADD CONSTRAINT fk_topic_registrations_form_gvhd FOREIGN KEY (gvhd_code) REFERENCES giangvien(maGV) ON DELETE SET NULL ON UPDATE CASCADE;
 
---
--- Constraints for dumped tables
---
 
 --
 -- Constraints for table `detai`
@@ -412,13 +421,7 @@ ALTER TABLE `diem`
   ADD CONSTRAINT `fk_diem_detai` FOREIGN KEY (`maDeTai`) REFERENCES `detai` (`maDeTai`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_diem_giangvien` FOREIGN KEY (`maGV`) REFERENCES `giangvien` (`maGV`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- Constraints for table `form_submissions`
---
-ALTER TABLE `form_submissions`
-  ADD CONSTRAINT `fk_form_detai` FOREIGN KEY (`maDeTai`) REFERENCES `detai` (`maDeTai`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
 -- Constraints for table `sinhvien`
 --
 ALTER TABLE `sinhvien`

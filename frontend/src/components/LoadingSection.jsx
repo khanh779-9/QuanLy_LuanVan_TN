@@ -16,7 +16,7 @@ const LoadingSection = () => (
             borderRadius: '50%',
             animation: 'spin 1s linear infinite'
         }} />
-        <p style={{ marginTop: '16px', color: '#555' }}>Đang tải...</p>
+        <p style={{ marginTop: '16px', color: '#555' }}>Đang tải dữ liệu. Vui lòng chờ đợi ...</p>
         <style>
             {`
                 @keyframes spin {

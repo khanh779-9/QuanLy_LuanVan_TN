@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { saveToken, login } from "../../services/authApi";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL + "/api";
+// const API_URL = import.meta.env.VITE_API_BASE_URL + "/api";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -13,16 +14,8 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ maGV: username, matKhau: password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Đăng nhập thất bại");
-      // Lưu token vào localStorage/sessionStorage tuỳ ý
-      localStorage.setItem("token", data.token);
-      // Chuyển hướng sang trang chính hoặc dashboard
+      const data = await login(username, password );
+      saveToken(data.token);
       window.location.href = "/thesis";
     } catch (err) {
       setError(err.message);

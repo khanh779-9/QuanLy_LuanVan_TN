@@ -8,22 +8,21 @@ async function parseResponse(response, defaultErrorMessage) {
   return payload;
 }
 
-export async function login({ maGV, matKhau }) {
+export async function login( username, password ) {
   // BE yêu cầu username, password
   const response = await fetch(API_BASE_URL+`/api/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ username: maGV, password: matKhau })
+    body: JSON.stringify({ maGV: username, matKhau: password })
   });
-  // BE trả về redirect hoặc lỗi, nên chỉ trả về message nếu có lỗi
-  // Nếu BE trả về JSON, sẽ có thể lấy user hoặc message
+ 
   let payload = {};
   try {
     payload = await response.json();
+    
   } catch (e) {
-    // Nếu không phải JSON (redirect), trả về lỗi chung
     throw new Error("Đăng nhập thất bại.");
   }
   if (!response.ok) {
@@ -33,16 +32,22 @@ export async function login({ maGV, matKhau }) {
 }
 
 export function saveToken(token) {
-  localStorage.setItem("access_token", token);
+  localStorage.setItem("token", token);
 }
 
 export function getToken() {
-  return localStorage.getItem("access_token");
+  return localStorage.getItem("token");
 }
 
-export function removeToken() {
-  localStorage.removeItem("access_token");
+
+export async function logout()
+{
+  // Gọi API logout nếu cần thiết
+  // Sau đó xóa token và chuyển hướng
+  localStorage.removeItem("token");
+  window.location.href = "/thesis/login";
 }
+
 
 export async function fetchWithAuth(url, options = {}) {
   const token = getToken();

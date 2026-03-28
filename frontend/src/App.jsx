@@ -2,6 +2,7 @@ import {
   faBook,
   faGavel,
   faHouse,
+  faInfo,
   faListCheck,
   faPeopleGroup,
   faRightFromBracket,
@@ -18,11 +19,13 @@ import LoginPage from "./pages/thesis/LoginPage";
 import Dashboard from "./pages/thesis/Dashboard";
 import Assignment from "./pages/thesis/Assignment";
 import Midterm from "./pages/thesis/Midterm";
+import DataManagement from "./pages/thesis/DataManagement";
 import Review from "./pages/thesis/Review";
 import Council from "./pages/thesis/Council";
 import { Outlet, Navigate, NavLink } from "react-router-dom";
 import React from "react";
 import StuLogo from "../public/assets/Logo_STU.png";
+import { logout } from "./services/authApi";
 
 function ThesisLayout() {
   const token = localStorage.getItem("token");
@@ -57,6 +60,17 @@ function ThesisLayout() {
           <FontAwesomeIcon icon={faHouse} className="pr-3" />
           Dashboard
         </NavLink>
+
+        <NavLink
+          to="/thesis/datamanagement"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
+          }
+        >
+          <FontAwesomeIcon icon={faInfo} className="pr-3" />
+          Data Management
+        </NavLink>
+
         <NavLink
           to="/thesis/assignment"
           className={({ isActive }) =>
@@ -99,8 +113,7 @@ function ThesisLayout() {
             to=""
             className="w-full text-left font-bold text-red-500 hover:text-red-700 transition-colors cursor-pointer"
             onClick={() => {
-              localStorage.removeItem("token");
-              window.location.href = "/thesis/login";
+              logout();
             }}
           >
             <FontAwesomeIcon icon={faRightFromBracket} className="pr-3" />
@@ -132,6 +145,7 @@ function App() {
         <Route path="login" element={<LoginPage />} />
         <Route element={<ThesisLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="datamanagement" element={<DataManagement />} />
           <Route path="assignment" element={<Assignment />} />
           <Route path="midterm" element={<Midterm />} />
           <Route path="review" element={<Review />} />
