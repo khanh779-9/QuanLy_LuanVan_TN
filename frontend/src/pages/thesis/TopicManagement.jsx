@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchThesesForm } from "../../services/thesisFormService";
+import { fetchThesesForm, updateThesisForm, deleteThesisForm, deleteAllThesisForms } from "../../services/thesisFormService";
 
 const initialForm = {
   topic_title: "",
@@ -46,8 +46,8 @@ export default function DataManagement() {
     setLoading(true);
     try {
       const res = await fetchThesesForm();
-      setData(res.data || []);
-      console.log("Fetched data:", res.data);
+      setData(res || []);
+      console.log("Fetched data:", res);
     } catch (e) {
       setError("Không thể tải dữ liệu: " + (e.message || e));
     }
@@ -160,59 +160,49 @@ export default function DataManagement() {
             Thêm mới
           </button>
         </div>
-        <div style={{ overflowX: "auto" }}>
-          <table
-            className="table table-bordered"
-            style={{ background: "#f9fafb", borderRadius: 8, minWidth: 900 }}
-          >
-            <thead style={{ background: "#e5e7eb" }}>
-              <tr style={{ textAlign: "center" }}>
-                <th>ID</th>
-                <th>Tiêu đề</th>
-                <th>Loại</th>
-                <th>SV1</th>
-                <th>SV2</th>
-                <th>GVHD</th>
-                <th>Trạng thái</th>
-                <th>Ngày đăng ký</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.length === 0 ? (
-                <tr>
-                  <td colSpan={9} className="text-center">
-                    Chưa có dữ liệu
-                  </td>
-                </tr>
-              ) : (
-                data.map((item) => (
-                  <tr
-                    key={item.id}
-                    style={{
-                      textAlign: "center",
-                      background: editingId === item.id ? "#f1f5f9" : undefined,
-                    }}
-                  >
-                    <td>{item.id}</td>
-                    <td
-                      style={{
-                        maxWidth: 180,
-                        whiteSpace: "pre-line",
-                        wordBreak: "break-word",
-                      }}
-                    >
-                      {item.topic_title}
-                    </td>
-                    <td>
-                      {typeOptions.find((t) => t.value === item.topic_type)
-                        ?.label || item.topic_type}
-                    </td>
-                    <td>{item.student1_name}</td>
-                    <td>{item.student2_name}</td>
-                    <td>{item.gvhd_code}</td>
-                    <td>
-                      <span
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 32,
+          justifyContent: "flex-start",
+          alignItems: "stretch",
+        }}>
+          {data.length === 0 ? (
+            <div style={{ width: "100%", textAlign: "center", color: "#888", padding: 32 }}>
+              Chưa có dữ liệu
+            </div>
+          ) : (
+            data.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  background: editingId === item.id ? "#f1f5f9" : "#fff",
+                  border: "1.5px solid #e5e7eb",
+                  borderRadius: 16,
+                  boxShadow: "0 4px 16px #0001",
+                  padding: 28,
+                  minWidth: 340,
+                  maxWidth: 380,
+                  flex: "1 1 340px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  height: "340px",
+                  marginBottom: 8,
+                  position: "relative",
+                  transition: "box-shadow 0.2s, border 0.2s",
+                }}
+              >
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ fontWeight: 800, fontSize: 20, color: "#2563eb", marginBottom: 2, wordBreak: "break-word" }}>
+                    {item.topic_title || <span style={{ color: '#bbb' }}>[Chưa có tiêu đề]</span>}
+                  </div>
+                  <div style={{ fontSize: 14, color: "#444", marginBottom: 2 }}>
+                    <span style={{ marginRight: 12 }}>
+                      <b>Loại:</b> {typeOptions.find((t) => t.value === item.topic_type)?.label || item.topic_type}
+                    </span>
+                    <span>
+                      <b>Trạng thái:</b> <span
                         style={{
                           background:
                             item.status === "approved"
@@ -231,32 +221,56 @@ export default function DataManagement() {
                           fontWeight: 600,
                         }}
                       >
-                        {statusOptions.find((s) => s.value === item.status)
-                          ?.label || item.status}
+                        {statusOptions.find((s) => s.value === item.status)?.label || item.status}
                       </span>
-                    </td>
-                    <td>{item.registered_at}</td>
-                    <td>
-                      <button
-                        className="btn btn-warning btn-sm mr-2"
-                        style={{ borderRadius: 6, fontWeight: 500 }}
-                        onClick={() => handleEdit(item)}
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        style={{ borderRadius: 6, fontWeight: 500 }}
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Xóa
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 15, marginBottom: 2 }}>
+                    <b>SV1:</b> {item.student1_name || <span style={{ color: '#bbb' }}>[Chưa có tên]</span>} {item.student1_id && `(${item.student1_id})`}<br />
+                    <b>Lớp:</b> {item.student1_class || <span style={{ color: '#bbb' }}>[Chưa có lớp]</span>} <b>Email:</b> {item.student1_email || <span style={{ color: '#bbb' }}>[Chưa có email]</span>}
+                  </div>
+                  {item.student2_name && (
+                    <div style={{ fontSize: 15, marginBottom: 2 }}>
+                      <b>SV2:</b> {item.student2_name} {item.student2_id && `(${item.student2_id})`}<br />
+                      <b>Lớp:</b> {item.student2_class || <span style={{ color: '#bbb' }}>[Chưa có lớp]</span>} <b>Email:</b> {item.student2_email || <span style={{ color: '#bbb' }}>[Chưa có email]</span>}
+                    </div>
+                  )}
+                  <div style={{ fontSize: 15, marginBottom: 2 }}>
+                    <b>GVHD:</b> {item.gvhd_code || <span style={{ color: '#bbb' }}>[Chưa có mã]</span>} {item.gvhd_workplace && <span>({item.gvhd_workplace})</span>}
+                  </div>
+                  {item.gvpb_code && (
+                    <div style={{ fontSize: 15, marginBottom: 2 }}>
+                      <b>GV phản biện:</b> {item.gvpb_code}
+                    </div>
+                  )}
+                  {item.note && (
+                    <div style={{ fontSize: 14, color: "#b45309", marginBottom: 2 }}>
+                      <b>Ghi chú:</b> {item.note}
+                    </div>
+                  )}
+                  <div style={{ fontSize: 13, color: "#888", marginBottom: 2 }}>
+                    <b>Ngày đăng ký:</b> {item.registered_at ? item.registered_at : <span style={{ color: '#bbb' }}>[Chưa có]</span>}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12, marginTop: 18, justifyContent: "flex-end" }}>
+                  <button
+                    className="btn btn-warning btn-sm"
+                    style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
+                    onClick={() => handleEdit(item)}
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

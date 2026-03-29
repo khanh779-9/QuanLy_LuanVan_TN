@@ -17,3 +17,47 @@ export async function fetchThesesForm() {
   );
   return Array.isArray(payload.data) ? payload.data : [];
 }
+
+export async function createThesisForm(formData) {
+  const response = await fetchWithAuth(`${API_BASE_URL}/thesis-form`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+  return await parseResponse(
+    response,
+    "Không thể tạo biểu mẫu luận văn mới.",
+  );
+}
+
+export async function updateThesisForm(formId, formData) {
+  const response = await fetchWithAuth(`${API_BASE_URL}/thesis-form/${formId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+  return await parseResponse(
+    response,
+    "Không thể cập nhật biểu mẫu luận văn.",
+  );
+}
+
+export async function deleteThesisForm(formId) {
+  const response = await fetchWithAuth(`${API_BASE_URL}/thesis-form/${formId}`, {
+    method: "DELETE",
+  });
+  return await parseResponse(
+    response,
+    "Không thể xóa biểu mẫu luận văn.",
+  );
+}
+
+export async function deleteAllThesisForms() {
+  const response = await fetchWithAuth(`${API_BASE_URL}/thesis-forms`, {
+    method: "DELETE",
+  });
+  return await parseResponse(
+    response,
+    "Không thể xóa tất cả biểu mẫu luận văn.",
+  );
+}

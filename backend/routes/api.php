@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
 Route::get('/', function () {
     return response()->json([
@@ -795,6 +796,10 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         Thông tin Form đăng ký làm đồ án tốt nghiệp (ThesisForm) 
     */
     Route::get('/thesis-form', [ThesisFormController::class, 'index']);
+    Route::post('/thesis-form', [ThesisFormController::class, 'store']);
+    Route::put('/thesis-form/{form}', [ThesisFormController::class, 'update']);
+    Route::delete('/thesis-form/{form}', [ThesisFormController::class, 'destroy']);
+    Route::delete('/thesis-forms', [ThesisFormController::class, 'destroyAll']);
 
 
     // Nếu chưa login mà cố gắng truy cập API, trả về lỗi 401 Unauthorized
