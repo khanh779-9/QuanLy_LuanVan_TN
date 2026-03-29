@@ -4,6 +4,7 @@ import ThesisFormModal from "../../components/ThesisFormModal";
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
 import { fetchCurrentUser } from "../../services/authApi";
+import { fetchDashboard } from "../../services/dashboardApi";
 
 import {
   fetchTheses,
@@ -19,6 +20,7 @@ import {
 } from "../../services/studentApi";
 
 export default function Dashboard() {
+  const [aboutMe, setAboutMe] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -36,7 +38,14 @@ export default function Dashboard() {
     students: 0,
     students_all: 0,
     finished: 0,
+    presentations: "N/A",
   });
+
+  // useEffect(() => {
+  //   fetchCurrentUser()
+  //     .then((user) => setAboutMe(user))
+  //     .catch(() => setAboutMe(null));
+  // }, []);
 
   const showToast = (message, type = "info") =>
     setToast({ open: true, message, type });
@@ -44,16 +53,22 @@ export default function Dashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const theses = await fetchTheses();
-      const students = await fetchStudents();
-      const student_Count = students ? JSON.stringify(students).length : 0;
-
-      setData(theses);
+      // Gọi song song các API
+      const [aboutMeRes, thesesRes, studentsRes, dashboardRes] = await Promise.all([
+        fetchCurrentUser().catch(() => null),
+        fetchTheses().catch(() => []),
+        fetchStudents().catch(() => []),
+        fetchDashboard().catch(() => null),
+      ]);
+      setAboutMe(aboutMeRes);
+      setData(thesesRes);
+      const student_Count = studentsRes ? JSON.stringify(studentsRes).length : 0;
       setStats({
-        total: theses.length,
-        students: theses.reduce((sum, t) => sum + (t.students?.length || 0), 0),
+        total: thesesRes.length,
+        students: thesesRes.reduce((sum, t) => sum + (t.students?.length || 0), 0),
         students_all: student_Count,
-        finished: theses.filter((t) => t.trangThai === "Đã hoàn thành").length,
+        finished: thesesRes.filter((t) => t.trangThai === "Đã hoàn thành").length,
+        presentations: dashboardRes?.cauhinh?.giaiDoan || "N/A",
       });
     } catch (e) {
       showToast(e.message, "error");
@@ -124,9 +139,22 @@ export default function Dashboard() {
           borderRadius: "6px",
           marginBottom: "20px",
           width: "100%",
+          color: "#fff",
         }}
       >
-        <h2>Xin chào {fetchCurrentUser()?.tenGV || "Giảng viên"}!</h2>
+        <h2 className="font-bold">
+          Xin chào, {aboutMe?.tenGV || "N/A"}!
+        </h2>
+
+        <div style={{ color: "#f1f1f1" }}>
+          <div>Mã giảng viên: {aboutMe?.maGV || "N/A"}</div>
+          {/* <div>Email: {aboutMe?.email || "N/A"}</div>
+          <div>Số điện thoại: {aboutMe?.soDienThoai || "N/A"}</div>
+          <div>Học vị: {aboutMe?.hocVi || "N/A"}</div>
+          <div>Khoa: {aboutMe?.khoa || "N/A"}</div> */}
+          <div>Vai trò: {aboutMe?.role || "N/A"}</div>
+          <div>Giai đoạn hiện tại: {stats.presentations || "N/A"}</div>
+        </div>
       </div>
 
       <div

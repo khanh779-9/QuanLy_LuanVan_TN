@@ -34,7 +34,14 @@ export async function login( username, password ) {
 export async function fetchCurrentUser() {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/me`);
   const payload = await parseResponse(response, "Không thể tải thông tin người dùng.");
-  return payload.data;
+  // Trả về data bên trong data của payload (nếu có)
+  if (payload && payload.data && payload.data.data) {
+    return payload.data.data;
+  }
+  if (payload && payload.data) {
+    return payload.data;
+  }
+  return payload;
 }
 
 export function saveToken(token) {
