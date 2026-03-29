@@ -65,11 +65,19 @@ export async function logout() {
 
 export async function fetchWithAuth(url, options = {}) {
   const token = getToken();
-  return fetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers: {
       ...(options.headers || {}),
       Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/thesis/login";
+    // Trả về Promise.reject để dừng các xử lý tiếp theo
+    return Promise.reject(new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."));
+  }
+  return response;
 }
