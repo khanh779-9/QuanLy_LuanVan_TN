@@ -24,14 +24,20 @@ import {
 } from "../../services/studentService";
 
 export default function Dashboard() {
-  const aboutMe = JSON.parse(localStorage.getItem("user"));
-  if (!aboutMe) {
-    showToast(
-      "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.",
-      "error",
-    );
-    return;
-  }
+  const [aboutMe, setAboutMe] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (!aboutMe) {
+      window.location.href = "/thesis/login";
+    }
+  }, [aboutMe]);
+  if (!aboutMe) return null;
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
