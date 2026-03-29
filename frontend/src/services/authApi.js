@@ -21,7 +21,8 @@ export async function login( username, password ) {
   let payload = {};
   try {
     payload = await response.json();
-    
+    const userData = payload.user;
+    localStorage.setItem("user", JSON.stringify(userData));
   } catch (e) {
     throw new Error("Đăng nhập thất bại.");
   }

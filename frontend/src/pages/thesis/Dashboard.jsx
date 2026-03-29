@@ -20,7 +20,6 @@ import {
 } from "../../services/studentApi";
 
 export default function Dashboard() {
-  const [aboutMe, setAboutMe] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,13 +53,12 @@ export default function Dashboard() {
     setLoading(true);
     try {
       // Gọi song song các API
-      const [aboutMeRes, thesesRes, studentsRes, dashboardRes] = await Promise.all([
-        fetchCurrentUser().catch(() => null),
+      const [thesesRes, studentsRes, dashboardRes] = await Promise.all([
         fetchTheses().catch(() => []),
         fetchStudents().catch(() => []),
         fetchDashboard().catch(() => null),
       ]);
-      setAboutMe(aboutMeRes);
+      
       setData(thesesRes);
       const student_Count = studentsRes ? JSON.stringify(studentsRes).length : 0;
       setStats({
@@ -77,6 +75,11 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    const aboutMe = JSON.parse(localStorage.getItem("user"));
+    if (!aboutMe) {
+      showToast("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.", "error");
+      return;
+    }
     loadData();
   }, []);
 
