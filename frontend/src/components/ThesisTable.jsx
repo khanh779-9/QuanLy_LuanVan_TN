@@ -12,7 +12,7 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
         <th>GV Phản biện</th>
         <th>Điểm</th>
         <th>Trạng thái</th>
-        <th>Hành động</th>
+        {/* <th>Hành động</th> */}
       </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
           <td>{row.reviewer?.tenGV}</td>
           <td>{row.diemTong || '-'}</td>
           <td>{row.trangThai || '-'}</td>
-          <td>
+          {/* <td>
             <button className="btn btn-info mt-2" title="Chi tiết" onClick={() => onDetail(row)}>
               <FaEye />
             </button>
@@ -35,7 +35,7 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
             <button className="btn btn-danger mt-2" title="Xóa" onClick={() => onDelete(row)}>
               <FaTrash />
             </button>
-          </td>
+          </td> */}
         </tr>
       )) : (
         <tr><td colSpan={8} className="text-center">Không có dữ liệu</td></tr>

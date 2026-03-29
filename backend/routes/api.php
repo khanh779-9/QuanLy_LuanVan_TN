@@ -782,5 +782,10 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-    
+    // Nếu chưa login mà cố gắng truy cập API, trả về lỗi 401 Unauthorized
+    Route::middleware('auth.api')->any('/{any}', function () {
+        return response()->json([
+            'message' => 'Unauthorized. Vui lòng đăng nhập để truy cập API.',
+        ], 401);
+    })->where('any', '.*');
 });
