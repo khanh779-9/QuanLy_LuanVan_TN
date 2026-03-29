@@ -1,19 +1,13 @@
+
 import { fetchWithAuth } from "./authService";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/api";
-
-async function parseResponse(response, defaultErrorMessage) {
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.message || defaultErrorMessage);
-  }
-  return payload;
-}
+import { parseResponse } from "../utils/parseResponse";
 
 export async function fetchTheses() {
   const response = await fetchWithAuth(`${API_BASE_URL}/topics`);
   const payload = await parseResponse(
     response,
-    "Không thể tải danh sách luận văn.",
+    "Không thể tải danh sách luận văn."
   );
   return Array.isArray(payload.data) ? payload.data : [];
 }
@@ -51,11 +45,11 @@ export async function deleteThesis(id) {
 
 export async function fetchStudentsByThesisId(thesisId) {
   const response = await fetchWithAuth(
-    `${API_BASE_URL}/topics/${thesisId}/students`,
+    `${API_BASE_URL}/topics/${thesisId}/students`
   );
   const payload = await parseResponse(
     response,
-    "Không thể tải danh sách sinh viên.",
+    "Không thể tải danh sách sinh viên."
   );
   return Array.isArray(payload.data) ? payload.data : [];
 }

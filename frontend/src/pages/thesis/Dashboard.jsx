@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import studentWithLaptop from "../../../public/assets/student with laptop.json";
-// Nếu bạn đã cài lottie-react:
-// import Lottie from "lottie-react";
+
 import ThesisTable from "../../components/ThesisTable";
 import ThesisFormModal from "../../components/ThesisFormModal";
 import Toast from "../../components/Toast";

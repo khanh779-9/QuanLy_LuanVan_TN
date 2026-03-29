@@ -83,30 +83,93 @@ export default function DataManagement() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.topic_title || !form.student1_id || !form.student1_name) {
-      setError("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+    // Validate các trường bắt buộc theo BE
+    const requiredFields = [
+      { key: "topic_title", label: "Tiêu đề" },
+      { key: "topic_description", label: "Mô tả" },
+      { key: "topic_type", label: "Loại đề tài" },
+      { key: "student1_id", label: "MSSV 1" },
+      { key: "student1_name", label: "Tên SV 1" },
+      { key: "student1_class", label: "Lớp SV 1" },
+      { key: "student1_email", label: "Email SV 1" },
+      { key: "gvhd_code", label: "Mã GVHD" },
+      { key: "gvhd_workplace", label: "Nơi công tác GVHD" },
+      { key: "gvpb_code", label: "Mã GV phản biện" },
+    ];
+    for (let f of requiredFields) {
+      if (!form[f.key] || (typeof form[f.key] === "string" && form[f.key].trim() === "")) {
+        setError(`Vui lòng nhập ${f.label}!`);
+        setToast({
+          show: true,
+          type: "error",
+          message: `Vui lòng nhập ${f.label}!`,
+        });
+        return;
+      }
+    }
+    // Validate email SV1
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.student1_email)) {
+      setError("Email SV 1 không hợp lệ!");
       setToast({
         show: true,
         type: "error",
-        message: "Vui lòng nhập đầy đủ thông tin bắt buộc!",
+        message: "Email SV 1 không hợp lệ!",
+      });
+      return;
+    }
+    // Nếu có SV2 email thì kiểm tra hợp lệ
+    if (form.student2_email && !emailRegex.test(form.student2_email)) {
+      setError("Email SV 2 không hợp lệ!");
+      setToast({
+        show: true,
+        type: "error",
+        message: "Email SV 2 không hợp lệ!",
+      });
+      return;
+    }
+    // Đảm bảo MSSV là số
+    if (isNaN(Number(form.student1_id))) {
+      setError("MSSV 1 phải là số!");
+      setToast({
+        show: true,
+        type: "error",
+        message: "MSSV 1 phải là số!",
+      });
+      return;
+    }
+    if (form.student2_id && isNaN(Number(form.student2_id))) {
+      setError("MSSV 2 phải là số!");
+      setToast({
+        show: true,
+        type: "error",
+        message: "MSSV 2 phải là số!",
       });
       return;
     }
     setError("");
+    setLoading(true);
     try {
+      // Chuẩn hóa dữ liệu gửi đi đúng kiểu
+      const payload = {
+        ...form,
+        student1_id: Number(form.student1_id),
+        student2_id: form.student2_id ? Number(form.student2_id) : null,
+      };
+      let res;
       if (editingId !== null) {
-        await updateThesisForm(editingId, form);
+        res = await updateThesisForm(editingId, payload);
         setToast({
           show: true,
           type: "success",
-          message: "Cập nhật đăng ký thành công!",
+          message: res?.message || "Cập nhật đăng ký thành công!",
         });
       } else {
-        await createThesisForm(form);
+        res = await createThesisForm(payload);
         setToast({
           show: true,
           type: "success",
-          message: "Thêm đăng ký mới thành công!",
+          message: res?.message || "Thêm đăng ký mới thành công!",
         });
       }
       await loadData();
@@ -118,25 +181,28 @@ export default function DataManagement() {
       setToast({
         show: true,
         type: "error",
-        message: "Lỗi khi lưu dữ liệu: " + (e.message || e),
+        message: e?.message || "Lỗi khi lưu dữ liệu!",
       });
     }
+    setLoading(false);
   };
 
   const handleEdit = (item) => {
-    setForm(item);
+    setForm({ ...item });
     setEditingId(item.id);
     setShowForm(true);
+    setError("");
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Bạn chắc chắn muốn xóa?")) {
+      setLoading(true);
       try {
-        await deleteThesisForm(id);
+        const res = await deleteThesisForm(id);
         setToast({
           show: true,
           type: "success",
-          message: "Xóa đăng ký thành công!",
+          message: res?.message || "Xóa đăng ký thành công!",
         });
         await loadData();
       } catch (e) {
@@ -144,9 +210,10 @@ export default function DataManagement() {
         setToast({
           show: true,
           type: "error",
-          message: "Lỗi khi xóa: " + (e.message || e),
+          message: e?.message || "Lỗi khi xóa!",
         });
       }
+      setLoading(false);
     }
   };
 
@@ -205,145 +272,109 @@ export default function DataManagement() {
               Thêm mới
             </button>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 32,
-              justifyContent: "flex-start",
-              alignItems: "stretch",
-            }}
-          >
-            {data.length === 0 ? (
-              <div
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  color: "#888",
-                  padding: 32,
-                }}
-              >
-                Chưa có dữ liệu
-              </div>
-            ) : (
-              data.map((item) => (
-                <div
-                  key={item.id}
-                  style={{
-                    background: editingId === item.id ? "#f1f5f9" : "#fff",
-                    border: "1.5px solid #e5e7eb",
-                    borderRadius: 8,
-                    boxShadow: "0 4px 16px #0001",
-                    padding: 12,
-                    minWidth: 280,
-                    maxWidth: 320,
-                    flex: "1 1 280px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    height: "auto",
-                    marginBottom: 8,
-                    position: "relative",
-                    transition: "box-shadow 0.2s, border 0.2s",
-                  }}
-                >
-                  <div
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    <div style={{ fontWeight: 800, fontSize: 16, color: "#2563eb", wordBreak: "break-word", textAlign: "center" }}>
-                      {item.topic_title || (<span style={{ color: "#bbb" }}>[Chưa có tiêu đề]</span>)}
-                    </div>
-                    <div style={{ fontSize: 13, color: "#444" }}>
-                      <b>Loại:</b> {typeOptions.find((t) => t.value === item.topic_type)?.label || item.topic_type}
-                    </div>
-                    <div style={{ fontSize: 13, color: "#444" }}>
-                      <b>Trạng thái:</b> <span
-                        style={{
-                          background:
-                            item.status === "approved"
-                              ? "#22c55e22"
-                              : item.status === "rejected"
-                                ? "#ef444422"
-                                : "#facc1522",
-                          color:
-                            item.status === "approved"
-                              ? "#16a34a"
-                              : item.status === "rejected"
-                                ? "#b91c1c"
-                                : "#b45309",
-                          borderRadius: 8,
-                          padding: "2px 10px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {statusOptions.find((s) => s.value === item.status)?.label || item.status}
-                      </span>
-                    </div>
-                    <div style={{ fontSize: 13, color: "#222" }}>
-                      <b>SV1:</b> {item.student1_name || <span style={{ color: "#bbb" }}>[Chưa có tên]</span>} {item.student1_id && `(${item.student1_id})`}
-                    </div>
-                    <div style={{ fontSize: 13, color: "#222" }}>
-                      <b>Lớp:</b> {item.student1_class || <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>}
-                    </div>
-                    <div style={{ fontSize: 13, color: "#222" }}>
-                      <b>Email:</b> {item.student1_email || <span style={{ color: "#bbb" }}>[Chưa có email]</span>}
-                    </div>
-                    {item.student2_name && (
-                      <>
-                        <div style={{ fontSize: 13, color: "#222" }}><b>SV2:</b> {item.student2_name} {item.student2_id && `(${item.student2_id})`}</div>
-                        <div style={{ fontSize: 13, color: "#222" }}><b>Lớp:</b> {item.student2_class || <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>}</div>
-                        <div style={{ fontSize: 13, color: "#222" }}><b>Email:</b> {item.student2_email || <span style={{ color: "#bbb" }}>[Chưa có email]</span>}</div>
-                      </>
-                    )}
-                    <div style={{ fontSize: 13, color: "#222" }}>
-                      <b>GVHD:</b> {item.gvhd_code || <span style={{ color: "#bbb" }}>[Chưa có mã]</span>} {item.gvhd_workplace && <span>({item.gvhd_workplace})</span>}
-                    </div>
-                    {item.gvpb_code && (
-                      <div style={{ fontSize: 13, color: "#222" }}>
-                        <b>GV phản biện:</b> {item.gvpb_code}
-                      </div>
-                    )}
-                    {item.note && (
-                      <div style={{ fontSize: 12, color: "#b45309" }}>
-                        <b>Ghi chú:</b> {item.note}
-                      </div>
-                    )}
-                    <div style={{ fontSize: 12, color: "#888" }}>
-                      <b>Ngày đăng ký:</b> {item.registered_at ? item.registered_at : <span style={{ color: "#bbb" }}>[Chưa có]</span>}
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 7,
-                      marginTop: 18,
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <button
-                      className="btn btn-warning btn-sm"
-                      style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
-                      onClick={() => handleEdit(item)}
-                    >
-                      Sửa
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          {data.length === 0 ? (
+            <div
+              style={{
+                width: "100%",
+                textAlign: "center",
+                color: "#888",
+                padding: 32,
+              }}
+            >
+              Chưa có dữ liệu
+            </div>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table className="table table-bordered" style={{ minWidth: 1100, background: "#fff" }}>
+                <thead style={{ background: "#f1f5f9" }}>
+                  <tr>
+                    <th>STT</th>
+                    <th>Tiêu đề</th>
+                    <th>Loại</th>
+                    <th>Trạng thái</th>
+                    <th>Sinh viên 1</th>
+                    <th>Sinh viên 2</th>
+                    <th>GVHD</th>
+                    <th>GV phản biện</th>
+                    <th>Ngày đăng ký</th>
+                    <th>Ghi chú</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((item, idx) => (
+                    <tr key={item.id} style={{ background: editingId === item.id ? "#f1f5f9" : undefined }}>
+                      <td>{idx + 1}</td>
+                      <td style={{ maxWidth: 220, wordBreak: "break-word" }}>{item.topic_title || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
+                      <td>{typeOptions.find((t) => t.value === item.topic_type)?.label || item.topic_type}</td>
+                      <td>
+                        <span
+                          style={{
+                            background:
+                              item.status === "approved"
+                                ? "#22c55e22"
+                                : item.status === "rejected"
+                                  ? "#ef444422"
+                                  : "#facc1522",
+                            color:
+                              item.status === "approved"
+                                ? "#16a34a"
+                                : item.status === "rejected"
+                                  ? "#b91c1c"
+                                  : "#b45309",
+                            borderRadius: 8,
+                            padding: "2px 10px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {statusOptions.find((s) => s.value === item.status)?.label || item.status}
+                        </span>
+                      </td>
+                      <td>
+                        <div><b>MSSV:</b> {item.student1_id || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                        <div><b>Họ tên:</b> {item.student1_name || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                        <div><b>Lớp:</b> {item.student1_class || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                        <div><b>Email:</b> {item.student1_email || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                      </td>
+                      <td>
+                        {item.student2_name || item.student2_id || item.student2_class || item.student2_email ? (
+                          <>
+                            <div><b>MSSV:</b> {item.student2_id || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                            <div><b>Họ tên:</b> {item.student2_name || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                            <div><b>Lớp:</b> {item.student2_class || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                            <div><b>Email:</b> {item.student2_email || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                          </>
+                        ) : <span style={{ color: "#bbb" }}>[Không có]</span>}
+                      </td>
+                      <td>
+                        <div><b>Mã:</b> {item.gvhd_code || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                        <div><b>Nơi công tác:</b> {item.gvhd_workplace || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                      </td>
+                      <td>{item.gvpb_code || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
+                      <td>{item.registered_at ? item.registered_at : <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
+                      <td>{item.note || <span style={{ color: "#bbb" }}>[Không có]</span>}</td>
+                      <td>
+                        <button
+                          className="btn btn-warning btn-sm"
+                          style={{ borderRadius: 6, fontWeight: 600, minWidth: 64, marginBottom: 4 }}
+                          onClick={() => handleEdit(item)}
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Xóa
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
