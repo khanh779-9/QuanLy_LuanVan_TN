@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { fetchThesesForm, updateThesisForm, deleteThesisForm, deleteAllThesisForms } from "../../services/thesisFormService";
+import {
+  fetchThesesForm,
+  createThesisForm,
+  updateThesisForm,
+  deleteThesisForm,
+  deleteAllThesisForms,
+} from "../../services/thesisFormService";
+
+import Toast from "../../components/Toast"; 
+import LoadingSection from "../../components/LoadingSection";
 
 const initialForm = {
   topic_title: "",
@@ -32,7 +41,6 @@ const typeOptions = [
   { value: "group", label: "2 sinh viên" },
 ];
 
-
 export default function DataManagement() {
   const [data, setData] = useState([]);
   const [form, setForm] = useState(initialForm);
@@ -40,6 +48,7 @@ export default function DataManagement() {
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, type: "success", message: "" });
 
   // Fetch data from API
   const loadData = async () => {
@@ -47,9 +56,10 @@ export default function DataManagement() {
     try {
       const res = await fetchThesesForm();
       setData(res || []);
-      console.log("Fetched data:", res);
+      // setToast({ show: true, type: "success", message: "Tải dữ liệu thành công!" }); // Không cần thông báo khi chỉ tải dữ liệu
     } catch (e) {
       setError("Không thể tải dữ liệu: " + (e.message || e));
+      setToast({ show: true, type: "error", message: "Không thể tải dữ liệu: " + (e.message || e) });
     }
     setLoading(false);
   };
@@ -67,14 +77,17 @@ export default function DataManagement() {
     e.preventDefault();
     if (!form.topic_title || !form.student1_id || !form.student1_name) {
       setError("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+      setToast({ show: true, type: "error", message: "Vui lòng nhập đầy đủ thông tin bắt buộc!" });
       return;
     }
     setError("");
     try {
       if (editingId !== null) {
         await updateThesisForm(editingId, form);
+        setToast({ show: true, type: "success", message: "Cập nhật đăng ký thành công!" });
       } else {
         await createThesisForm(form);
+        setToast({ show: true, type: "success", message: "Thêm đăng ký mới thành công!" });
       }
       await loadData();
       setForm(initialForm);
@@ -82,6 +95,7 @@ export default function DataManagement() {
       setShowForm(false);
     } catch (e) {
       setError("Lỗi khi lưu dữ liệu: " + (e.message || e));
+      setToast({ show: true, type: "error", message: "Lỗi khi lưu dữ liệu: " + (e.message || e) });
     }
   };
 
@@ -95,9 +109,11 @@ export default function DataManagement() {
     if (window.confirm("Bạn chắc chắn muốn xóa?")) {
       try {
         await deleteThesisForm(id);
+        setToast({ show: true, type: "success", message: "Xóa đăng ký thành công!" });
         await loadData();
       } catch (e) {
         setError("Lỗi khi xóa: " + (e.message || e));
+        setToast({ show: true, type: "error", message: "Lỗi khi xóa: " + (e.message || e) });
       }
     }
   };
@@ -111,7 +127,9 @@ export default function DataManagement() {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: 24 }}>
-      {loading && <div>Đang tải dữ liệu...</div>}
+      <Toast show={toast.show} type={toast.type} message={toast.message} onClose={() => setToast({ ...toast, show: false })} />
+      {loading && <LoadingSection text="Đang tải dữ liệu..." />}
+      {!loading && (
       <div
         style={{
           background: "#fff",
@@ -126,7 +144,6 @@ export default function DataManagement() {
             fontWeight: 700,
             color: "#2d3a4a",
             marginBottom: 16,
-            
           }}
         >
           Quản lý Đăng ký Đề tài
@@ -160,15 +177,24 @@ export default function DataManagement() {
             Thêm mới
           </button>
         </div>
-        <div style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 32,
-          justifyContent: "flex-start",
-          alignItems: "stretch",
-        }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 32,
+            justifyContent: "flex-start",
+            alignItems: "stretch",
+          }}
+        >
           {data.length === 0 ? (
-            <div style={{ width: "100%", textAlign: "center", color: "#888", padding: 32 }}>
+            <div
+              style={{
+                width: "100%",
+                textAlign: "center",
+                color: "#888",
+                padding: 32,
+              }}
+            >
               Chưa có dữ liệu
             </div>
           ) : (
@@ -193,16 +219,36 @@ export default function DataManagement() {
                   transition: "box-shadow 0.2s, border 0.2s",
                 }}
               >
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-                  <div style={{ fontWeight: 800, fontSize: 20, color: "#2563eb", marginBottom: 2, wordBreak: "break-word" }}>
-                    {item.topic_title || <span style={{ color: '#bbb' }}>[Chưa có tiêu đề]</span>}
+                <div
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 800,
+                      fontSize: 20,
+                      color: "#2563eb",
+                      marginBottom: 2,
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {item.topic_title || (
+                      <span style={{ color: "#bbb" }}>[Chưa có tiêu đề]</span>
+                    )}
                   </div>
                   <div style={{ fontSize: 14, color: "#444", marginBottom: 2 }}>
                     <span style={{ marginRight: 12 }}>
-                      <b>Loại:</b> {typeOptions.find((t) => t.value === item.topic_type)?.label || item.topic_type}
+                      <b>Loại:</b>{" "}
+                      {typeOptions.find((t) => t.value === item.topic_type)
+                        ?.label || item.topic_type}
                     </span>
                     <span>
-                      <b>Trạng thái:</b> <span
+                      <b>Trạng thái:</b>{" "}
+                      <span
                         style={{
                           background:
                             item.status === "approved"
@@ -221,22 +267,50 @@ export default function DataManagement() {
                           fontWeight: 600,
                         }}
                       >
-                        {statusOptions.find((s) => s.value === item.status)?.label || item.status}
+                        {statusOptions.find((s) => s.value === item.status)
+                          ?.label || item.status}
                       </span>
                     </span>
                   </div>
                   <div style={{ fontSize: 15, marginBottom: 2 }}>
-                    <b>SV1:</b> {item.student1_name || <span style={{ color: '#bbb' }}>[Chưa có tên]</span>} {item.student1_id && `(${item.student1_id})`}<br />
-                    <b>Lớp:</b> {item.student1_class || <span style={{ color: '#bbb' }}>[Chưa có lớp]</span>} <b>Email:</b> {item.student1_email || <span style={{ color: '#bbb' }}>[Chưa có email]</span>}
+                    <b>SV1:</b>{" "}
+                    {item.student1_name || (
+                      <span style={{ color: "#bbb" }}>[Chưa có tên]</span>
+                    )}{" "}
+                    {item.student1_id && `(${item.student1_id})`}
+                    <br />
+                    <b>Lớp:</b>{" "}
+                    {item.student1_class || (
+                      <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>
+                    )}{" "}
+                    <b>Email:</b>{" "}
+                    {item.student1_email || (
+                      <span style={{ color: "#bbb" }}>[Chưa có email]</span>
+                    )}
                   </div>
                   {item.student2_name && (
                     <div style={{ fontSize: 15, marginBottom: 2 }}>
-                      <b>SV2:</b> {item.student2_name} {item.student2_id && `(${item.student2_id})`}<br />
-                      <b>Lớp:</b> {item.student2_class || <span style={{ color: '#bbb' }}>[Chưa có lớp]</span>} <b>Email:</b> {item.student2_email || <span style={{ color: '#bbb' }}>[Chưa có email]</span>}
+                      <b>SV2:</b> {item.student2_name}{" "}
+                      {item.student2_id && `(${item.student2_id})`}
+                      <br />
+                      <b>Lớp:</b>{" "}
+                      {item.student2_class || (
+                        <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>
+                      )}{" "}
+                      <b>Email:</b>{" "}
+                      {item.student2_email || (
+                        <span style={{ color: "#bbb" }}>[Chưa có email]</span>
+                      )}
                     </div>
                   )}
                   <div style={{ fontSize: 15, marginBottom: 2 }}>
-                    <b>GVHD:</b> {item.gvhd_code || <span style={{ color: '#bbb' }}>[Chưa có mã]</span>} {item.gvhd_workplace && <span>({item.gvhd_workplace})</span>}
+                    <b>GVHD:</b>{" "}
+                    {item.gvhd_code || (
+                      <span style={{ color: "#bbb" }}>[Chưa có mã]</span>
+                    )}{" "}
+                    {item.gvhd_workplace && (
+                      <span>({item.gvhd_workplace})</span>
+                    )}
                   </div>
                   {item.gvpb_code && (
                     <div style={{ fontSize: 15, marginBottom: 2 }}>
@@ -244,15 +318,33 @@ export default function DataManagement() {
                     </div>
                   )}
                   {item.note && (
-                    <div style={{ fontSize: 14, color: "#b45309", marginBottom: 2 }}>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        color: "#b45309",
+                        marginBottom: 2,
+                      }}
+                    >
                       <b>Ghi chú:</b> {item.note}
                     </div>
                   )}
                   <div style={{ fontSize: 13, color: "#888", marginBottom: 2 }}>
-                    <b>Ngày đăng ký:</b> {item.registered_at ? item.registered_at : <span style={{ color: '#bbb' }}>[Chưa có]</span>}
+                    <b>Ngày đăng ký:</b>{" "}
+                    {item.registered_at ? (
+                      item.registered_at
+                    ) : (
+                      <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                    )}
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 12, marginTop: 18, justifyContent: "flex-end" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 12,
+                    marginTop: 18,
+                    justifyContent: "flex-end",
+                  }}
+                >
                   <button
                     className="btn btn-warning btn-sm"
                     style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
@@ -273,6 +365,7 @@ export default function DataManagement() {
           )}
         </div>
       </div>
+      )}
 
       {/* Modal Dialog for Form */}
       {showForm && (
