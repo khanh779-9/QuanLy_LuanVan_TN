@@ -20,6 +20,15 @@ import {
 } from "../../services/studentApi";
 
 export default function Dashboard() {
+  const aboutMe = JSON.parse(localStorage.getItem("user"));
+  if (!aboutMe) {
+    showToast(
+      "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.",
+      "error",
+    );
+    return;
+  }
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -40,12 +49,6 @@ export default function Dashboard() {
     presentations: 0,
   });
 
-  // useEffect(() => {
-  //   fetchCurrentUser()
-  //     .then((user) => setAboutMe(user))
-  //     .catch(() => setAboutMe(null));
-  // }, []);
-
   const showToast = (message, type = "info") =>
     setToast({ open: true, message, type });
 
@@ -58,14 +61,20 @@ export default function Dashboard() {
         fetchStudents().catch(() => []),
         fetchDashboard().catch(() => null),
       ]);
-      
+
       setData(thesesRes);
-      const student_Count = studentsRes ? JSON.stringify(studentsRes).length : 0;
+      const student_Count = studentsRes
+        ? JSON.stringify(studentsRes).length
+        : 0;
       setStats({
         total: thesesRes.length,
-        students: thesesRes.reduce((sum, t) => sum + (t.students?.length || 0), 0),
+        students: thesesRes.reduce(
+          (sum, t) => sum + (t.students?.length || 0),
+          0,
+        ),
         students_all: student_Count,
-        finished: thesesRes.filter((t) => t.trangThai === "Đã hoàn thành").length,
+        finished: thesesRes.filter((t) => t.trangThai === "Đã hoàn thành")
+          .length,
         presentations: dashboardRes?.cauhinh?.giaiDoan || 0,
       });
     } catch (e) {
@@ -75,11 +84,6 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const aboutMe = JSON.parse(localStorage.getItem("user"));
-    if (!aboutMe) {
-      showToast("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.", "error");
-      return;
-    }
     loadData();
   }, []);
 
@@ -145,9 +149,7 @@ export default function Dashboard() {
           color: "#fff",
         }}
       >
-        <h2 className="font-bold">
-          Xin chào, {aboutMe?.tenGV || "N/A"}!
-        </h2>
+        <h2 className="font-bold">Xin chào, {aboutMe?.tenGV || "N/A"}!</h2>
 
         <div style={{ color: "#f1f1f1" }}>
           <div>Mã giảng viên: {aboutMe?.maGV || "N/A"}</div>
@@ -177,7 +179,7 @@ export default function Dashboard() {
           <div className="stat-label">Giai đoạn hiện tại</div>
           <div className="stat-value">{stats.presentations || 0}</div>
         </div>
-        
+
         <div
           className="stat-card"
           style={{

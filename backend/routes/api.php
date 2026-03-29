@@ -386,6 +386,13 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
+    Route::get('/topics/{topic}', function (Topic $topic) {
+        return response()->json([
+            'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
+        ]);
+    });
+
+
     Route::post('/topics/create-group-assign', function (Request $request) {
         $validated = $request->validate([
             'student_1' => 'required|exists:sinhvien,mssv',
