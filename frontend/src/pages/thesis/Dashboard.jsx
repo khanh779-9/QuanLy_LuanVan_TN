@@ -133,8 +133,8 @@ export default function Dashboard() {
 
   const filtered = data.filter(
     (row) =>
-      row.tenDeTai?.toLowerCase().includes(search.toLowerCase()) ||
-      row.maDeTai?.toLowerCase().includes(search.toLowerCase()),
+      String(row.tenDeTai || "").toLowerCase().includes(search.toLowerCase()) ||
+      String(row.maDeTai || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -256,9 +256,9 @@ export default function Dashboard() {
           gap: 16,
         }}
       >
-        <button className="btn btn-primary" onClick={handleAdd}>
+        {/* <button className="btn btn-primary" onClick={handleAdd}>
           Thêm mới
-        </button>
+        </button> */}
         <input
           type="text"
           placeholder="Tìm kiếm..."
