@@ -1,3 +1,7 @@
+
+import React from "react";
+import { Route, Routes, Outlet, Navigate, NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
   faGavel,
@@ -7,13 +11,11 @@ import {
   faPeopleGroup,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { Route, Routes } from "react-router-dom";
+import StuLogo from "../public/assets/Logo_STU.png";
+import { logout } from "./services/authService";
 import HomePage from "./pages/HomePage";
 import UsersPage from "./pages/users/UsersPage";
 import NotFoundPage from "./pages/NotFoundPage";
-
 import ThesisList from "./pages/thesis/ThesisList";
 import LoginPage from "./pages/thesis/LoginPage";
 import Dashboard from "./pages/thesis/Dashboard";
@@ -22,10 +24,6 @@ import Midterm from "./pages/thesis/Midterm";
 import DataManagement from "./pages/thesis/DataManagement";
 import Review from "./pages/thesis/Review";
 import Council from "./pages/thesis/Council";
-import { Outlet, Navigate, NavLink } from "react-router-dom";
-import React from "react";
-import StuLogo from "../public/assets/Logo_STU.png";
-import { logout } from "./services/authApi";
 
 function ThesisLayout() {
   const token = localStorage.getItem("token");

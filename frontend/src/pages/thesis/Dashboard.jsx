@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
+import studentWithLaptop from "../../../public/assets/student with laptop.json";
+// Nếu bạn đã cài lottie-react:
+// import Lottie from "lottie-react";
 import ThesisTable from "../../components/ThesisTable";
 import ThesisFormModal from "../../components/ThesisFormModal";
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
-import { fetchCurrentUser } from "../../services/authApi";
-import { fetchDashboard } from "../../services/dashboardApi";
+import { fetchDashboard } from "../../services/dashboardService";
 
+import LottieImport from "lottie-react";
+const Lottie = LottieImport.default || LottieImport;
 import {
   fetchTheses,
   createThesis,
   updateThesis,
   deleteThesis,
-} from "../../services/thesisApi";
+} from "../../services/thesisService";
 import {
   fetchStudents,
   createStudents,
   updateStudent,
   deleteStudent,
-} from "../../services/studentApi";
+} from "../../services/studentService";
 
 export default function Dashboard() {
   const aboutMe = JSON.parse(localStorage.getItem("user"));
@@ -130,6 +134,12 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-page">
+      {/* Hiển thị ảnh động Lottie nếu có lottie-react */}
+      {/*
+      <div style={{ maxWidth: 300, margin: '0 auto' }}>
+        <Lottie animationData={studentWithLaptop} loop={true} />
+      </div>
+      */}
       <Toast
         open={toast.open}
         message={toast.message}
@@ -147,17 +157,27 @@ export default function Dashboard() {
           marginBottom: "20px",
           width: "100%",
           color: "#fff",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        <h2 className="font-bold">Xin chào, {aboutMe?.tenGV || "N/A"}!</h2>
+        <div>
+          <h2 className="font-bold">Xin chào, {aboutMe?.tenGV || "N/A"}!</h2>
 
-        <div style={{ color: "#f1f1f1" }}>
-          <div>Mã giảng viên: {aboutMe?.maGV || "N/A"}</div>
-          {/* <div>Email: {aboutMe?.email || "N/A"}</div>
+          <div style={{ color: "#f1f1f1" }}>
+            <div>Mã giảng viên: {aboutMe?.maGV || "N/A"}</div>
+            {/* <div>Email: {aboutMe?.email || "N/A"}</div>
           <div>Số điện thoại: {aboutMe?.soDienThoai || "N/A"}</div>
           <div>Học vị: {aboutMe?.hocVi || "N/A"}</div>
           <div>Khoa: {aboutMe?.khoa || "N/A"}</div> */}
-          <div>Vai trò: {aboutMe?.role || "N/A"}</div>
+            <div>Vai trò: {aboutMe?.role || "N/A"}</div>
+          </div>
+        </div>
+
+        {/* Ảnh động Lottie sẽ hiển thị ở đây nếu bạn đã cài đặt lottie-react và có file JSON hợp lệ. */}
+        <div style={{ width: "150px" }}>
+          <Lottie animationData={studentWithLaptop} loop={true} />
         </div>
       </div>
 

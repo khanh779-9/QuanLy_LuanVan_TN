@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { fetchTheses, updateThesis } from "../../services/thesisApi";
+import { fetchTheses, updateThesis, fetchStudentsByThesisId } from "../../services/thesisService";
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
-import { fetchStudentsByThesisId } from "../../services/thesisApi";
 
 const STATUS_OPTIONS = ["Được làm tiếp", "Đình chỉ", "Cảnh cáo"];
 
@@ -23,18 +22,7 @@ export default function Midterm() {
     setLoading(true);
     try {
       const theses = await fetchTheses();
-      const data= await Promise.all(
-        theses.map(async (thesis) => {
-          const students = await fetchStudentsByThesisId(thesis.maDeTai);
-         
-          return {
-            ...thesis,
-            students,
-          }
-        }),
-      );
-
-      setData(data);
+      setData(theses);
     } catch (e) {
       showToast(e.message, "error");
     }
@@ -102,11 +90,7 @@ export default function Midterm() {
               <tr key={row.maDeTai}>
                 <td>{row.maDeTai}</td>
                 <td>{row.tenDeTai}</td>
-                <td>
-                  {row.students?.map((student) => (
-                    <div key={student.maSV}>{student.tenSV}</div>
-                  ))}
-                </td>
+                <td>{row.students?.map((sv) => sv.hoTen).join(", ")}</td>
                 <td>
                   <input
                     type="number"

@@ -1,11 +1,7 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  deleteUser,
-  fetchUsers,
-  createUser,
-  updateUser,
-} from "../../services/usersApi";
+import { deleteUser, fetchUsers, createUser, updateUser } from "../../services/userService";
 
 const initialForm = {
   name: "",
@@ -123,9 +119,11 @@ function UsersPage() {
   return (
     <main className="page">
       <section className="card">
-
-        <div style={{display: "flex", gap: "1rem"}}>
-          <div className="quick-links" style={{height:"10px", padding:"0px"}}>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <div
+            className="quick-links"
+            style={{ height: "10px", padding: "0px" }}
+          >
             <Link className="link-button" to="/">
               &larr; Quay trở lại
             </Link>

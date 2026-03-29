@@ -263,7 +263,8 @@ export default function DataManagement() {
                       required
                     />
                   </div>
-                  <div>
+
+                  <div style={{ display: "flex", flexDirection: "column" }}>
                     <label>Loại *</label>
                     <select
                       name="topic_type"
@@ -279,7 +280,7 @@ export default function DataManagement() {
                   </div>
                 </div>
 
-                <div>
+                <div style={{ display: "flex", flexDirection: "column" }}>
                   <label>Mô tả</label>
                   <textarea
                     name="topic_description"

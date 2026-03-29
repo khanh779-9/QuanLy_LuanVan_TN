@@ -1,5 +1,6 @@
-import React from 'react';
-import { FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
+
+import React from "react";
+import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 
 const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
   <table className="thesis-table">
@@ -16,16 +17,17 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
       </tr>
     </thead>
     <tbody>
-      {data && data.length > 0 ? data.map((row) => (
-        <tr key={row.maDeTai}>
-          <td>{row.maDeTai}</td>
-          <td>{row.tenDeTai}</td>
-          <td>{row.students?.map(sv => sv.hoTen).join(', ')}</td>
-          <td>{row.lecturer?.tenGV}</td>
-          <td>{row.reviewer?.tenGV}</td>
-          <td>{row.diemTong || '-'}</td>
-          <td>{row.trangThai || '-'}</td>
-          {/* <td>
+      {data && data.length > 0 ? (
+        data.map((row) => (
+          <tr key={row.maDeTai}>
+            <td>{row.maDeTai}</td>
+            <td>{row.tenDeTai}</td>
+            <td>{row.students?.map((sv) => sv.hoTen).join(", ")}</td>
+            <td>{row.lecturer?.tenGV}</td>
+            <td>{row.reviewer?.tenGV}</td>
+            <td>{row.diemTong || "-"}</td>
+            <td>{row.trangThai || "-"}</td>
+            {/* <td>
             <button className="btn btn-info mt-2" title="Chi tiết" onClick={() => onDetail(row)}>
               <FaEye />
             </button>
@@ -36,9 +38,14 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
               <FaTrash />
             </button>
           </td> */}
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={8} className="text-center">
+            Không có dữ liệu
+          </td>
         </tr>
-      )) : (
-        <tr><td colSpan={8} className="text-center">Không có dữ liệu</td></tr>
       )}
     </tbody>
   </table>

@@ -4,9 +4,8 @@
 @tailwind utilities;
 
 :root {
-  --brand: #B6E2FD;
-  --button: 
-  --warning: #f59e0b;
+  --brand: #b6e2fd;
+  --button: --warning: #f59e0b;
   --success: #10b981;
   --danger: #ef4444;
 
@@ -19,57 +18,54 @@
 }
 
 @theme {
-    --font-sans: "Plus Jakarta Sans", sans-serif;
-    --animate-slideInLeft: slideInLeft 1s ease-out forwards;
-    --animate-slideBottom: slideBottom 1s ease-out forwards;
-    --animate-slideTop: slideTop 1s ease-out forwards;
-    --animate-spinSlow: spin 6s linear infinite; 
-
-  }
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --animate-slideInLeft: slideInLeft 1s ease-out forwards;
+  --animate-slideBottom: slideBottom 1s ease-out forwards;
+  --animate-slideTop: slideTop 1s ease-out forwards;
+  --animate-spinSlow: spin 6s linear infinite;
+}
 
 @keyframes slideInLeft {
-    from { 
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to { 
-        transform: translateX(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes slideBottom {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-        }
-    to {
-        transform: translateY(0);
-         opacity: 1;
-        }
+  from {
+    transform: translateY(100%);
+    opacity: 0;
   }
-
-  @keyframes slideTop{
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-        }
-    to {
-        transform: translateY(0);
-         opacity: 1;
-        }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
+}
 
+@keyframes slideTop {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
-  
 @keyframes wave {
-    from { 
-        backgroundPositionX: 0
-    }
+  from {
+    backgroundpositionx: 0;
+  }
 
-    to {
-         backgroundPositionX: 200%
-        }
+  to {
+    backgroundpositionx: 200%;
+  }
 }
 
 /* Modern custom select (combobox) style */
@@ -78,13 +74,17 @@
   padding: 5px 10px 5px 10px;
   border: 1px solid #94a3b8;
   border-radius: 10px;
-  background: #f8fafc url('data:image/svg+xml;utf8,<svg fill="%233481f7" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 12px center/18px 18px;
+  background: #f8fafc
+    url('data:image/svg+xml;utf8,<svg fill="%233481f7" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>')
+    no-repeat right 12px center/18px 18px;
   font-size: 15px;
   color: #1e293b;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  transition: border 0.2s, box-shadow 0.2s;
+  transition:
+    border 0.2s,
+    box-shadow 0.2s;
 }
 .custom-select:focus {
   outline: 2px solid #3b82f6;
@@ -140,7 +140,9 @@
   padding: 16px 24px;
   text-decoration: none;
   font-weight: 500;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 .sidebar-link:hover {
   background: #f1f1f1;
@@ -166,7 +168,11 @@
 }
 /* --- Unified Thesis Management UI Styles --- */
 
-.dashboard-page, .assignment-page, .midterm-page, .review-page, .council-page {
+.dashboard-page,
+.assignment-page,
+.midterm-page,
+.review-page,
+.council-page {
   max-width: 1200px;
   margin: 0 auto;
   background: #fff;
@@ -185,7 +191,8 @@
   margin-bottom: 24px;
   font-size: 15px;
 }
-.thesis-table th, .thesis-table td {
+.thesis-table th,
+.thesis-table td {
   border-bottom: 1px solid #e2e8f0;
   text-align: left;
   padding: 8px 10px;
@@ -211,24 +218,43 @@
   transition: background 0.15s;
   margin-right: 6px;
 }
-.btn:last-child { margin-right: 0; }
+.btn:last-child {
+  margin-right: 0;
+}
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.btn-success { background: #22c55e; }
-.btn-warning { background: #f59e42; }
-.btn-danger { background: #ef4444; }
-.btn-secondary { background: #334155; }
-.btn-primary { background: #3b82f6; }
-.btn-info { background: #38bdf8; }
-.btn:hover:not(:disabled) { filter: brightness(0.95); }
+.btn-success {
+  background: #22c55e;
+}
+.btn-warning {
+  background: #f59e42;
+}
+.btn-danger {
+  background: #ef4444;
+}
+.btn-secondary {
+  background: #334155;
+}
+.btn-primary {
+  background: #3b82f6;
+}
+.btn-info {
+  background: #38bdf8;
+}
+.btn:hover:not(:disabled) {
+  filter: brightness(0.95);
+}
 
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(30,41,59,0.18);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(30, 41, 59, 0.18);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -263,9 +289,15 @@
   font-size: 16px;
   animation: toast-in 0.2s;
 }
-.toast-success { background: #22c55e; }
-.toast-error { background: #ef4444; }
-.toast-info { background: #38bdf8; }
+.toast-success {
+  background: #22c55e;
+}
+.toast-error {
+  background: #ef4444;
+}
+.toast-info {
+  background: #38bdf8;
+}
 .toast button {
   background: #fff2;
   color: #fff;
@@ -276,10 +308,18 @@
   font-size: 15px;
   margin-left: 8px;
 }
-.toast button:hover { background: #fff3; }
+.toast button:hover {
+  background: #fff3;
+}
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Utility */
@@ -293,14 +333,24 @@
   flex-direction: column;
   gap: 4px;
 }
-.stat-label { font-size: 14px; color: #888; }
-.stat-value { font-size: 28px; font-weight: 700; }
-
+.stat-label {
+  font-size: 14px;
+  color: #888;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+}
 
 :root {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #0f172a;
-  background: radial-gradient(circle at top left, #dbeafe, #f8fafc 45%, #e2e8f0 100%);
+  background: radial-gradient(
+    circle at top left,
+    #dbeafe,
+    #f8fafc 45%,
+    #e2e8f0 100%
+  );
 }
 
 * {
@@ -390,7 +440,6 @@ input:focus {
   border-color: #3b82f6;
 }
 
-
 .actions-row {
   grid-column: 1 / -1;
   display: flex;
@@ -477,7 +526,7 @@ Added responsive design for better usability on mobile devices.
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -491,7 +540,7 @@ Added responsive design for better usability on mobile devices.
   width: 520px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   position: relative;
 }
 
@@ -535,7 +584,9 @@ Added responsive design for better usability on mobile devices.
   gap: 10px;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   /* width: 100%; */
   padding: 6px 10px;
   border: 1px solid #ddd;

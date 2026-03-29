@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { saveToken, login } from "../../services/authApi";
+import { saveToken, login } from "../../services/authService";
 
 // const API_URL = import.meta.env.VITE_API_BASE_URL + "/api";
 
@@ -14,7 +14,7 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      const data = await login(username, password );
+      const data = await login(username, password);
       saveToken(data.token);
       window.location.href = "/thesis";
     } catch (err) {
@@ -36,7 +36,7 @@ export default function LoginPage() {
       }}
     >
       <form
-      className="w-120 mt-20"
+        className="w-120 mt-20"
         onSubmit={handleSubmit}
         style={{
           background: "#fff",

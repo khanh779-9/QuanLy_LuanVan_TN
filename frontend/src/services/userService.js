@@ -12,7 +12,10 @@ async function parseResponse(response, defaultErrorMessage) {
 
 export async function fetchUsers() {
   const response = await fetch(`${API_BASE_URL}/users`);
-  const payload = await parseResponse(response, "Không thể tải danh sách users.");
+  const payload = await parseResponse(
+    response,
+    "Không thể tải danh sách users.",
+  );
   return Array.isArray(payload.data) ? payload.data : [];
 }
 
@@ -20,9 +23,9 @@ export async function createUser(input) {
   const response = await fetch(`${API_BASE_URL}/users`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(input)
+    body: JSON.stringify(input),
   });
 
   const payload = await parseResponse(response, "Không thể lưu user.");
@@ -33,9 +36,9 @@ export async function updateUser(userId, input) {
   const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(input)
+    body: JSON.stringify(input),
   });
 
   const payload = await parseResponse(response, "Không thể lưu user.");
@@ -44,7 +47,7 @@ export async function updateUser(userId, input) {
 
 export async function deleteUser(userId) {
   const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
-    method: "DELETE"
+    method: "DELETE",
   });
 
   await parseResponse(response, "Không thể xóa user.");

@@ -8,16 +8,16 @@ async function parseResponse(response, defaultErrorMessage) {
   return payload;
 }
 
-export async function login( username, password ) {
+export async function login(username, password) {
   // BE yêu cầu username, password
-  const response = await fetch(API_BASE_URL+`/api/login`, {
+  const response = await fetch(API_BASE_URL + `/api/login`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ maGV: username, matKhau: password })
+    body: JSON.stringify({ maGV: username, matKhau: password }),
   });
- 
+
   let payload = {};
   try {
     payload = await response.json();
@@ -34,7 +34,10 @@ export async function login( username, password ) {
 
 export async function fetchCurrentUser() {
   const response = await fetchWithAuth(`${API_BASE_URL}/api/me`);
-  const payload = await parseResponse(response, "Không thể tải thông tin người dùng.");
+  const payload = await parseResponse(
+    response,
+    "Không thể tải thông tin người dùng.",
+  );
   // Trả về data bên trong data của payload (nếu có)
   if (payload && payload.data && payload.data.data) {
     return payload.data.data;
@@ -53,15 +56,12 @@ export function getToken() {
   return localStorage.getItem("token");
 }
 
-
-export async function logout()
-{
+export async function logout() {
   // Gọi API logout nếu cần thiết
   // Sau đó xóa token và chuyển hướng
   localStorage.removeItem("token");
   window.location.href = "/thesis/login";
 }
-
 
 export async function fetchWithAuth(url, options = {}) {
   const token = getToken();

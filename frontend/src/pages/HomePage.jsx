@@ -6,8 +6,8 @@ function HomePage() {
       <section className="card">
         <h1>Frontend Playground</h1>
         <p className="intro">
-            Trang này chỉ code tạm thời
-            Mấy bạn bên FE bổ sung giao diện để phù hợp với đề tài nha
+          Trang này chỉ code tạm thời Mấy bạn bên FE bổ sung giao diện để phù
+          hợp với đề tài nha
         </p>
         <div className="quick-links">
           <Link className="link-button" to="/users">
