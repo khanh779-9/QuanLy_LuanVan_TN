@@ -7,7 +7,7 @@ import {
   deleteAllThesisForms,
 } from "../../services/thesisFormService";
 
-import Toast from "../../components/Toast"; 
+import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
 
 const initialForm = {
@@ -48,7 +48,11 @@ export default function DataManagement() {
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState({ show: false, type: "success", message: "" });
+  const [toast, setToast] = useState({
+    show: false,
+    type: "success",
+    message: "",
+  });
 
   // Fetch data from API
   const loadData = async () => {
@@ -59,7 +63,11 @@ export default function DataManagement() {
       // setToast({ show: true, type: "success", message: "Tải dữ liệu thành công!" }); // Không cần thông báo khi chỉ tải dữ liệu
     } catch (e) {
       setError("Không thể tải dữ liệu: " + (e.message || e));
-      setToast({ show: true, type: "error", message: "Không thể tải dữ liệu: " + (e.message || e) });
+      setToast({
+        show: true,
+        type: "error",
+        message: "Không thể tải dữ liệu: " + (e.message || e),
+      });
     }
     setLoading(false);
   };
@@ -77,17 +85,29 @@ export default function DataManagement() {
     e.preventDefault();
     if (!form.topic_title || !form.student1_id || !form.student1_name) {
       setError("Vui lòng nhập đầy đủ thông tin bắt buộc!");
-      setToast({ show: true, type: "error", message: "Vui lòng nhập đầy đủ thông tin bắt buộc!" });
+      setToast({
+        show: true,
+        type: "error",
+        message: "Vui lòng nhập đầy đủ thông tin bắt buộc!",
+      });
       return;
     }
     setError("");
     try {
       if (editingId !== null) {
         await updateThesisForm(editingId, form);
-        setToast({ show: true, type: "success", message: "Cập nhật đăng ký thành công!" });
+        setToast({
+          show: true,
+          type: "success",
+          message: "Cập nhật đăng ký thành công!",
+        });
       } else {
         await createThesisForm(form);
-        setToast({ show: true, type: "success", message: "Thêm đăng ký mới thành công!" });
+        setToast({
+          show: true,
+          type: "success",
+          message: "Thêm đăng ký mới thành công!",
+        });
       }
       await loadData();
       setForm(initialForm);
@@ -95,7 +115,11 @@ export default function DataManagement() {
       setShowForm(false);
     } catch (e) {
       setError("Lỗi khi lưu dữ liệu: " + (e.message || e));
-      setToast({ show: true, type: "error", message: "Lỗi khi lưu dữ liệu: " + (e.message || e) });
+      setToast({
+        show: true,
+        type: "error",
+        message: "Lỗi khi lưu dữ liệu: " + (e.message || e),
+      });
     }
   };
 
@@ -109,11 +133,19 @@ export default function DataManagement() {
     if (window.confirm("Bạn chắc chắn muốn xóa?")) {
       try {
         await deleteThesisForm(id);
-        setToast({ show: true, type: "success", message: "Xóa đăng ký thành công!" });
+        setToast({
+          show: true,
+          type: "success",
+          message: "Xóa đăng ký thành công!",
+        });
         await loadData();
       } catch (e) {
         setError("Lỗi khi xóa: " + (e.message || e));
-        setToast({ show: true, type: "error", message: "Lỗi khi xóa: " + (e.message || e) });
+        setToast({
+          show: true,
+          type: "error",
+          message: "Lỗi khi xóa: " + (e.message || e),
+        });
       }
     }
   };
@@ -126,129 +158,111 @@ export default function DataManagement() {
   };
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: 24 }}>
-      <Toast show={toast.show} type={toast.type} message={toast.message} onClose={() => setToast({ ...toast, show: false })} />
-      {loading && <LoadingSection text="Đang tải dữ liệu..." />}
-      {!loading && (
-      <div
+    <div className="topic-management-page">
+      <Toast
+        show={toast.show}
+        type={toast.type}
+        message={toast.message}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
+      <h2
         style={{
-          background: "#fff",
-          borderRadius: 16,
-          boxShadow: "0 4px 24px #0002",
-          padding: 32,
-          marginBottom: 32,
+          color: "#2d3a4a",
+          marginBottom: 16,
         }}
       >
-        <h2
-          style={{
-            fontWeight: 700,
-            color: "#2d3a4a",
-            marginBottom: 16,
-          }}
-        >
-          Quản lý Đăng ký Đề tài
-        </h2>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 16,
-          }}
-        >
-          <span style={{ color: "#888" }}>
-            Tổng số: <b>{data.length}</b>
-          </span>
-          <button
-            className="btn btn-primary"
+        Quản lý Đăng ký Đề tài
+      </h2>
+      {loading && <LoadingSection />}
+      {!loading && (
+        <div>
+          <div
             style={{
-              borderRadius: 8,
-              fontWeight: 600,
-              padding: "8px 24px",
-              background: "#2563eb",
-              border: "none",
-            }}
-            onClick={() => {
-              setShowForm(true);
-              setForm(initialForm);
-              setEditingId(null);
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 16,
             }}
           >
-            Thêm mới
-          </button>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 32,
-            justifyContent: "flex-start",
-            alignItems: "stretch",
-          }}
-        >
-          {data.length === 0 ? (
-            <div
+            <span style={{ color: "#888" }}>
+              Tổng số: <b>{data.length}</b>
+            </span>
+            <button
+              className="btn btn-primary"
               style={{
-                width: "100%",
-                textAlign: "center",
-                color: "#888",
-                padding: 32,
+                borderRadius: 8,
+                fontWeight: 600,
+                padding: "8px 24px",
+                background: "#2563eb",
+                border: "none",
+              }}
+              onClick={() => {
+                setShowForm(true);
+                setForm(initialForm);
+                setEditingId(null);
               }}
             >
-              Chưa có dữ liệu
-            </div>
-          ) : (
-            data.map((item) => (
+              Thêm mới
+            </button>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 32,
+              justifyContent: "flex-start",
+              alignItems: "stretch",
+            }}
+          >
+            {data.length === 0 ? (
               <div
-                key={item.id}
                 style={{
-                  background: editingId === item.id ? "#f1f5f9" : "#fff",
-                  border: "1.5px solid #e5e7eb",
-                  borderRadius: 16,
-                  boxShadow: "0 4px 16px #0001",
-                  padding: 28,
-                  minWidth: 340,
-                  maxWidth: 380,
-                  flex: "1 1 340px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "340px",
-                  marginBottom: 8,
-                  position: "relative",
-                  transition: "box-shadow 0.2s, border 0.2s",
+                  width: "100%",
+                  textAlign: "center",
+                  color: "#888",
+                  padding: 32,
                 }}
               >
+                Chưa có dữ liệu
+              </div>
+            ) : (
+              data.map((item) => (
                 <div
+                  key={item.id}
                   style={{
-                    flex: 1,
+                    background: editingId === item.id ? "#f1f5f9" : "#fff",
+                    border: "1.5px solid #e5e7eb",
+                    borderRadius: 8,
+                    boxShadow: "0 4px 16px #0001",
+                    padding: 12,
+                    minWidth: 280,
+                    maxWidth: 320,
+                    flex: "1 1 280px",
                     display: "flex",
                     flexDirection: "column",
-                    gap: 8,
+                    justifyContent: "space-between",
+                    height: "auto",
+                    marginBottom: 8,
+                    position: "relative",
+                    transition: "box-shadow 0.2s, border 0.2s",
                   }}
                 >
                   <div
                     style={{
-                      fontWeight: 800,
-                      fontSize: 20,
-                      color: "#2563eb",
-                      marginBottom: 2,
-                      wordBreak: "break-word",
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 6,
                     }}
                   >
-                    {item.topic_title || (
-                      <span style={{ color: "#bbb" }}>[Chưa có tiêu đề]</span>
-                    )}
-                  </div>
-                  <div style={{ fontSize: 14, color: "#444", marginBottom: 2 }}>
-                    <span style={{ marginRight: 12 }}>
-                      <b>Loại:</b>{" "}
-                      {typeOptions.find((t) => t.value === item.topic_type)
-                        ?.label || item.topic_type}
-                    </span>
-                    <span>
-                      <b>Trạng thái:</b>{" "}
-                      <span
+                    <div style={{ fontWeight: 800, fontSize: 16, color: "#2563eb", wordBreak: "break-word", textAlign: "center" }}>
+                      {item.topic_title || (<span style={{ color: "#bbb" }}>[Chưa có tiêu đề]</span>)}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#444" }}>
+                      <b>Loại:</b> {typeOptions.find((t) => t.value === item.topic_type)?.label || item.topic_type}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#444" }}>
+                      <b>Trạng thái:</b> <span
                         style={{
                           background:
                             item.status === "approved"
@@ -267,104 +281,70 @@ export default function DataManagement() {
                           fontWeight: 600,
                         }}
                       >
-                        {statusOptions.find((s) => s.value === item.status)
-                          ?.label || item.status}
+                        {statusOptions.find((s) => s.value === item.status)?.label || item.status}
                       </span>
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 15, marginBottom: 2 }}>
-                    <b>SV1:</b>{" "}
-                    {item.student1_name || (
-                      <span style={{ color: "#bbb" }}>[Chưa có tên]</span>
-                    )}{" "}
-                    {item.student1_id && `(${item.student1_id})`}
-                    <br />
-                    <b>Lớp:</b>{" "}
-                    {item.student1_class || (
-                      <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>
-                    )}{" "}
-                    <b>Email:</b>{" "}
-                    {item.student1_email || (
-                      <span style={{ color: "#bbb" }}>[Chưa có email]</span>
-                    )}
-                  </div>
-                  {item.student2_name && (
-                    <div style={{ fontSize: 15, marginBottom: 2 }}>
-                      <b>SV2:</b> {item.student2_name}{" "}
-                      {item.student2_id && `(${item.student2_id})`}
-                      <br />
-                      <b>Lớp:</b>{" "}
-                      {item.student2_class || (
-                        <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>
-                      )}{" "}
-                      <b>Email:</b>{" "}
-                      {item.student2_email || (
-                        <span style={{ color: "#bbb" }}>[Chưa có email]</span>
-                      )}
                     </div>
-                  )}
-                  <div style={{ fontSize: 15, marginBottom: 2 }}>
-                    <b>GVHD:</b>{" "}
-                    {item.gvhd_code || (
-                      <span style={{ color: "#bbb" }}>[Chưa có mã]</span>
-                    )}{" "}
-                    {item.gvhd_workplace && (
-                      <span>({item.gvhd_workplace})</span>
-                    )}
-                  </div>
-                  {item.gvpb_code && (
-                    <div style={{ fontSize: 15, marginBottom: 2 }}>
-                      <b>GV phản biện:</b> {item.gvpb_code}
+                    <div style={{ fontSize: 13, color: "#222" }}>
+                      <b>SV1:</b> {item.student1_name || <span style={{ color: "#bbb" }}>[Chưa có tên]</span>} {item.student1_id && `(${item.student1_id})`}
                     </div>
-                  )}
-                  {item.note && (
-                    <div
-                      style={{
-                        fontSize: 14,
-                        color: "#b45309",
-                        marginBottom: 2,
-                      }}
+                    <div style={{ fontSize: 13, color: "#222" }}>
+                      <b>Lớp:</b> {item.student1_class || <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#222" }}>
+                      <b>Email:</b> {item.student1_email || <span style={{ color: "#bbb" }}>[Chưa có email]</span>}
+                    </div>
+                    {item.student2_name && (
+                      <>
+                        <div style={{ fontSize: 13, color: "#222" }}><b>SV2:</b> {item.student2_name} {item.student2_id && `(${item.student2_id})`}</div>
+                        <div style={{ fontSize: 13, color: "#222" }}><b>Lớp:</b> {item.student2_class || <span style={{ color: "#bbb" }}>[Chưa có lớp]</span>}</div>
+                        <div style={{ fontSize: 13, color: "#222" }}><b>Email:</b> {item.student2_email || <span style={{ color: "#bbb" }}>[Chưa có email]</span>}</div>
+                      </>
+                    )}
+                    <div style={{ fontSize: 13, color: "#222" }}>
+                      <b>GVHD:</b> {item.gvhd_code || <span style={{ color: "#bbb" }}>[Chưa có mã]</span>} {item.gvhd_workplace && <span>({item.gvhd_workplace})</span>}
+                    </div>
+                    {item.gvpb_code && (
+                      <div style={{ fontSize: 13, color: "#222" }}>
+                        <b>GV phản biện:</b> {item.gvpb_code}
+                      </div>
+                    )}
+                    {item.note && (
+                      <div style={{ fontSize: 12, color: "#b45309" }}>
+                        <b>Ghi chú:</b> {item.note}
+                      </div>
+                    )}
+                    <div style={{ fontSize: 12, color: "#888" }}>
+                      <b>Ngày đăng ký:</b> {item.registered_at ? item.registered_at : <span style={{ color: "#bbb" }}>[Chưa có]</span>}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 7,
+                      marginTop: 18,
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <button
+                      className="btn btn-warning btn-sm"
+                      style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
+                      onClick={() => handleEdit(item)}
                     >
-                      <b>Ghi chú:</b> {item.note}
-                    </div>
-                  )}
-                  <div style={{ fontSize: 13, color: "#888", marginBottom: 2 }}>
-                    <b>Ngày đăng ký:</b>{" "}
-                    {item.registered_at ? (
-                      item.registered_at
-                    ) : (
-                      <span style={{ color: "#bbb" }}>[Chưa có]</span>
-                    )}
+                      Sửa
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      Xóa
+                    </button>
                   </div>
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 12,
-                    marginTop: 18,
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <button
-                    className="btn btn-warning btn-sm"
-                    style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
-                    onClick={() => handleEdit(item)}
-                  >
-                    Sửa
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    Xóa
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
       )}
 
       {/* Modal Dialog for Form */}

@@ -172,6 +172,7 @@
 .assignment-page,
 .midterm-page,
 .review-page,
+.topic-management-page,
 .council-page {
   max-width: 1200px;
   margin: 0 auto;
