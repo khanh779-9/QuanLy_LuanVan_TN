@@ -8,6 +8,7 @@ use App\Models\Score;
 use App\Models\Setting;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\ThesisForm;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -786,6 +787,17 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'giangvien' => Teacher::orderBy('tenGV')->get(['maGV', 'tenGV']),
             'sinhvien' => Student::whereNull('maDeTai')->orderBy('hoTen')->get(['mssv', 'hoTen']),
             'hoidong' => Council::orderBy('tenHoiDong')->get(['maHoiDong', 'tenHoiDong']),
+        ]);
+    });
+
+
+    /*
+        Thông tin Form đăng ký làm đồ án tốt nghiệp (ThesisForm) 
+    */
+    Route::get('/thesis-form', function () {
+        $data= ThesisForm::all();
+        return response()->json([
+            'data' => $data,
         ]);
     });
 

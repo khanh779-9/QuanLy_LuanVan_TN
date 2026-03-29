@@ -21,7 +21,7 @@ import LoginPage from "./pages/thesis/LoginPage";
 import Dashboard from "./pages/thesis/Dashboard";
 import Assignment from "./pages/thesis/Assignment";
 import Midterm from "./pages/thesis/Midterm";
-import DataManagement from "./pages/thesis/DataManagement";
+import DataManagement from "./pages/thesis/TopicManagement";
 import Review from "./pages/thesis/Review";
 import Council from "./pages/thesis/Council";
 
@@ -66,7 +66,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faInfo} className="pr-3" />
-          Data Management
+          Topic Management
         </NavLink>
 
         <NavLink
@@ -76,7 +76,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faListCheck} className="pr-3" />
-          Topic Management
+          Assignment
         </NavLink>
         <NavLink
           to="/thesis/midterm"
@@ -108,8 +108,7 @@ function ThesisLayout() {
 
         <div className="sidebar-footer">
           <div
-            to=""
-            className="w-full text-left font-bold text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+           className="w-full text-left font-bold text-red-500 hover:text-red-700 transition-all cursor-pointer hover:scale-105"
             onClick={() => {
               logout();
             }}

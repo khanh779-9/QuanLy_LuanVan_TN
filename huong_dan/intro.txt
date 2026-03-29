@@ -1,0 +1,211 @@
+Thông tin về project:
+
+Nghiệp vụ (business flow)
+Use case theo role
+Danh sách module
+Chi tiết từng màn hình (page) + chức năng
+Mapping với các mẫu file (.doc) trong link
+
+
+I. TỔNG QUAN HỆ THỐNG
+1. Mục tiêu
+
+Xây dựng hệ thống quản lý luận văn tốt nghiệp (LVTN) cho khoa CNTT:
+
+Quản lý sinh viên làm LVTN
+Phân công giảng viên hướng dẫn
+Giao đề tài
+Chấm điểm (GVHD + phản biện)
+Lập hội đồng bảo vệ
+Xuất file biểu mẫu (.docx)
+2. Actor (vai trò)
+1. Admin (Thư ký khoa)
+Toàn quyền hệ thống
+Quản lý kỳ LVTN
+Phân công GVHD, GVPB
+Lập hội đồng
+2. Giảng viên hướng dẫn (GVHD)
+Nhận sinh viên
+Giao đề tài
+Chấm điểm hướng dẫn (50%)
+3. Giảng viên phản biện (GVPB)
+Nhận đề tài
+Chấm phản biện
+4. Sinh viên (SV)
+Xem đề tài
+In tờ nhiệm vụ
+II. NGHIỆP VỤ CHÍNH (FLOW)
+1. Flow tổng thể
+Import SV → Phân GVHD → Giao đề tài → SV thực hiện
+→ GVHD chấm 50% → Phân GVPB → GVPB chấm
+→ Lập hội đồng → Xếp lịch bảo vệ → Xuất danh sách
+2. Chi tiết từng bước
+Bước 1: Tạo kỳ LVTN
+
+Admin:
+
+Tạo kỳ (VD: HK2 2025-2026)
+Thiết lập:
+Thời gian nhận đề tài
+Thời gian chấm 50%
+Thời gian phản biện
+Ngày bảo vệ
+Bước 2: Import danh sách sinh viên
+Upload Excel từ phòng đào tạo
+Lưu:
+MSSV
+Tên
+Lớp
+Email
+Bước 3: Phân công GVHD
+Mỗi GV tối đa 10 SV
+Có thể:
+Auto assign
+Manual assign
+Bước 4: GVHD giao đề tài
+1 SV hoặc 2 SV / đề tài
+Nội dung:
+Tên đề tài
+Mô tả
+Mục tiêu
+Output
+Bước 5: SV in tờ nhiệm vụ
+
+Xuất file:
+
+Form_NhiemvuLVTN.doc
+Bước 6: GVHD chấm 50%
+
+Xuất:
+
+Mẫu 01.01 (nhóm)
+Mẫu 01.02 (1 SV)
+Bước 7: Phân công GVPB
+Admin chọn GV phản biện
+Mỗi đề tài có 1 GVPB
+Bước 8: GVPB chấm
+
+Xuất:
+
+Mẫu 02.01 (nhóm)
+Mẫu 02.02 (1 SV)
+Bước 9: Lập hội đồng
+Mỗi hội đồng:
+1 chủ tịch
+1 thư ký
+1–2 thành viên
+Bước 10: Xếp lịch bảo vệ
+Gán đề tài vào hội đồng
+Thứ tự trình bày
+Bước 11: Xuất danh sách bảo vệ
+Danh sách:
+SV
+Đề tài
+Hội đồng
+Thời gian
+Phòng
+III. DANH SÁCH MODULE
+1. Auth
+Login
+Forgot password
+2. User Management
+CRUD user
+Role (admin, gvhd, gvpb, sv)
+3. Student
+Import Excel
+Danh sách SV
+4. Lecturer
+Danh sách GV
+5. Assignment
+Phân công GVHD
+Phân công GVPB
+6. Topic (Đề tài)
+Tạo đề tài
+Gán SV
+7. Evaluation
+Chấm điểm GVHD
+Chấm phản biện
+8. Council
+Tạo hội đồng
+Thêm thành viên
+9. Defense Schedule
+Xếp lịch bảo vệ
+10. Export
+Xuất docx
+Xuất excel
+IV. DANH SÁCH MÀN HÌNH (PAGE)
+1. Login Page
+Email + Password
+2. Dashboard
+
+Hiển thị:
+
+Tổng SV
+Tổng đề tài
+Tiến độ
+3. Quản lý sinh viên
+List
+Bảng:
+MSSV
+Tên
+Lớp
+GVHD
+Action
+Import Excel
+Filter theo lớp
+4. Phân công GVHD
+Page:
+Danh sách SV chưa có GV
+Dropdown chọn GV
+5. Quản lý đề tài
+List:
+Tên đề tài
+GVHD
+SV
+Form:
+Tên đề tài
+Mô tả
+Loại (1 SV / 2 SV)
+6. Trang GVHD
+Danh sách SV hướng dẫn
+Button:
+Giao đề tài
+Chấm điểm
+7. Chấm điểm GVHD
+Form:
+Tiêu chí (5 mục)
+Tổng điểm
+Nhận xét
+
+Button:
+
+Export doc (Mẫu 01)
+8. Trang GVPB
+Danh sách đề tài
+Button:
+Chấm điểm
+9. Chấm phản biện
+Form:
+Tiêu chí
+Điểm
+Nhận xét
+
+Export Mẫu 02
+
+10. Quản lý hội đồng
+List:
+Số hội đồng
+Ngày
+Phòng
+Form:
+Chủ tịch
+Thư ký
+Thành viên
+11. Xếp lịch bảo vệ
+Drag & drop (optional)
+Gán đề tài → hội đồng
+12. Sinh viên
+Page:
+Xem đề tài
+Download:
+Tờ nhiệm vụ
