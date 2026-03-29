@@ -3,8 +3,9 @@ import React from "react";
 import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 
 const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
+  <div style={{ maxHeight: "500px", overflowY: "auto", border: "1px solid #ddd" }}>
   <table className="thesis-table">
-    <thead>
+    <thead style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa", zIndex: 1 }}>
       <tr>
         <th>Mã đề tài</th>
         <th>Tên đề tài</th>
@@ -49,6 +50,7 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
       )}
     </tbody>
   </table>
+  </div>
 );
 
 export default ThesisTable;
