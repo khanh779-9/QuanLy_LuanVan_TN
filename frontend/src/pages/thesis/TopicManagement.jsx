@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchThesesForm } from "../../services/thesisFormService";
 
 const initialForm = {
   topic_title: "",
@@ -31,40 +32,57 @@ const typeOptions = [
   { value: "group", label: "2 sinh viên" },
 ];
 
+
 export default function DataManagement() {
   const [data, setData] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Fetch data from API
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetchThesesForm();
+      setData(res.data || []);
+      console.log("Fetched data:", res.data);
+    } catch (e) {
+      setError("Không thể tải dữ liệu: " + (e.message || e));
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.topic_title || !form.student1_id || !form.student1_name) {
       setError("Vui lòng nhập đầy đủ thông tin bắt buộc!");
       return;
     }
     setError("");
-    if (editingId !== null) {
-      setData((prev) =>
-        prev.map((item) =>
-          item.id === editingId ? { ...form, id: editingId } : item,
-        ),
-      );
-    } else {
-      setData((prev) => [
-        ...prev,
-        { ...form, id: Date.now(), registered_at: new Date().toLocaleString() },
-      ]);
+    try {
+      if (editingId !== null) {
+        await updateThesisForm(editingId, form);
+      } else {
+        await createThesisForm(form);
+      }
+      await loadData();
+      setForm(initialForm);
+      setEditingId(null);
+      setShowForm(false);
+    } catch (e) {
+      setError("Lỗi khi lưu dữ liệu: " + (e.message || e));
     }
-    setForm(initialForm);
-    setEditingId(null);
-    setShowForm(false);
   };
 
   const handleEdit = (item) => {
@@ -73,9 +91,14 @@ export default function DataManagement() {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Bạn chắc chắn muốn xóa?")) {
-      setData((prev) => prev.filter((item) => item.id !== id));
+      try {
+        await deleteThesisForm(id);
+        await loadData();
+      } catch (e) {
+        setError("Lỗi khi xóa: " + (e.message || e));
+      }
     }
   };
 
@@ -88,6 +111,7 @@ export default function DataManagement() {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: 24 }}>
+      {loading && <div>Đang tải dữ liệu...</div>}
       <div
         style={{
           background: "#fff",
@@ -102,7 +126,7 @@ export default function DataManagement() {
             fontWeight: 700,
             color: "#2d3a4a",
             marginBottom: 16,
-            letterSpacing: 1,
+            
           }}
         >
           Quản lý Đăng ký Đề tài
@@ -133,7 +157,7 @@ export default function DataManagement() {
               setEditingId(null);
             }}
           >
-            + Thêm mới
+            Thêm mới
           </button>
         </div>
         <div style={{ overflowX: "auto" }}>

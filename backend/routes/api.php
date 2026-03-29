@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Middleware\ApiTokenAuth;
-use App\Http\Controllers\LegacyIOController;
+use App\Http\Controllers\ThesisFormController;
 use App\Models\Council;
 use App\Models\CouncilMember;
 use App\Models\Score;
@@ -794,12 +794,8 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     /*
         Thông tin Form đăng ký làm đồ án tốt nghiệp (ThesisForm) 
     */
-    Route::get('/thesis-form', function () {
-        $data= ThesisForm::all();
-        return response()->json([
-            'data' => $data,
-        ]);
-    });
+    Route::get('/thesis-form', [ThesisFormController::class, 'index']);
+
 
     // Nếu chưa login mà cố gắng truy cập API, trả về lỗi 401 Unauthorized
     Route::middleware('auth.api')->any('/{any}', function () {

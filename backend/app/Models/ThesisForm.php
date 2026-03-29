@@ -36,4 +36,6 @@ class ThesisForm extends Model
 		'registered_at' => 'datetime',
 		'updated_at' => 'datetime',
 	];
+
+    
 }

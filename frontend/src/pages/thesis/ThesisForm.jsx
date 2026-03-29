@@ -1,5 +1,6 @@
 import React from "react";
 
+
 const ThesisForm = ({ mode = "add", thesis, onSubmit, onCancel }) => {
   // TODO: Use form state and validation
   return (
