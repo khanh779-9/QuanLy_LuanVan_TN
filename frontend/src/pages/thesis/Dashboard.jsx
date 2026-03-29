@@ -32,7 +32,7 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    if (!aboutMe) {
+    if (!aboutMe && !localStorage.getItem("token")) {
       window.location.href = "/thesis/login";
     }
   }, [aboutMe]);

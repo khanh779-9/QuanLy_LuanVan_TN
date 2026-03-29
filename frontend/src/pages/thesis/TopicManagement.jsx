@@ -11,6 +11,7 @@ import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { formatDate } from "../../utils/convertFormat";
 
 const initialForm = {
   topic_title: "",
@@ -237,6 +238,26 @@ export default function DataManagement() {
             <span style={{ color: "#888" }}>
               Tổng số: <b>{data.length}</b>
             </span>
+
+            <button
+              className="btn btn-success"
+              style={{
+                borderRadius: 8,
+                fontWeight: 600,
+                padding: "8px 24px",
+                border: "none",
+                background: "#0a664f",
+                right: 16,
+                position: "relative",
+              }}
+              onClick={() => {
+                // Này chỗ nhập file Excel, chưa làm nên tạm thời để alert
+                alert("Tính năng này đang được phát triển!");
+              }}
+            >
+              Nhập file Excel
+            </button>
+
             <button
               className="btn btn-primary"
               style={{
@@ -380,7 +401,7 @@ export default function DataManagement() {
                       </td>
                       <td style={{ padding: 10 }}>
                         {item.registered_at ? (
-                          item.registered_at
+                         formatDate(item.registered_at, "dd/MM/yyyy HH:mm")
                         ) : (
                           <span style={{ color: "#bbb" }}>[Chưa có]</span>
                         )}
@@ -398,9 +419,7 @@ export default function DataManagement() {
                           }}
                           onClick={() => handleEdit(item)}
                         >
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                          />
+                          <FontAwesomeIcon icon={faEdit} />
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
@@ -409,9 +428,7 @@ export default function DataManagement() {
                           }}
                           onClick={() => handleDelete(item.id)}
                         >
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                          />
+                          <FontAwesomeIcon icon={faTrash} />
                         </button>
                       </td>
                     </tr>

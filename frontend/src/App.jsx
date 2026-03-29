@@ -26,14 +26,11 @@ import ThesisLayout from "./layouts/ThesisLayout";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/users" element={<UsersPage />} />
-
       <Route path="/thesis">
         <Route path="login" element={<LoginPage />} />
         <Route element={<ThesisLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="datamanagement" element={<DataManagement />} />
+          <Route path="topicmanagement" element={<DataManagement />} />
           <Route path="assignment" element={<Assignment />} />
           <Route path="midterm" element={<Midterm />} />
           <Route path="review" element={<Review />} />
@@ -41,6 +38,9 @@ function App() {
           <Route index element={<Dashboard />} />
         </Route>
       </Route>
+
+      <Route path="/" element={<HomePage />} />
+      <Route path="/users" element={<UsersPage />} />
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
