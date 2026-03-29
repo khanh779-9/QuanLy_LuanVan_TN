@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Route, Routes, Outlet, Navigate, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,7 +22,6 @@ import DataManagement from "./pages/thesis/TopicManagement";
 import Review from "./pages/thesis/Review";
 import Council from "./pages/thesis/Council";
 import ThesisLayout from "./layouts/ThesisLayout";
-
 
 function App() {
   return (
