@@ -38,7 +38,7 @@ export default function Dashboard() {
     students: 0,
     students_all: 0,
     finished: 0,
-    presentations: "N/A",
+    presentations: 0,
   });
 
   // useEffect(() => {
@@ -68,7 +68,7 @@ export default function Dashboard() {
         students: thesesRes.reduce((sum, t) => sum + (t.students?.length || 0), 0),
         students_all: student_Count,
         finished: thesesRes.filter((t) => t.trangThai === "Đã hoàn thành").length,
-        presentations: dashboardRes?.cauhinh?.giaiDoan || "N/A",
+        presentations: dashboardRes?.cauhinh?.giaiDoan || 0,
       });
     } catch (e) {
       showToast(e.message, "error");
@@ -153,7 +153,6 @@ export default function Dashboard() {
           <div>Học vị: {aboutMe?.hocVi || "N/A"}</div>
           <div>Khoa: {aboutMe?.khoa || "N/A"}</div> */}
           <div>Vai trò: {aboutMe?.role || "N/A"}</div>
-          <div>Giai đoạn hiện tại: {stats.presentations || "N/A"}</div>
         </div>
       </div>
 
@@ -172,9 +171,10 @@ export default function Dashboard() {
             boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
           }}
         >
-          <div className="stat-label">Tổng số đề tài</div>
-          <div className="stat-value">{stats.total}</div>
+          <div className="stat-label">Giai đoạn hiện tại</div>
+          <div className="stat-value">{stats.presentations || 0}</div>
         </div>
+        
         <div
           className="stat-card"
           style={{
@@ -182,7 +182,18 @@ export default function Dashboard() {
             boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
           }}
         >
-          <div className="stat-label">Tổng số sinh viên (đề tài hiện hữu)</div>
+          <div className="stat-label">Số đề tài</div>
+          <div className="stat-value">{stats.total}</div>
+        </div>
+
+        <div
+          className="stat-card"
+          style={{
+            border: "1px solid #ddd",
+            boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+          }}
+        >
+          <div className="stat-label">Số sinh viên (đề tài hiện hữu)</div>
           <div className="stat-value">{stats.students}</div>
         </div>
         <div
@@ -192,7 +203,7 @@ export default function Dashboard() {
             boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
           }}
         >
-          <div className="stat-label">Tổng số sinh viên</div>
+          <div className="stat-label">Số sinh viên</div>
           <div className="stat-value">{stats.students_all}</div>
         </div>
         <div
@@ -202,7 +213,7 @@ export default function Dashboard() {
             boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
           }}
         >
-          <div className="stat-label">Đề tài đã hoàn thành</div>
+          <div className="stat-label">Đề tài đã xong</div>
           <div className="stat-value">{stats.finished}</div>
         </div>
       </div>

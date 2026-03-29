@@ -54,10 +54,10 @@ Route::post('/login', function (Request $request) {
             'message' => 'Thông tin đăng nhập không chính xác.',
         ], 401);
     }
-
+    $role_of_user = CouncilMember::where('maGV', $user->maGV)->pluck('vaiTro')->first() ?? 'UyVien';
     $token = (string) Str::uuid();
     $tokenStore->put('api_token:' . $token, [
-        'role' => 'lecturer',
+        'role' => $role_of_user,
         'maGV' => $user->maGV,
     ], now()->addDays(7));
 
@@ -66,7 +66,7 @@ Route::post('/login', function (Request $request) {
         'token' => $token,
         'token_type' => 'Bearer',
         'user' => [
-            'role' => 'lecturer',
+            'role' => $role_of_user,
             'maGV' => $user->maGV,
             'tenGV' => $user->tenGV,
             'email' => $user->email,
