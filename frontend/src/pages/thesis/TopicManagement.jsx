@@ -9,6 +9,8 @@ import {
 
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const initialForm = {
   topic_title: "",
@@ -23,7 +25,7 @@ const initialForm = {
   student2_class: "",
   student2_email: "",
   gvhd_code: "",
-  gvhd_workplace: "",
+  gvhd_workplace: "ĐH CNSG",
   gvpb_code: "",
   note: "",
   source: "google_form",
@@ -92,12 +94,13 @@ export default function DataManagement() {
       { key: "student1_name", label: "Tên SV 1" },
       { key: "student1_class", label: "Lớp SV 1" },
       { key: "student1_email", label: "Email SV 1" },
-      { key: "gvhd_code", label: "Mã GVHD" },
       { key: "gvhd_workplace", label: "Nơi công tác GVHD" },
-      { key: "gvpb_code", label: "Mã GV phản biện" },
     ];
     for (let f of requiredFields) {
-      if (!form[f.key] || (typeof form[f.key] === "string" && form[f.key].trim() === "")) {
+      if (
+        !form[f.key] ||
+        (typeof form[f.key] === "string" && form[f.key].trim() === "")
+      ) {
         setError(`Vui lòng nhập ${f.label}!`);
         setToast({
           show: true,
@@ -128,33 +131,13 @@ export default function DataManagement() {
       });
       return;
     }
-    // Đảm bảo MSSV là số
-    if (isNaN(Number(form.student1_id))) {
-      setError("MSSV 1 phải là số!");
-      setToast({
-        show: true,
-        type: "error",
-        message: "MSSV 1 phải là số!",
-      });
-      return;
-    }
-    if (form.student2_id && isNaN(Number(form.student2_id))) {
-      setError("MSSV 2 phải là số!");
-      setToast({
-        show: true,
-        type: "error",
-        message: "MSSV 2 phải là số!",
-      });
-      return;
-    }
+    // MSSV cho nhập tự do, không kiểm tra kiểu số
     setError("");
     setLoading(true);
     try {
-      // Chuẩn hóa dữ liệu gửi đi đúng kiểu
+      // Gửi dữ liệu giữ nguyên MSSV là string
       const payload = {
         ...form,
-        student1_id: Number(form.student1_id),
-        student2_id: form.student2_id ? Number(form.student2_id) : null,
       };
       let res;
       if (editingId !== null) {
@@ -172,10 +155,10 @@ export default function DataManagement() {
           message: res?.message || "Thêm đăng ký mới thành công!",
         });
       }
-      await loadData();
+      setShowForm(false); // Đóng form ngay khi lưu thành công
       setForm(initialForm);
       setEditingId(null);
-      setShowForm(false);
+      await loadData();
     } catch (e) {
       setError("Lỗi khi lưu dữ liệu: " + (e.message || e));
       setToast({
@@ -285,7 +268,7 @@ export default function DataManagement() {
             </div>
           ) : (
             <div style={{ overflowX: "auto" }}>
-              <table className="table table-bordered" style={{ minWidth: 1100, background: "#fff" }}>
+              <table className="thesis-table">
                 <thead style={{ background: "#f1f5f9" }}>
                   <tr>
                     <th>STT</th>
@@ -303,10 +286,17 @@ export default function DataManagement() {
                 </thead>
                 <tbody>
                   {data.map((item, idx) => (
-                    <tr key={item.id} style={{ background: editingId === item.id ? "#f1f5f9" : undefined }}>
-                      <td>{idx + 1}</td>
-                      <td style={{ maxWidth: 220, wordBreak: "break-word" }}>{item.topic_title || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
-                      <td>{typeOptions.find((t) => t.value === item.topic_type)?.label || item.topic_type}</td>
+                    <tr key={item.id}>
+                      <td style={{ padding: 10 }}>{idx + 1}</td>
+                      <td>
+                        {item.topic_title || (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+                      <td>
+                        {typeOptions.find((t) => t.value === item.topic_type)
+                          ?.label || item.topic_type}
+                      </td>
                       <td>
                         <span
                           style={{
@@ -324,49 +314,104 @@ export default function DataManagement() {
                                   : "#b45309",
                             borderRadius: 8,
                             padding: "2px 10px",
-                            fontWeight: 600,
+                            width: "fit-content",
                           }}
                         >
-                          {statusOptions.find((s) => s.value === item.status)?.label || item.status}
+                          {statusOptions.find((s) => s.value === item.status)
+                            ?.label || item.status}
                         </span>
                       </td>
-                      <td>
-                        <div><b>MSSV:</b> {item.student1_id || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Họ tên:</b> {item.student1_name || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Lớp:</b> {item.student1_class || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Email:</b> {item.student1_email || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                      </td>
-                      <td>
-                        {item.student2_name || item.student2_id || item.student2_class || item.student2_email ? (
+                      <td style={{ padding: 10, textAlign: "left" }}>
+                        {item.student1_id || item.student1_name ? (
                           <>
-                            <div><b>MSSV:</b> {item.student2_id || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                            <div><b>Họ tên:</b> {item.student2_name || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                            <div><b>Lớp:</b> {item.student2_class || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                            <div><b>Email:</b> {item.student2_email || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                            {item.student1_id ? (
+                              item.student1_id
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có MSSV]
+                              </span>
+                            )}
+                            ,{" "}
+                            {item.student1_name ? (
+                              item.student1_name
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có tên]
+                              </span>
+                            )}
                           </>
-                        ) : <span style={{ color: "#bbb" }}>[Không có]</span>}
+                        ) : (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
                       </td>
-                      <td>
-                        <div><b>Mã:</b> {item.gvhd_code || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Nơi công tác:</b> {item.gvhd_workplace || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                      <td style={{ padding: 10, textAlign: "left" }}>
+                        {item.student2_id || item.student2_name ? (
+                          <>
+                            {item.student2_id ? (
+                              item.student2_id
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có MSSV]
+                              </span>
+                            )}
+                            ,{" "}
+                            {item.student2_name ? (
+                              item.student2_name
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có tên]
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span style={{ color: "#bbb" }}>[Không có]</span>
+                        )}
                       </td>
-                      <td>{item.gvpb_code || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
-                      <td>{item.registered_at ? item.registered_at : <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
-                      <td>{item.note || <span style={{ color: "#bbb" }}>[Không có]</span>}</td>
-                      <td>
+                      <td style={{ padding: 10, textAlign: "left" }}>
+                        {item.gvhd_code || (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+
+                      <td style={{ padding: 10 }}>
+                        {item.gvpb_code || (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+                      <td style={{ padding: 10 }}>
+                        {item.registered_at ? (
+                          item.registered_at
+                        ) : (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+                      <td style={{ padding: 10 }}>
+                        {item.note || (
+                          <span style={{ color: "#bbb" }}>[Không có]</span>
+                        )}
+                      </td>
+                      <td style={{ padding: 10 }}>
                         <button
                           className="btn btn-warning btn-sm"
-                          style={{ borderRadius: 6, fontWeight: 600, minWidth: 64, marginBottom: 4 }}
+                          style={{
+                            marginBottom: 4,
+                          }}
                           onClick={() => handleEdit(item)}
                         >
-                          Sửa
+                          <FontAwesomeIcon
+                            icon={faEdit}
+                          />
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
-                          style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
+                          style={{
+                            marginBottom: 4,
+                          }}
                           onClick={() => handleDelete(item.id)}
                         >
-                          Xóa
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                          />
                         </button>
                       </td>
                     </tr>
