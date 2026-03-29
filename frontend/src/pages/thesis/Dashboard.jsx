@@ -3,6 +3,7 @@ import ThesisTable from "../../components/ThesisTable";
 import ThesisFormModal from "../../components/ThesisFormModal";
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
+import { fetchCurrentUser } from "../../services/authApi";
 
 import {
   fetchTheses,
@@ -46,7 +47,7 @@ export default function Dashboard() {
       const theses = await fetchTheses();
       const students = await fetchStudents();
       const student_Count = students ? JSON.stringify(students).length : 0;
-  
+
       setData(theses);
       setStats({
         total: theses.length,
@@ -113,7 +114,21 @@ export default function Dashboard() {
         type={toast.type}
         onClose={() => setToast((t) => ({ ...t, open: false }))}
       />
-      <h2>Dashboard</h2>
+
+      {/* <h2>Dashboard</h2> */}
+
+      <div
+        style={{
+          background: "var(--primary-color)",
+          padding: "12px 16px",
+          borderRadius: "6px",
+          marginBottom: "20px",
+          width: "100%",
+        }}
+      >
+        <h2>Xin chào {fetchCurrentUser()?.tenGV || "Giảng viên"}!</h2>
+      </div>
+
       <div
         style={{
           display: "flex",

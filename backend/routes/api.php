@@ -76,6 +76,12 @@ Route::post('/login', function (Request $request) {
     ]);
 });
 
+Route::get('/me', function (Request $request) {
+    return response()->json([
+        'message' => 'Bạn chưa đăng nhập hoặc token không hợp lệ.',
+    ], 401);
+})->name('api.me');
+
 // BẮT ĐẦU KHU VỰC CẦN TOKEN (BẢO MẬT)
 Route::middleware(ApiTokenAuth::class)->group(function () {
     Route::get('/me', function (Request $request) {

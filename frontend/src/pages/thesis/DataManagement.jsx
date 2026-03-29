@@ -52,7 +52,9 @@ export default function DataManagement() {
     setError("");
     if (editingId !== null) {
       setData((prev) =>
-        prev.map((item) => (item.id === editingId ? { ...form, id: editingId } : item))
+        prev.map((item) =>
+          item.id === editingId ? { ...form, id: editingId } : item,
+        ),
       );
     } else {
       setData((prev) => [
@@ -86,22 +88,59 @@ export default function DataManagement() {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: 24 }}>
-      <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 4px 24px #0002", padding: 32, marginBottom: 32 }}>
-        <h2 style={{ fontWeight: 700, color: "#2d3a4a", marginBottom: 16, letterSpacing: 1 }}>Quản lý Đăng ký Đề tài</h2>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 16,
+          boxShadow: "0 4px 24px #0002",
+          padding: 32,
+          marginBottom: 32,
+        }}
+      >
+        <h2
+          style={{
+            fontWeight: 700,
+            color: "#2d3a4a",
+            marginBottom: 16,
+            letterSpacing: 1,
+          }}
+        >
+          Quản lý Đăng ký Đề tài
+        </h2>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 16,
+          }}
+        >
           <span style={{ color: "#888" }}>
             Tổng số: <b>{data.length}</b>
           </span>
           <button
             className="btn btn-primary"
-            style={{ borderRadius: 8, fontWeight: 600, padding: "8px 24px", background: "#2563eb", border: "none" }}
-            onClick={() => { setShowForm(true); setForm(initialForm); setEditingId(null); }}
+            style={{
+              borderRadius: 8,
+              fontWeight: 600,
+              padding: "8px 24px",
+              background: "#2563eb",
+              border: "none",
+            }}
+            onClick={() => {
+              setShowForm(true);
+              setForm(initialForm);
+              setEditingId(null);
+            }}
           >
             + Thêm mới
           </button>
         </div>
         <div style={{ overflowX: "auto" }}>
-          <table className="table table-bordered" style={{ background: "#f9fafb", borderRadius: 8, minWidth: 900 }}>
+          <table
+            className="table table-bordered"
+            style={{ background: "#f9fafb", borderRadius: 8, minWidth: 900 }}
+          >
             <thead style={{ background: "#e5e7eb" }}>
               <tr style={{ textAlign: "center" }}>
                 <th>ID</th>
@@ -117,118 +156,278 @@ export default function DataManagement() {
             </thead>
             <tbody>
               {data.length === 0 ? (
-                <tr><td colSpan={9} className="text-center">Chưa có dữ liệu</td></tr>
-              ) : data.map((item) => (
-                <tr key={item.id} style={{ textAlign: "center", background: editingId === item.id ? "#f1f5f9" : undefined }}>
-                  <td>{item.id}</td>
-                  <td style={{ maxWidth: 180, whiteSpace: "pre-line", wordBreak: "break-word" }}>{item.topic_title}</td>
-                  <td>{typeOptions.find(t => t.value === item.topic_type)?.label || item.topic_type}</td>
-                  <td>{item.student1_name}</td>
-                  <td>{item.student2_name}</td>
-                  <td>{item.gvhd_code}</td>
-                  <td>
-                    <span style={{
-                      background: item.status === "approved" ? "#22c55e22" : item.status === "rejected" ? "#ef444422" : "#facc1522",
-                      color: item.status === "approved" ? "#16a34a" : item.status === "rejected" ? "#b91c1c" : "#b45309",
-                      borderRadius: 8,
-                      padding: "2px 10px",
-                      fontWeight: 600,
-                    }}>{statusOptions.find(s => s.value === item.status)?.label || item.status}</span>
-                  </td>
-                  <td>{item.registered_at}</td>
-                  <td>
-                    <button className="btn btn-warning btn-sm mr-2" style={{ borderRadius: 6, fontWeight: 500 }} onClick={() => handleEdit(item)}>Sửa</button>
-                    <button className="btn btn-danger btn-sm" style={{ borderRadius: 6, fontWeight: 500 }} onClick={() => handleDelete(item.id)}>Xóa</button>
+                <tr>
+                  <td colSpan={9} className="text-center">
+                    Chưa có dữ liệu
                   </td>
                 </tr>
-              ))}
+              ) : (
+                data.map((item) => (
+                  <tr
+                    key={item.id}
+                    style={{
+                      textAlign: "center",
+                      background: editingId === item.id ? "#f1f5f9" : undefined,
+                    }}
+                  >
+                    <td>{item.id}</td>
+                    <td
+                      style={{
+                        maxWidth: 180,
+                        whiteSpace: "pre-line",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {item.topic_title}
+                    </td>
+                    <td>
+                      {typeOptions.find((t) => t.value === item.topic_type)
+                        ?.label || item.topic_type}
+                    </td>
+                    <td>{item.student1_name}</td>
+                    <td>{item.student2_name}</td>
+                    <td>{item.gvhd_code}</td>
+                    <td>
+                      <span
+                        style={{
+                          background:
+                            item.status === "approved"
+                              ? "#22c55e22"
+                              : item.status === "rejected"
+                                ? "#ef444422"
+                                : "#facc1522",
+                          color:
+                            item.status === "approved"
+                              ? "#16a34a"
+                              : item.status === "rejected"
+                                ? "#b91c1c"
+                                : "#b45309",
+                          borderRadius: 8,
+                          padding: "2px 10px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {statusOptions.find((s) => s.value === item.status)
+                          ?.label || item.status}
+                      </span>
+                    </td>
+                    <td>{item.registered_at}</td>
+                    <td>
+                      <button
+                        className="btn btn-warning btn-sm mr-2"
+                        style={{ borderRadius: 6, fontWeight: 500 }}
+                        onClick={() => handleEdit(item)}
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        style={{ borderRadius: 6, fontWeight: 500 }}
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Xóa
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
+      {/* Modal Dialog for Form */}
       {showForm && (
-        <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 4px 24px #0002", padding: 32, maxWidth: 900, margin: "0 auto" }}>
-          <form className="row" onSubmit={handleSubmit}>
-            <h4 style={{ fontWeight: 600, color: "#2563eb", marginBottom: 24 }}>{editingId ? "Chỉnh sửa" : "Thêm mới"} đăng ký đề tài</h4>
-            {error && <div className="alert alert-danger w-100">{error}</div>}
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Tiêu đề *</label>
-              <input className="form-control" name="topic_title" value={form.topic_title} onChange={handleChange} required />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Loại đề tài *</label>
-              <select className="form-control" name="topic_type" value={form.topic_type} onChange={handleChange} required>
-                {typeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-              </select>
-            </div>
-            <div className="col-md-12 mb-3">
-              <label className="font-weight-bold">Mô tả</label>
-              <textarea className="form-control" name="topic_description" value={form.topic_description} onChange={handleChange} rows={2} />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="font-weight-bold">MSSV 1 *</label>
-              <input className="form-control" name="student1_id" value={form.student1_id} onChange={handleChange} required />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="font-weight-bold">Tên SV 1 *</label>
-              <input className="form-control" name="student1_name" value={form.student1_name} onChange={handleChange} required />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="font-weight-bold">Lớp SV 1 *</label>
-              <input className="form-control" name="student1_class" value={form.student1_class} onChange={handleChange} required />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Email SV 1</label>
-              <input className="form-control" name="student1_email" value={form.student1_email} onChange={handleChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">MSSV 2</label>
-              <input className="form-control" name="student2_id" value={form.student2_id} onChange={handleChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Tên SV 2</label>
-              <input className="form-control" name="student2_name" value={form.student2_name} onChange={handleChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Lớp SV 2</label>
-              <input className="form-control" name="student2_class" value={form.student2_class} onChange={handleChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Email SV 2</label>
-              <input className="form-control" name="student2_email" value={form.student2_email} onChange={handleChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Mã GVHD</label>
-              <input className="form-control" name="gvhd_code" value={form.gvhd_code} onChange={handleChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Nơi công tác GVHD</label>
-              <input className="form-control" name="gvhd_workplace" value={form.gvhd_workplace} onChange={handleChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="font-weight-bold">Mã GV Phản biện</label>
-              <input className="form-control" name="gvpb_code" value={form.gvpb_code} onChange={handleChange} />
-            </div>
-            <div className="col-md-12 mb-3">
-              <label className="font-weight-bold">Ghi chú</label>
-              <textarea className="form-control" name="note" value={form.note} onChange={handleChange} rows={2} />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="font-weight-bold">Nguồn</label>
-              <input className="form-control" name="source" value={form.source} onChange={handleChange} />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="font-weight-bold">Trạng thái</label>
-              <select className="form-control" name="status" value={form.status} onChange={handleChange}>
-                {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-              </select>
-            </div>
-            <div className="col-12 mt-4" style={{ textAlign: "right" }}>
-              <button className="btn btn-success mr-2" style={{ borderRadius: 8, fontWeight: 600, minWidth: 100 }} type="submit">Lưu</button>
-              <button className="btn btn-secondary" style={{ borderRadius: 8, fontWeight: 600, minWidth: 100 }} type="button" onClick={handleCancel}>Hủy</button>
-            </div>
-          </form>
+        <div className="overlay">
+          <div className="modal">
+            <button className="close-btn" onClick={handleCancel}>
+              ×
+            </button>
+
+            <form onSubmit={handleSubmit}>
+              <h3 className="title">
+                {editingId ? "Chỉnh sửa" : "Thêm mới"} đăng ký đề tài
+              </h3>
+
+              {error && <div className="alert alert-danger">{error}</div>}
+
+              {/* ===== ĐỀ TÀI ===== */}
+              <div className="section">
+                <div className="grid-2">
+                  <div>
+                    <label>Tiêu đề *</label>
+                    <input
+                      name="topic_title"
+                      value={form.topic_title}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Loại *</label>
+                    <select
+                      name="topic_type"
+                      value={form.topic_type}
+                      onChange={handleChange}
+                    >
+                      {typeOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label>Mô tả</label>
+                  <textarea
+                    name="topic_description"
+                    value={form.topic_description}
+                    onChange={handleChange}
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              {/* ===== SV1 ===== */}
+              <div className="section">
+                <h5>Sinh viên 1</h5>
+                <div className="grid-2">
+                  <input
+                    placeholder="MSSV *"
+                    name="student1_id"
+                    value={form.student1_id}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    placeholder="Tên SV *"
+                    name="student1_name"
+                    value={form.student1_name}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    placeholder="Lớp *"
+                    name="student1_class"
+                    value={form.student1_class}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    placeholder="Email"
+                    name="student1_email"
+                    value={form.student1_email}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* ===== SV2 ===== */}
+              {(form.topic_type === "group" ||
+                form.student2_id ||
+                form.student2_name ||
+                form.student2_class ||
+                form.student2_email) && (
+                <div className="section sub">
+                  <h5>Sinh viên 2</h5>
+                  <div className="grid-2">
+                    <input
+                      placeholder="MSSV 2"
+                      name="student2_id"
+                      value={form.student2_id}
+                      onChange={handleChange}
+                    />
+                    <input
+                      placeholder="Tên SV 2"
+                      name="student2_name"
+                      value={form.student2_name}
+                      onChange={handleChange}
+                    />
+                    <input
+                      placeholder="Lớp"
+                      name="student2_class"
+                      value={form.student2_class}
+                      onChange={handleChange}
+                    />
+                    <input
+                      placeholder="Email"
+                      name="student2_email"
+                      value={form.student2_email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* ===== GIẢNG VIÊN ===== */}
+              <div className="section">
+                <h5>Giảng viên</h5>
+                <div className="grid-2">
+                  <input
+                    placeholder="Mã GVHD"
+                    name="gvhd_code"
+                    value={form.gvhd_code}
+                    onChange={handleChange}
+                  />
+                  <input
+                    placeholder="Nơi công tác"
+                    name="gvhd_workplace"
+                    value={form.gvhd_workplace}
+                    onChange={handleChange}
+                  />
+                  <input
+                    placeholder="Mã GV phản biện"
+                    name="gvpb_code"
+                    value={form.gvpb_code}
+                    onChange={handleChange}
+                  />
+                  <input
+                    placeholder="Nguồn"
+                    name="source"
+                    value={form.source}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* ===== KHÁC ===== */}
+              <div className="section">
+                <div className="grid-2">
+                  <select
+                    name="status"
+                    value={form.status}
+                    onChange={handleChange}
+                  >
+                    {statusOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    placeholder="Ghi chú"
+                    name="note"
+                    value={form.note}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* ACTION */}
+              <div className="actions">
+                <button className="btn btn-success">Lưu</button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCancel}
+                >
+                  Hủy
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

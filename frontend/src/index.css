@@ -15,6 +15,7 @@
   --text-primary: #0f172a;
   --text-secondary: #64748b;
   --border-color: #e2e8f0;
+  --primary-color: #3b82f6;
 }
 
 @theme {
@@ -74,7 +75,7 @@
 /* Modern custom select (combobox) style */
 .custom-select {
   width: 100%;
-  padding: 9px 36px 9px 12px;
+  padding: 5px 10px 5px 10px;
   border: 1px solid #94a3b8;
   border-radius: 10px;
   background: #f8fafc url('data:image/svg+xml;utf8,<svg fill="%233481f7" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 12px center/18px 18px;
@@ -464,4 +465,87 @@ th {
   .form {
     grid-template-columns: 1fr;
   }
+}
+
+/* 
+
+Modernized the UI with a clean, minimalist design using a light color palette and subtle shadows.
+Added responsive design for better usability on mobile devices. 
+
+*/
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.title {
+  text-align: center;
+  color: #2563eb;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #888;
+}
+
+.section {
+  margin-bottom: 16px;
+}
+
+.section h5 {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.section.sub {
+  background: #f9fafb;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+input, select, textarea {
+  /* width: 100%; */
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
 }
