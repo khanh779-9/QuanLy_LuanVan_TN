@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Council;
+use App\Models\CouncilMember;
 use App\Models\Teacher;
 use Closure;
 use Illuminate\Http\Request;
@@ -16,7 +18,7 @@ class ApiTokenAuth
 
         if (!$token) {
             return response()->json([
-                'message' => 'Thiếu Bearer token.',
+                'message' => 'Không thể xác thực bạn.',
             ], 401);
         }
 
@@ -29,7 +31,7 @@ class ApiTokenAuth
             ], 401);
         }
 
-        $role = 'lecturer';
+        $role = CouncilMember::where('maGV', $payload['maGV'] ?? '')->pluck('vaiTro')->first() ?? 'lecturer';
         $user = null;
 
         if (is_array($payload)) {
