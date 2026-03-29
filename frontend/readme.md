@@ -2,10 +2,6 @@
 
 # Quản lý Luận Văn Tốt Nghiệp - Frontend
 
-## Tổng quan
-
-Đây là mã nguồn Frontend (React + Vite) cho hệ thống Quản lý Luận Văn Tốt Nghiệp. Ứng dụng này giao tiếp với Backend qua API và được phát triển mới, hiện đại hóa so với project cũ (PHP thuần).
-
 ## Các trang/chức năng đã hoàn thành
 
 - [X] Đăng nhập (LoginPage.jsx)
