@@ -53,7 +53,6 @@ const ThesisList = () => {
     }
   };
   const handleDetail = (row) => {
-    // TODO: Show detail modal or navigate
     alert("Chi tiết: " + row.tenDeTai);
   };
   const handleSubmit = async (form) => {

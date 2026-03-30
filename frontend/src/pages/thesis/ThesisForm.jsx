@@ -4,7 +4,7 @@ import FormField from "../../components/FormField";
 
 
 const ThesisForm = ({ mode = "add", thesis, onSubmit, onCancel }) => {
-  // TODO: Use form state and validation
+
   return (
     <div className="thesis-form-page">
       <h2>{mode === "add" ? "Thêm mới Luận văn" : "Chỉnh sửa Luận văn"}</h2>

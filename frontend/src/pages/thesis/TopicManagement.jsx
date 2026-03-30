@@ -58,13 +58,13 @@ export default function DataManagement() {
     message: "",
   });
 
-  // Fetch data from API
+  // ...existing code...
   const loadData = async () => {
     setLoading(true);
     try {
       const res = await fetchThesesForm();
       setData(res || []);
-      // setToast({ show: true, type: "success", message: "Tải dữ liệu thành công!" }); // Không cần thông báo khi chỉ tải dữ liệu
+      // ...existing code...
     } catch (e) {
       setError("Không thể tải dữ liệu: " + (e.message || e));
       setToast({
@@ -87,7 +87,7 @@ export default function DataManagement() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate các trường bắt buộc theo BE
+    // ...existing code...
     const requiredFields = [
       { key: "topic_title", label: "Tiêu đề" },
       { key: "topic_description", label: "Mô tả" },
@@ -112,7 +112,7 @@ export default function DataManagement() {
         return;
       }
     }
-    // Validate email SV1
+    // ...existing code...
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.student1_email)) {
       setError("Email SV 1 không hợp lệ!");
@@ -123,7 +123,7 @@ export default function DataManagement() {
       });
       return;
     }
-    // Nếu có SV2 email thì kiểm tra hợp lệ
+    // ...existing code...
     if (form.student2_email && !emailRegex.test(form.student2_email)) {
       setError("Email SV 2 không hợp lệ!");
       setToast({
@@ -133,11 +133,11 @@ export default function DataManagement() {
       });
       return;
     }
-    // MSSV cho nhập tự do, không kiểm tra kiểu số
+    // ...existing code...
     setError("");
     setLoading(true);
     try {
-      // Gửi dữ liệu giữ nguyên MSSV là string
+      // ...existing code...
       const payload = {
         ...form,
       };
@@ -252,7 +252,7 @@ export default function DataManagement() {
                 position: "relative",
               }}
               onClick={() => {
-                // Này chỗ nhập file Excel, chưa làm nên tạm thời để alert
+                // ...existing code...
                 alert("Tính năng này đang được phát triển!");
               }}
             >
@@ -441,7 +441,7 @@ export default function DataManagement() {
         </div>
       )}
 
-      {/* Modal Dialog for Form */}
+      {/* ...existing code... */}
       {showForm && (
         <div className="overlay">
           <div className="modal">
@@ -456,7 +456,7 @@ export default function DataManagement() {
 
               {error && <div className="alert alert-danger">{error}</div>}
 
-              {/* ===== ĐỀ TÀI ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <div className="grid-2">
                   <FormField
@@ -491,7 +491,7 @@ export default function DataManagement() {
                 />
               </div>
 
-              {/* ===== SV1 ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <h5>Sinh viên 1</h5>
                 <div className="grid-2">
@@ -525,7 +525,7 @@ export default function DataManagement() {
                 </div>
               </div>
 
-              {/* ===== SV2 ===== */}
+              {/* ...existing code... */}
               {(form.topic_type === "group" ||
                 form.student2_id ||
                 form.student2_name ||
@@ -562,7 +562,7 @@ export default function DataManagement() {
                 </div>
               )}
 
-              {/* ===== GIẢNG VIÊN ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <h5>Giảng viên</h5>
                 <div className="grid-2">
@@ -593,7 +593,7 @@ export default function DataManagement() {
                 </div>
               </div>
 
-              {/* ===== KHÁC ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <div className="grid-2">
                   <FormField
@@ -617,7 +617,7 @@ export default function DataManagement() {
                 </div>
               </div>
 
-              {/* ACTION */}
+              {/* ...existing code... */}
               <div className="actions">
                 <button className="btn btn-success">Lưu</button>
                 <button

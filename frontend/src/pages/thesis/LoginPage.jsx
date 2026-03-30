@@ -1,18 +1,13 @@
 import React, { useState } from "react";
 import { saveToken, login } from "../../services/authService";
 import FormField from "../../components/FormField";
-// const API_URL = import.meta.env.VITE_API_BASE_URL + "/api";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [toast, setToast] = useState({
-    show: false,
-    type: "success",
-    message: "",
-  });
+
 
 
 
@@ -54,6 +49,7 @@ export default function LoginPage() {
       >
         <h2 style={{ marginBottom: 24 }}>Đăng nhập Giảng viên</h2>
         <FormField
+          className="w-100"
           label="Mã giảng viên"
           type="text"
           value={username}
@@ -61,6 +57,7 @@ export default function LoginPage() {
           required
         />
         <FormField
+          className="w-100"
           label="Mật khẩu"
           type="password"
           value={password}

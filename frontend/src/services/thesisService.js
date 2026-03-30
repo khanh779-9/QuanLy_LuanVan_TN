@@ -1,7 +1,7 @@
 
 import { fetchWithAuth } from "./authService";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/api";
 import { parseResponse } from "../utils/parseResponse";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/api";
 
 export async function fetchTheses() {
   const response = await fetchWithAuth(`${API_BASE_URL}/topics`);

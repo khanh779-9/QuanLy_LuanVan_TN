@@ -29,6 +29,7 @@ const defaultStudent = {
   diemPercent: "0%",
 };
 
+
 export default function Review() {
   const [tab, setTab] = useState("review");
   const [loading, setLoading] = useState(true);
@@ -47,7 +48,7 @@ export default function Review() {
     cauHoi_PB: "",
     deNghi_PB: "duoc",
   });
-  // State cho tab chấm hướng dẫn
+  // ...existing code...
   const [guideForm, setGuideForm] = useState({
     ndDieuChinh: "",
     nxTongQuat_HD: "",
@@ -61,7 +62,7 @@ export default function Review() {
   const [guideScale, setGuideScale] = useState(defaultScale);
 
   const maGV = JSON.parse(localStorage.getItem("user"))?.maGV || "";
-  console.log("Giáo viên đang đăng nhập:", maGV);
+  // ...existing code...
 
   const showToast = (message, type = "info") => setToast({ open: true, message, type });
 
@@ -70,8 +71,7 @@ export default function Review() {
       setLoading(true);
       try {
         const res = await fetchTheses();
-        // Chuẩn hóa dữ liệu từ BE: res.data là mảng đề tài
-        console.log("Dữ liệu đề tài nhận được từ API:", res);
+        // ...existing code...
         setTheses(res || []);
       } catch (e) {
         showToast(e.message, "error");
@@ -81,10 +81,10 @@ export default function Review() {
     load();
   }, [maGV]);
 
-  // Khi chọn đề tài, reset form
+  // ...existing code...
   useEffect(() => {
     if (!selected) return;
-    // TODO: fetch chi tiết nếu cần
+    // ...existing code...
     setScale(defaultScale);
     setStudents([ { ...defaultStudent }, { ...defaultStudent } ]);
     setForm({

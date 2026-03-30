@@ -1,4 +1,4 @@
-// Hàm tính điểm cho sinh viên (dùng cho cả review và guide)
+
 export function calcStudentScore(student, scale) {
   const total =
     (parseFloat(student.diemPhanTich) || 0) +
@@ -15,7 +15,7 @@ export function calcStudentScore(student, scale) {
   return { ...student, diemFinal, diemPercent };
 }
 
-// Hàm tính lại điểm cho tất cả sinh viên khi đổi thang điểm
+
 export function recalcAllStudents(students, scale, changedField, changedValue) {
   return students.map((s) => {
     const total =

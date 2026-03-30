@@ -3,13 +3,7 @@ import { fetchWithAuth } from "./authService";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
-async function parseResponse(response, defaultErrorMessage) {
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.message || defaultErrorMessage);
-  }
-  return payload;
-}
+import { parseResponse } from "../utils/parseResponse";
 
 export async function fetchUsers() {
   const response = await fetchWithAuth(`${API_BASE_URL}/users`);
