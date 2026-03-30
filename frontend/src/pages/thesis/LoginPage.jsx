@@ -8,9 +8,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -47,9 +44,13 @@ export default function LoginPage() {
           boxShadow: "0 2px 8px #0001",
         }}
       >
-        <h2 style={{ marginBottom: 24 }}>Đăng nhập Giảng viên</h2>
+        <img src="/assets/Logo_STU.png" alt="Logo" width={80} height={80} />
+
+        <h2 style={{ marginTop: 10, marginBottom: 20 }}>
+          Đăng nhập Giảng viên
+        </h2>
         <FormField
-          className="w-100"
+          className="w-full"
           label="Mã giảng viên"
           type="text"
           value={username}
@@ -57,7 +58,7 @@ export default function LoginPage() {
           required
         />
         <FormField
-          className="w-100"
+          className="w-full"
           label="Mật khẩu"
           type="password"
           value={password}
@@ -67,8 +68,7 @@ export default function LoginPage() {
         {error && <div style={{ color: "red", marginBottom: 12 }}>{error}</div>}
         <button
           type="submit"
-          className="btn btn-primary"
-          style={{ width: "100%" }}
+          className="btn btn-primary w-full"
           disabled={loading}
         >
           {loading ? "Đang đăng nhập..." : "Đăng nhập"}
