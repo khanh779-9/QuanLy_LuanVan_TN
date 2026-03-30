@@ -31,7 +31,12 @@ export default function LoginPage() {
         justifyContent: "center",
         alignItems: "start",
         height: "100vh",
-        background: "#f5f6fa",
+        backgroundImage: `
+    linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)),
+    url('../public/assets/dai-hoc-cong-nghe-sai-gon-1.webp')
+  `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       <form
@@ -39,6 +44,7 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         style={{
           background: "#fff",
+          backdropFilter: "blur(40px)",
           padding: 32,
           borderRadius: 8,
           boxShadow: "0 2px 8px #0001",
