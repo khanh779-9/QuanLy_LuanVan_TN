@@ -32,7 +32,7 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    if (!aboutMe) {
+    if (!aboutMe && !localStorage.getItem("token")) {
       window.location.href = "/thesis/login";
     }
   }, [aboutMe]);
@@ -42,12 +42,20 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [search, setSearch] = useState("");
+  const [searchMaDeTai, setSearchMaDeTai] = useState("");
+  const [searchSinhVien, setSearchSinhVien] = useState("");
   const [toast, setToast] = useState({
     open: false,
     message: "",
     type: "info",
   });
+
+  // Các bộ lọc
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterGVHD, setFilterGVHD] = useState("");
+  const [filterGVPB, setFilterGVPB] = useState("");
+
+  // const recordsPerPage = 10;
 
   // Thống kê
   const [stats, setStats] = useState({
@@ -96,6 +104,54 @@ export default function Dashboard() {
     loadData();
   }, []);
 
+  // --- 2. LOGIC TÌM KIẾM VÀ LỌC BẰNG JAVASCRIPT (MỚI) ---
+  const finalFilteredData = data.filter((row) => {
+    // 1. Kiểm tra Search theo Mã Đề Tài
+    const termMaDeTai = searchMaDeTai.toLowerCase();
+    const passMaDeTai =
+      !termMaDeTai ||
+      String(row.maDeTai || "")
+        .toLowerCase()
+        .includes(termMaDeTai);
+
+    // 2. Kiểm tra Search theo Sinh Viên (Lấy cả mssv và hoTen)
+    const termSinhVien = searchSinhVien.toLowerCase();
+    const passSinhVien =
+      !termSinhVien ||
+      (row.students || []).some((sv) => {
+        // Dùng hàm .some() để kiểm tra xem có sinh viên nào khớp không
+        const matchMSSV = String(sv.mssv || "")
+          .toLowerCase()
+          .includes(termSinhVien);
+        const matchTen = String(sv.hoTen || "")
+          .toLowerCase()
+          .includes(termSinhVien);
+        return matchMSSV || matchTen;
+      });
+
+    // 3. Kiểm tra các bộ lọc Cột (Giữ nguyên như cũ)
+    const passStatus = !filterStatus || row.trangThai === filterStatus;
+    const passGVHD_Filter =
+      !filterGVHD ||
+      String(row.lecturer?.tenGV || "")
+        .toLowerCase()
+        .includes(filterGVHD.toLowerCase());
+    const passGVPB_Filter =
+      !filterGVPB ||
+      String(row.reviewer?.tenGV || "")
+        .toLowerCase()
+        .includes(filterGVPB.toLowerCase());
+
+    // Trả về true nếu thỏa mãn TẤT CẢ các điều kiện (ô nào bỏ trống thì tự động pass)
+    return (
+      passMaDeTai &&
+      passSinhVien &&
+      passStatus &&
+      passGVHD_Filter &&
+      passGVPB_Filter
+    );
+  });
+
   const handleAdd = () => {
     setEditData(null);
     setModalOpen(true);
@@ -131,20 +187,8 @@ export default function Dashboard() {
     }
   };
 
-  const filtered = data.filter(
-    (row) =>
-      row.tenDeTai?.toLowerCase().includes(search.toLowerCase()) ||
-      row.maDeTai?.toLowerCase().includes(search.toLowerCase()),
-  );
-
   return (
     <div className="dashboard-page">
-      {/* Hiển thị ảnh động Lottie nếu có lottie-react */}
-      {/*
-      <div style={{ maxWidth: 300, margin: '0 auto' }}>
-        <Lottie animationData={studentWithLaptop} loop={true} />
-      </div>
-      */}
       <Toast
         open={toast.open}
         message={toast.message}
@@ -223,10 +267,11 @@ export default function Dashboard() {
             boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
           }}
         >
-          <div className="stat-label">Số sinh viên (đề tài hiện hữu)</div>
+          <div className="stat-label">Số sinh viên</div>
           <div className="stat-value">{stats.students}</div>
         </div>
-        <div
+
+        {/* <div
           className="stat-card"
           style={{
             border: "1px solid #ddd",
@@ -235,7 +280,8 @@ export default function Dashboard() {
         >
           <div className="stat-label">Số sinh viên</div>
           <div className="stat-value">{stats.students_all}</div>
-        </div>
+        </div> */}
+
         <div
           className="stat-card"
           style={{
@@ -256,15 +302,44 @@ export default function Dashboard() {
           gap: 16,
         }}
       >
-        <button className="btn btn-primary" onClick={handleAdd}>
+        {/* <button className="btn btn-primary" onClick={handleAdd}>
           Thêm mới
-        </button>
+        </button> */}
         <input
           type="text"
-          placeholder="Tìm kiếm..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Tìm theo mã đề tài..."
+          value={searchMaDeTai}
+          onChange={(e) => setSearchMaDeTai(e.target.value)}
         />
+        <input
+          type="text"
+          placeholder="Tìm MSSV hoặc Tên SV..."
+          value={searchSinhVien}
+          onChange={(e) => setSearchSinhVien(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Lọc GV Hướng dẫn..."
+          value={filterGVHD}
+          onChange={(e) => setFilterGVHD(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Lọc GV Phản biện..."
+          value={filterGVPB}
+          onChange={(e) => setFilterGVPB(e.target.value)}
+        />
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">Tất cả trạng thái</option>
+          <option value="Đã hoàn thành">Đã hoàn thành</option>
+          <option value="Đang thực hiện">Đang thực hiện</option>
+          <option value="Chờ duyệt">Chờ duyệt</option>
+        </select>
       </div>
       {loading ? (
         <div>
@@ -273,7 +348,7 @@ export default function Dashboard() {
         </div>
       ) : (
         <ThesisTable
-          data={filtered}
+          data={finalFilteredData}
           onDetail={handleDetail}
           onEdit={handleEdit}
           onDelete={handleDelete}

@@ -417,3 +417,14 @@ FodyWeavers.xsd
 *.msm
 *.msp
 .*/
+
+
+# docs
+huong_dan/Chốt_DSSV_GVHD_TenDeTai_LVTN_Dot2_17112025.xlsx
+huong_dan/DS SV BV LVTN T10_2025.xlsx
+huong_dan/Form_NhiemvuLVTN.doc
+huong_dan/Mau 01.01_PHIEU CHAM_HUONG DAN_NHOM SINH VIEN.doc
+huong_dan/Mau 01.02_PHIEU CHAM_HUONG DAN_SINH VIEN.doc
+huong_dan/Mau 02.01_PHIEU CHAM_PHAN BIEN_NHOM SINH VIEN.doc
+huong_dan/Mau 02.02_PHIEU CHAM_PHAN BIEN_SINH VIEN.doc
+huong_dan/Projects.docx

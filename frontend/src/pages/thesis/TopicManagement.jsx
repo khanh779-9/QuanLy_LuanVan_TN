@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FormField from "../../components/FormField";
 import {
   fetchThesesForm,
   createThesisForm,
@@ -9,6 +10,9 @@ import {
 
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { formatDate } from "../../utils/convertFormat";
 
 const initialForm = {
   topic_title: "",
@@ -23,7 +27,7 @@ const initialForm = {
   student2_class: "",
   student2_email: "",
   gvhd_code: "",
-  gvhd_workplace: "",
+  gvhd_workplace: "ĐH CNSG",
   gvpb_code: "",
   note: "",
   source: "google_form",
@@ -54,13 +58,13 @@ export default function DataManagement() {
     message: "",
   });
 
-  // Fetch data from API
+  // ...existing code...
   const loadData = async () => {
     setLoading(true);
     try {
       const res = await fetchThesesForm();
       setData(res || []);
-      // setToast({ show: true, type: "success", message: "Tải dữ liệu thành công!" }); // Không cần thông báo khi chỉ tải dữ liệu
+      // ...existing code...
     } catch (e) {
       setError("Không thể tải dữ liệu: " + (e.message || e));
       setToast({
@@ -83,7 +87,7 @@ export default function DataManagement() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate các trường bắt buộc theo BE
+    // ...existing code...
     const requiredFields = [
       { key: "topic_title", label: "Tiêu đề" },
       { key: "topic_description", label: "Mô tả" },
@@ -92,12 +96,13 @@ export default function DataManagement() {
       { key: "student1_name", label: "Tên SV 1" },
       { key: "student1_class", label: "Lớp SV 1" },
       { key: "student1_email", label: "Email SV 1" },
-      { key: "gvhd_code", label: "Mã GVHD" },
       { key: "gvhd_workplace", label: "Nơi công tác GVHD" },
-      { key: "gvpb_code", label: "Mã GV phản biện" },
     ];
     for (let f of requiredFields) {
-      if (!form[f.key] || (typeof form[f.key] === "string" && form[f.key].trim() === "")) {
+      if (
+        !form[f.key] ||
+        (typeof form[f.key] === "string" && form[f.key].trim() === "")
+      ) {
         setError(`Vui lòng nhập ${f.label}!`);
         setToast({
           show: true,
@@ -107,7 +112,7 @@ export default function DataManagement() {
         return;
       }
     }
-    // Validate email SV1
+    // ...existing code...
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.student1_email)) {
       setError("Email SV 1 không hợp lệ!");
@@ -118,7 +123,7 @@ export default function DataManagement() {
       });
       return;
     }
-    // Nếu có SV2 email thì kiểm tra hợp lệ
+    // ...existing code...
     if (form.student2_email && !emailRegex.test(form.student2_email)) {
       setError("Email SV 2 không hợp lệ!");
       setToast({
@@ -128,33 +133,13 @@ export default function DataManagement() {
       });
       return;
     }
-    // Đảm bảo MSSV là số
-    if (isNaN(Number(form.student1_id))) {
-      setError("MSSV 1 phải là số!");
-      setToast({
-        show: true,
-        type: "error",
-        message: "MSSV 1 phải là số!",
-      });
-      return;
-    }
-    if (form.student2_id && isNaN(Number(form.student2_id))) {
-      setError("MSSV 2 phải là số!");
-      setToast({
-        show: true,
-        type: "error",
-        message: "MSSV 2 phải là số!",
-      });
-      return;
-    }
+    // ...existing code...
     setError("");
     setLoading(true);
     try {
-      // Chuẩn hóa dữ liệu gửi đi đúng kiểu
+      // ...existing code...
       const payload = {
         ...form,
-        student1_id: Number(form.student1_id),
-        student2_id: form.student2_id ? Number(form.student2_id) : null,
       };
       let res;
       if (editingId !== null) {
@@ -172,10 +157,10 @@ export default function DataManagement() {
           message: res?.message || "Thêm đăng ký mới thành công!",
         });
       }
-      await loadData();
+      setShowForm(false); // Đóng form ngay khi lưu thành công
       setForm(initialForm);
       setEditingId(null);
-      setShowForm(false);
+      await loadData();
     } catch (e) {
       setError("Lỗi khi lưu dữ liệu: " + (e.message || e));
       setToast({
@@ -254,6 +239,26 @@ export default function DataManagement() {
             <span style={{ color: "#888" }}>
               Tổng số: <b>{data.length}</b>
             </span>
+
+            <button
+              className="btn btn-success"
+              style={{
+                borderRadius: 8,
+                fontWeight: 600,
+                padding: "8px 24px",
+                border: "none",
+                background: "#0a664f",
+                right: 16,
+                position: "relative",
+              }}
+              onClick={() => {
+                // ...existing code...
+                alert("Tính năng này đang được phát triển!");
+              }}
+            >
+              Nhập file Excel
+            </button>
+
             <button
               className="btn btn-primary"
               style={{
@@ -285,7 +290,7 @@ export default function DataManagement() {
             </div>
           ) : (
             <div style={{ overflowX: "auto" }}>
-              <table className="table table-bordered" style={{ minWidth: 1100, background: "#fff" }}>
+              <table className="thesis-table">
                 <thead style={{ background: "#f1f5f9" }}>
                   <tr>
                     <th>STT</th>
@@ -303,10 +308,17 @@ export default function DataManagement() {
                 </thead>
                 <tbody>
                   {data.map((item, idx) => (
-                    <tr key={item.id} style={{ background: editingId === item.id ? "#f1f5f9" : undefined }}>
-                      <td>{idx + 1}</td>
-                      <td style={{ maxWidth: 220, wordBreak: "break-word" }}>{item.topic_title || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
-                      <td>{typeOptions.find((t) => t.value === item.topic_type)?.label || item.topic_type}</td>
+                    <tr key={item.id}>
+                      <td style={{ padding: 10 }}>{idx + 1}</td>
+                      <td>
+                        {item.topic_title || (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+                      <td>
+                        {typeOptions.find((t) => t.value === item.topic_type)
+                          ?.label || item.topic_type}
+                      </td>
                       <td>
                         <span
                           style={{
@@ -324,49 +336,100 @@ export default function DataManagement() {
                                   : "#b45309",
                             borderRadius: 8,
                             padding: "2px 10px",
-                            fontWeight: 600,
+                            width: "fit-content",
                           }}
                         >
-                          {statusOptions.find((s) => s.value === item.status)?.label || item.status}
+                          {statusOptions.find((s) => s.value === item.status)
+                            ?.label || item.status}
                         </span>
                       </td>
-                      <td>
-                        <div><b>MSSV:</b> {item.student1_id || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Họ tên:</b> {item.student1_name || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Lớp:</b> {item.student1_class || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Email:</b> {item.student1_email || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                      </td>
-                      <td>
-                        {item.student2_name || item.student2_id || item.student2_class || item.student2_email ? (
+                      <td style={{ padding: 10, textAlign: "left" }}>
+                        {item.student1_id || item.student1_name ? (
                           <>
-                            <div><b>MSSV:</b> {item.student2_id || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                            <div><b>Họ tên:</b> {item.student2_name || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                            <div><b>Lớp:</b> {item.student2_class || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                            <div><b>Email:</b> {item.student2_email || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                            {item.student1_id ? (
+                              item.student1_id
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có MSSV]
+                              </span>
+                            )}
+                            ,{" "}
+                            {item.student1_name ? (
+                              item.student1_name
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có tên]
+                              </span>
+                            )}
                           </>
-                        ) : <span style={{ color: "#bbb" }}>[Không có]</span>}
+                        ) : (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
                       </td>
-                      <td>
-                        <div><b>Mã:</b> {item.gvhd_code || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
-                        <div><b>Nơi công tác:</b> {item.gvhd_workplace || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</div>
+                      <td style={{ padding: 10, textAlign: "left" }}>
+                        {item.student2_id || item.student2_name ? (
+                          <>
+                            {item.student2_id ? (
+                              item.student2_id
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có MSSV]
+                              </span>
+                            )}
+                            ,{" "}
+                            {item.student2_name ? (
+                              item.student2_name
+                            ) : (
+                              <span style={{ color: "#bbb" }}>
+                                [Chưa có tên]
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span style={{ color: "#bbb" }}>[Không có]</span>
+                        )}
                       </td>
-                      <td>{item.gvpb_code || <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
-                      <td>{item.registered_at ? item.registered_at : <span style={{ color: "#bbb" }}>[Chưa có]</span>}</td>
-                      <td>{item.note || <span style={{ color: "#bbb" }}>[Không có]</span>}</td>
-                      <td>
+                      <td style={{ padding: 10, textAlign: "left" }}>
+                        {item.gvhd_code || (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+
+                      <td style={{ padding: 10 }}>
+                        {item.gvpb_code || (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+                      <td style={{ padding: 10 }}>
+                        {item.registered_at ? (
+                         formatDate(item.registered_at, "dd/MM/yyyy HH:mm")
+                        ) : (
+                          <span style={{ color: "#bbb" }}>[Chưa có]</span>
+                        )}
+                      </td>
+                      <td style={{ padding: 10 }}>
+                        {item.note || (
+                          <span style={{ color: "#bbb" }}>[Không có]</span>
+                        )}
+                      </td>
+                      <td style={{ padding: 10 }}>
                         <button
                           className="btn btn-warning btn-sm"
-                          style={{ borderRadius: 6, fontWeight: 600, minWidth: 64, marginBottom: 4 }}
+                          style={{
+                            marginBottom: 4,
+                          }}
                           onClick={() => handleEdit(item)}
                         >
-                          Sửa
+                          <FontAwesomeIcon icon={faEdit} />
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
-                          style={{ borderRadius: 6, fontWeight: 600, minWidth: 64 }}
+                          style={{
+                            marginBottom: 4,
+                          }}
                           onClick={() => handleDelete(item.id)}
                         >
-                          Xóa
+                          <FontAwesomeIcon icon={faTrash} />
                         </button>
                       </td>
                     </tr>
@@ -378,7 +441,7 @@ export default function DataManagement() {
         </div>
       )}
 
-      {/* Modal Dialog for Form */}
+      {/* ...existing code... */}
       {showForm && (
         <div className="overlay">
           <div className="modal">
@@ -393,72 +456,67 @@ export default function DataManagement() {
 
               {error && <div className="alert alert-danger">{error}</div>}
 
-              {/* ===== ĐỀ TÀI ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <div className="grid-2">
-                  <div>
-                    <label>Tiêu đề *</label>
-                    <input
-                      name="topic_title"
-                      value={form.topic_title}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <label>Loại *</label>
-                    <select
-                      name="topic_type"
-                      value={form.topic_type}
-                      onChange={handleChange}
-                    >
-                      {typeOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <label>Mô tả</label>
-                  <textarea
-                    name="topic_description"
-                    value={form.topic_description}
+                  <FormField
+                    label="Tiêu đề *"
+                    name="topic_title"
+                    value={form.topic_title}
                     onChange={handleChange}
-                    rows={2}
+                    required
                   />
+                  <FormField
+                    label="Loại *"
+                    as="select"
+                    name="topic_type"
+                    value={form.topic_type}
+                    onChange={handleChange}
+                  >
+                    {typeOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </FormField>
                 </div>
+
+                <FormField
+                  label="Mô tả"
+                  as="textarea"
+                  name="topic_description"
+                  value={form.topic_description}
+                  onChange={handleChange}
+                  rows={2}
+                />
               </div>
 
-              {/* ===== SV1 ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <h5>Sinh viên 1</h5>
                 <div className="grid-2">
-                  <input
+                  <FormField
                     placeholder="MSSV *"
                     name="student1_id"
                     value={form.student1_id}
                     onChange={handleChange}
                     required
                   />
-                  <input
+                  <FormField
                     placeholder="Tên SV *"
                     name="student1_name"
                     value={form.student1_name}
                     onChange={handleChange}
                     required
                   />
-                  <input
+                  <FormField
                     placeholder="Lớp *"
                     name="student1_class"
                     value={form.student1_class}
                     onChange={handleChange}
                     required
                   />
-                  <input
+                  <FormField
                     placeholder="Email"
                     name="student1_email"
                     value={form.student1_email}
@@ -467,7 +525,7 @@ export default function DataManagement() {
                 </div>
               </div>
 
-              {/* ===== SV2 ===== */}
+              {/* ...existing code... */}
               {(form.topic_type === "group" ||
                 form.student2_id ||
                 form.student2_name ||
@@ -476,25 +534,25 @@ export default function DataManagement() {
                 <div className="section sub">
                   <h5>Sinh viên 2</h5>
                   <div className="grid-2">
-                    <input
+                    <FormField
                       placeholder="MSSV 2"
                       name="student2_id"
                       value={form.student2_id}
                       onChange={handleChange}
                     />
-                    <input
+                    <FormField
                       placeholder="Tên SV 2"
                       name="student2_name"
                       value={form.student2_name}
                       onChange={handleChange}
                     />
-                    <input
+                    <FormField
                       placeholder="Lớp"
                       name="student2_class"
                       value={form.student2_class}
                       onChange={handleChange}
                     />
-                    <input
+                    <FormField
                       placeholder="Email"
                       name="student2_email"
                       value={form.student2_email}
@@ -504,29 +562,29 @@ export default function DataManagement() {
                 </div>
               )}
 
-              {/* ===== GIẢNG VIÊN ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <h5>Giảng viên</h5>
                 <div className="grid-2">
-                  <input
+                  <FormField
                     placeholder="Mã GVHD"
                     name="gvhd_code"
                     value={form.gvhd_code}
                     onChange={handleChange}
                   />
-                  <input
+                  <FormField
                     placeholder="Nơi công tác"
                     name="gvhd_workplace"
                     value={form.gvhd_workplace}
                     onChange={handleChange}
                   />
-                  <input
+                  <FormField
                     placeholder="Mã GV phản biện"
                     name="gvpb_code"
                     value={form.gvpb_code}
                     onChange={handleChange}
                   />
-                  <input
+                  <FormField
                     placeholder="Nguồn"
                     name="source"
                     value={form.source}
@@ -535,10 +593,11 @@ export default function DataManagement() {
                 </div>
               </div>
 
-              {/* ===== KHÁC ===== */}
+              {/* ...existing code... */}
               <div className="section">
                 <div className="grid-2">
-                  <select
+                  <FormField
+                    as="select"
                     name="status"
                     value={form.status}
                     onChange={handleChange}
@@ -548,8 +607,8 @@ export default function DataManagement() {
                         {opt.label}
                       </option>
                     ))}
-                  </select>
-                  <input
+                  </FormField>
+                  <FormField
                     placeholder="Ghi chú"
                     name="note"
                     value={form.note}
@@ -558,7 +617,7 @@ export default function DataManagement() {
                 </div>
               </div>
 
-              {/* ACTION */}
+              {/* ...existing code... */}
               <div className="actions">
                 <button className="btn btn-success">Lưu</button>
                 <button

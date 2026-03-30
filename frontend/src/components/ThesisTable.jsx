@@ -1,10 +1,11 @@
 
 import React from "react";
-import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
+
 
 const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
+  <div style={{ maxHeight: "500px", overflowY: "auto", border: "1px solid #ddd" }}>
   <table className="thesis-table">
-    <thead>
+    <thead style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa", zIndex: 1 }}>
       <tr>
         <th>Mã đề tài</th>
         <th>Tên đề tài</th>
@@ -13,7 +14,7 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
         <th>GV Phản biện</th>
         <th>Điểm</th>
         <th>Trạng thái</th>
-        {/* <th>Hành động</th> */}
+
       </tr>
     </thead>
     <tbody>
@@ -27,17 +28,7 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
             <td>{row.reviewer?.tenGV}</td>
             <td>{row.diemTong || "-"}</td>
             <td>{row.trangThai || "-"}</td>
-            {/* <td>
-            <button className="btn btn-info mt-2" title="Chi tiết" onClick={() => onDetail(row)}>
-              <FaEye />
-            </button>
-            <button className="btn btn-warning mt-2" title="Sửa" onClick={() => onEdit(row)}>
-              <FaEdit />
-            </button>
-            <button className="btn btn-danger mt-2" title="Xóa" onClick={() => onDelete(row)}>
-              <FaTrash />
-            </button>
-          </td> */}
+
           </tr>
         ))
       ) : (
@@ -49,6 +40,7 @@ const ThesisTable = ({ data, onDetail, onEdit, onDelete }) => (
       )}
     </tbody>
   </table>
+  </div>
 );
 
 export default ThesisTable;

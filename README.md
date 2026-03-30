@@ -47,8 +47,13 @@ php artisan migrate
 php artisan serve --port=8000
 ```
 
-API base URL: `http://127.0.0.1:8000/api` (chỉ test trên local)
+## Backend
+- API base URL: `http://127.0.0.1:8000/api` (chỉ test trên local)
+- Trong môi trường mạng `https://quanly-luanvan-tn-backend-ae78.onrender.com`
+- Link BE dự phòng: `https://quanlyluanvantnbackend-production.up.railway.app`
 
-Trong môi trường mạng `https://quanly-luanvan-tn-backend-ae78.onrender.com`
+## Frontend
+- Link frontend: `https://quan-ly-luan-van-tn.vercel.app`
 
-Link BE dự phòng: `https://quanlyluanvantnbackend-production.up.railway.app`
+## Thông tin tài khoản test
+![Acc_Image](screenshot/image.png)

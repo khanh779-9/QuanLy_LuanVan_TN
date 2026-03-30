@@ -48,7 +48,7 @@ function ThesisLayout() {
         </NavLink>
 
         <NavLink
-          to="/thesis/datamanagement"
+          to="/thesis/topicmanagement"
           className={({ isActive }) =>
             isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
           }

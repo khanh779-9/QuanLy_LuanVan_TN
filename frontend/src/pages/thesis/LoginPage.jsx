@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { saveToken, login } from "../../services/authService";
-
-// const API_URL = import.meta.env.VITE_API_BASE_URL + "/api";
+import FormField from "../../components/FormField";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,26 +48,22 @@ export default function LoginPage() {
         }}
       >
         <h2 style={{ marginBottom: 24 }}>Đăng nhập Giảng viên</h2>
-        <div style={{ marginBottom: 16 }}>
-          <label>Mã giảng viên</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, marginTop: 4 }}
-          />
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <label>Mật khẩu</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, marginTop: 4 }}
-          />
-        </div>
+        <FormField
+          className="w-100"
+          label="Mã giảng viên"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <FormField
+          className="w-100"
+          label="Mật khẩu"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         {error && <div style={{ color: "red", marginBottom: 12 }}>{error}</div>}
         <button
           type="submit"

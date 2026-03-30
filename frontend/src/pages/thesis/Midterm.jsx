@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchTheses, updateThesis, fetchStudentsByThesisId } from "../../services/thesisService";
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
+import FormField from "../../components/FormField";
 
 const STATUS_OPTIONS = ["Được làm tiếp", "Đình chỉ", "Cảnh cáo"];
 
@@ -92,25 +93,21 @@ export default function Midterm() {
                 <td>{row.tenDeTai}</td>
                 <td>{row.students?.map((sv) => sv.hoTen).join(", ")}</td>
                 <td>
-                  <input
+                  <FormField
                     type="number"
                     min="0"
                     max="100"
                     step="0.1"
                     value={row.diemGiuaKy || ""}
-                    onChange={(e) =>
-                      handleChange(row, "diemGiuaKy", e.target.value)
-                    }
+                    onChange={(e) => handleChange(row, "diemGiuaKy", e.target.value)}
                     disabled={saving}
                   />
                 </td>
                 <td>
-                  <select
-                    className="custom-select"
+                  <FormField
+                    as="select"
                     value={row.trangThaiGiuaKy || ""}
-                    onChange={(e) =>
-                      handleChange(row, "trangThaiGiuaKy", e.target.value)
-                    }
+                    onChange={(e) => handleChange(row, "trangThaiGiuaKy", e.target.value)}
                     disabled={saving}
                   >
                     <option value="">-- Chọn --</option>
@@ -119,15 +116,13 @@ export default function Midterm() {
                         {opt}
                       </option>
                     ))}
-                  </select>
+                  </FormField>
                 </td>
                 <td>
-                  <input
+                  <FormField
                     type="text"
                     value={row.nhanXetGiuaKy || ""}
-                    onChange={(e) =>
-                      handleChange(row, "nhanXetGiuaKy", e.target.value)
-                    }
+                    onChange={(e) => handleChange(row, "nhanXetGiuaKy", e.target.value)}
                     disabled={saving}
                   />
                 </td>
