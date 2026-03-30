@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import FormField from "../../components/FormField";
 import { Link } from "react-router-dom";
 import {
   deleteUser,
@@ -138,31 +139,26 @@ function UsersPage() {
         </div>
 
         <form className="form" onSubmit={handleSubmit}>
-          <div className="form-row">
-            <label htmlFor="name">Tên</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Nhập tên user"
-              value={form.name}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Nhập email"
-              value={form.email}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-            />
-          </div>
+          <FormField
+            label="Tên"
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Nhập tên user"
+            value={form.name}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+          />
+          <FormField
+            label="Email"
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Nhập email"
+            value={form.email}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+          />
 
           <div className="actions-row">
             <button type="submit" disabled={isSubmitting}>

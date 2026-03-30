@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FormField from "../../components/FormField";
 import {
   fetchThesesForm,
   createThesisForm,
@@ -458,69 +459,64 @@ export default function DataManagement() {
               {/* ===== ĐỀ TÀI ===== */}
               <div className="section">
                 <div className="grid-2">
-                  <div>
-                    <label>Tiêu đề *</label>
-                    <input
-                      name="topic_title"
-                      value={form.topic_title}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <label>Loại *</label>
-                    <select
-                      name="topic_type"
-                      value={form.topic_type}
-                      onChange={handleChange}
-                    >
-                      {typeOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <label>Mô tả</label>
-                  <textarea
-                    name="topic_description"
-                    value={form.topic_description}
+                  <FormField
+                    label="Tiêu đề *"
+                    name="topic_title"
+                    value={form.topic_title}
                     onChange={handleChange}
-                    rows={2}
+                    required
                   />
+                  <FormField
+                    label="Loại *"
+                    as="select"
+                    name="topic_type"
+                    value={form.topic_type}
+                    onChange={handleChange}
+                  >
+                    {typeOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </FormField>
                 </div>
+
+                <FormField
+                  label="Mô tả"
+                  as="textarea"
+                  name="topic_description"
+                  value={form.topic_description}
+                  onChange={handleChange}
+                  rows={2}
+                />
               </div>
 
               {/* ===== SV1 ===== */}
               <div className="section">
                 <h5>Sinh viên 1</h5>
                 <div className="grid-2">
-                  <input
+                  <FormField
                     placeholder="MSSV *"
                     name="student1_id"
                     value={form.student1_id}
                     onChange={handleChange}
                     required
                   />
-                  <input
+                  <FormField
                     placeholder="Tên SV *"
                     name="student1_name"
                     value={form.student1_name}
                     onChange={handleChange}
                     required
                   />
-                  <input
+                  <FormField
                     placeholder="Lớp *"
                     name="student1_class"
                     value={form.student1_class}
                     onChange={handleChange}
                     required
                   />
-                  <input
+                  <FormField
                     placeholder="Email"
                     name="student1_email"
                     value={form.student1_email}
@@ -538,25 +534,25 @@ export default function DataManagement() {
                 <div className="section sub">
                   <h5>Sinh viên 2</h5>
                   <div className="grid-2">
-                    <input
+                    <FormField
                       placeholder="MSSV 2"
                       name="student2_id"
                       value={form.student2_id}
                       onChange={handleChange}
                     />
-                    <input
+                    <FormField
                       placeholder="Tên SV 2"
                       name="student2_name"
                       value={form.student2_name}
                       onChange={handleChange}
                     />
-                    <input
+                    <FormField
                       placeholder="Lớp"
                       name="student2_class"
                       value={form.student2_class}
                       onChange={handleChange}
                     />
-                    <input
+                    <FormField
                       placeholder="Email"
                       name="student2_email"
                       value={form.student2_email}
@@ -570,25 +566,25 @@ export default function DataManagement() {
               <div className="section">
                 <h5>Giảng viên</h5>
                 <div className="grid-2">
-                  <input
+                  <FormField
                     placeholder="Mã GVHD"
                     name="gvhd_code"
                     value={form.gvhd_code}
                     onChange={handleChange}
                   />
-                  <input
+                  <FormField
                     placeholder="Nơi công tác"
                     name="gvhd_workplace"
                     value={form.gvhd_workplace}
                     onChange={handleChange}
                   />
-                  <input
+                  <FormField
                     placeholder="Mã GV phản biện"
                     name="gvpb_code"
                     value={form.gvpb_code}
                     onChange={handleChange}
                   />
-                  <input
+                  <FormField
                     placeholder="Nguồn"
                     name="source"
                     value={form.source}
@@ -600,7 +596,8 @@ export default function DataManagement() {
               {/* ===== KHÁC ===== */}
               <div className="section">
                 <div className="grid-2">
-                  <select
+                  <FormField
+                    as="select"
                     name="status"
                     value={form.status}
                     onChange={handleChange}
@@ -610,8 +607,8 @@ export default function DataManagement() {
                         {opt.label}
                       </option>
                     ))}
-                  </select>
-                  <input
+                  </FormField>
+                  <FormField
                     placeholder="Ghi chú"
                     name="note"
                     value={form.note}

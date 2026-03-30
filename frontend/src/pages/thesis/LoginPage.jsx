@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { saveToken, login } from "../../services/authService";
+import FormField from "../../components/FormField";
 // const API_URL = import.meta.env.VITE_API_BASE_URL + "/api";
 
 export default function LoginPage() {
@@ -52,26 +53,20 @@ export default function LoginPage() {
         }}
       >
         <h2 style={{ marginBottom: 24 }}>Đăng nhập Giảng viên</h2>
-        <div style={{ marginBottom: 16 }}>
-          <label>Mã giảng viên</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, marginTop: 4 }}
-          />
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <label>Mật khẩu</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, marginTop: 4 }}
-          />
-        </div>
+        <FormField
+          label="Mã giảng viên"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <FormField
+          label="Mật khẩu"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         {error && <div style={{ color: "red", marginBottom: 12 }}>{error}</div>}
         <button
           type="submit"
