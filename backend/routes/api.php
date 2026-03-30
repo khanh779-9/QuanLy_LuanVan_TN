@@ -26,7 +26,6 @@ Route::get('/', function () {
     ]);
 });
 
-
 Route::post('/login', function (Request $request) {
     $tokenStore = Cache::store('file');
     $username = (string) $request->input('username', $request->input('maGV', ''));
@@ -47,8 +46,6 @@ Route::post('/login', function (Request $request) {
     }
 
     $storedPassword = (string) $user->matKhau;
-    // $isLegacyPlainText = hash_equals($storedPassword, $password);
-    // $isValidPassword = Hash::check($password, $storedPassword) || $isLegacyPlainText;
     $isValidPassword = $password === $storedPassword;
 
     if (!$isValidPassword) {
@@ -77,7 +74,6 @@ Route::post('/login', function (Request $request) {
         ],
     ]);
 });
-
 
 // BẮT ĐẦU KHU VỰC CẦN TOKEN (BẢO MẬT)
 Route::middleware(ApiTokenAuth::class)->group(function () {
@@ -207,67 +203,12 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     Route::delete('/students/{student}', [\App\Http\Controllers\StudentController::class, 'destroy']);
     Route::delete('/students', [\App\Http\Controllers\StudentController::class, 'destroyAll']);
 
-    Route::get('/lecturers', function () {
-        return response()->json([
-            'data' => Teacher::orderBy('maGV', 'desc')->get(),
-        ]);
-    });
-
-    Route::get('/lecturers/{lecturer}', function (Teacher $lecturer) {
-        return response()->json([
-            'data' => $lecturer,
-        ]);
-    });
-
-    Route::post('/lecturers', function (Request $request) {
-        $validated = $request->validate([
-            'maGV' => 'required|string|max:20|unique:giangvien,maGV',
-            'tenGV' => 'required|string|max:100',
-            'email' => 'nullable|email|max:100|unique:giangvien,email',
-            'soDienThoai' => 'nullable|string|max:15',
-            'hocVi' => 'nullable|string|max:50',
-            'matKhau' => 'required|string|min:3',
-        ]);
-
-        $validated['matKhau'] = Hash::make($validated['matKhau']);
-
-        $lecturer = Teacher::create($validated);
-
-        return response()->json([
-            'data' => $lecturer,
-        ], 201);
-    });
-
-    Route::put('/lecturers/{lecturer}', function (Request $request, Teacher $lecturer) {
-        $validated = $request->validate([
-            'maGV' => ['required', 'string', 'max:20', Rule::unique('giangvien', 'maGV')->ignore($lecturer->maGV, 'maGV')],
-            'tenGV' => 'required|string|max:100',
-            'email' => ['nullable', 'email', 'max:100', Rule::unique('giangvien', 'email')->ignore($lecturer->maGV, 'maGV')],
-            'soDienThoai' => 'nullable|string|max:15',
-            'hocVi' => 'nullable|string|max:50',
-            'matKhau' => 'nullable|string|min:3',
-        ]);
-
-        if (!empty($validated['matKhau'])) {
-            $validated['matKhau'] = Hash::make($validated['matKhau']);
-        } else {
-            unset($validated['matKhau']);
-        }
-
-        $lecturer->update($validated);
-
-        return response()->json([
-            'data' => $lecturer,
-        ]);
-    });
-
-    Route::delete('/lecturers/{lecturer}', function (Teacher $lecturer) {
-        $lecturer->delete();
-
-        return response()->json([
-            'message' => 'Đã xóa giảng viên',
-        ]);
-    });
+    // Lecturers API RESTful
+    Route::get('/lecturers', [\App\Http\Controllers\LecturerController::class, 'index']);
+    Route::get('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'show']);
+    Route::post('/lecturers', [\App\Http\Controllers\LecturerController::class, 'store']);
+    Route::put('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'update']);
+    Route::delete('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'destroy']);
 
     Route::get('/councils', function () {
         return response()->json([
@@ -394,7 +335,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-
     Route::post('/topics/create-group-assign', function (Request $request) {
         $validated = $request->validate([
             'student_1' => 'required|exists:sinhvien,mssv',
@@ -427,15 +367,16 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     });
 
     Route::delete('/topics', function () {
-        // Lecturers API RESTful
-        Route::get('/lecturers', [\App\Http\Controllers\LecturerController::class, 'index']);
-        Route::get('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'show']);
-        Route::post('/lecturers', [\App\Http\Controllers\LecturerController::class, 'store']);
-        Route::put('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'update']);
-        Route::delete('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'destroy']);
+        DB::transaction(function () {
+            Student::query()->update(['maDeTai' => null]);
+            Topic::truncate();
+        });
+
+        return response()->json([
+            'message' => 'Đã xóa tất cả đề tài.',
+        ]);
     });
 
-    // API Duyệt / Từ chối đề tài (Phát chèn thêm)
     Route::patch('/topics/{topic}/status', function (Request $request, Topic $topic) {
         $validated = $request->validate([
             'status' => 'required|in:Được làm tiếp,Đình chỉ,Cảnh cáo,Chờ duyệt'
@@ -608,85 +549,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-    Route::get('/topics/{topic}', function (Topic $topic) {
-        return response()->json([
-            'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
-        ]);
-    });
-
-    Route::post('/topics', function (Request $request) {
-        $validated = $request->validate([
-            'maMH' => 'nullable|string|max:20|unique:detai,maMH',
-            'tenMonHoc' => 'nullable|string|max:100',
-            'tenDeTai' => 'required|string',
-            'maGV_HD' => 'nullable|exists:giangvien,maGV',
-            'maGV_PB' => 'nullable|exists:giangvien,maGV',
-            'ghiChu_PB' => 'nullable|string',
-            'ghiChu' => 'nullable|string',
-            'diemGiuaKy' => 'nullable|numeric|min:0|max:100',
-            'trangThaiGiuaKy' => 'nullable|in:Được làm tiếp,Đình chỉ,Cảnh cáo',
-            'nhanXetGiuaKy' => 'nullable|string',
-            'maHoiDong' => 'nullable|exists:hoidong,maHoiDong',
-            'diemPhanBien' => 'nullable|numeric|min:0|max:100',
-            'nhanXetPhanBien' => 'nullable|string',
-            'diemHuongDan' => 'nullable|numeric|min:0|max:100',
-            'diemHoiDong' => 'nullable|numeric|min:0|max:100',
-            'nhanXetHoiDong' => 'nullable|string',
-            'diemTongKet' => 'nullable|numeric|min:0|max:100',
-            'diemChu' => 'nullable|string|max:5',
-            'trangThaiHoiDong' => 'nullable|string|max:50',
-        ]);
-
-        if (!array_key_exists('trangThaiGiuaKy', $validated) || $validated['trangThaiGiuaKy'] === null) {
-            $validated['trangThaiGiuaKy'] = 'Được làm tiếp';
-        }
-
-        $topic = Topic::create($validated);
-
-        return response()->json([
-            'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
-        ], 201);
-    });
-
-    Route::put('/topics/{topic}', function (Request $request, Topic $topic) {
-        $validated = $request->validate([
-            'maMH' => ['sometimes', 'nullable', 'string', 'max:20', Rule::unique('detai', 'maMH')->ignore($topic->maDeTai, 'maDeTai')],
-            'tenMonHoc' => 'sometimes|nullable|string|max:100',
-            'tenDeTai' => 'sometimes|required|string',
-            'maGV_HD' => 'sometimes|nullable|exists:giangvien,maGV',
-            'maGV_PB' => 'sometimes|nullable|exists:giangvien,maGV',
-            'ghiChu_PB' => 'sometimes|nullable|string',
-            'ghiChu' => 'sometimes|nullable|string',
-            'diemGiuaKy' => 'sometimes|nullable|numeric|min:0|max:100',
-            'trangThaiGiuaKy' => 'sometimes|nullable|in:Được làm tiếp,Đình chỉ,Cảnh cáo',
-            'nhanXetGiuaKy' => 'sometimes|nullable|string',
-            'maHoiDong' => 'sometimes|nullable|exists:hoidong,maHoiDong',
-            'diemPhanBien' => 'sometimes|nullable|numeric|min:0|max:100',
-            'nhanXetPhanBien' => 'sometimes|nullable|string',
-            'diemHuongDan' => 'sometimes|nullable|numeric|min:0|max:100',
-            'diemHoiDong' => 'sometimes|nullable|numeric|min:0|max:100',
-            'nhanXetHoiDong' => 'sometimes|nullable|string',
-            'diemTongKet' => 'sometimes|nullable|numeric|min:0|max:100',
-            'diemChu' => 'sometimes|nullable|string|max:5',
-            'trangThaiHoiDong' => 'sometimes|nullable|string|max:50',
-        ]);
-
-        $topic->update($validated);
-
-        return response()->json([
-            'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
-        ]);
-    });
-
-    Route::delete('/topics/{topic}', function (Topic $topic) {
-        Student::where('maDeTai', $topic->maDeTai)->update(['maDeTai' => null]);
-        $topic->delete();
-
-        return response()->json([
-            'message' => 'Đã xóa đề tài',
-        ]);
-    });
-
     Route::get('/scores', function (Request $request) {
         $query = Score::with(['topic', 'lecturer'])->orderBy('maDiem', 'desc');
 
@@ -737,50 +599,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         return response()->json([
             'message' => 'Đã xóa điểm.',
         ]);
-    });
-
-
-
-    // Các route import/export Excel/Word tạm thời trả về lỗi 501 Not Implemented
-    Route::any('/students/import-excel', function () {
-        return response()->json([
-            'message' => 'Chức năng import Excel chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/midterm', function () {
-        return response()->json([
-            'message' => 'Chức năng export midterm chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/hoidong', function () {
-        return response()->json([
-            'message' => 'Chức năng export hội đồng chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/phanbien', function () {
-        return response()->json([
-            'message' => 'Chức năng export phản biện chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/tongket', function () {
-        return response()->json([
-            'message' => 'Chức năng export tổng kết chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/word/assignment', function () {
-        return response()->json([
-            'message' => 'Chức năng export Word assignment chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/word/gvhd/{topic}', function () {
-        return response()->json([
-            'message' => 'Chức năng export Word GVHD chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/word/gvpb/{topic}', function () {
-        return response()->json([
-            'message' => 'Chức năng export Word GVPB chưa được hỗ trợ.'
-        ], 501);
     });
 
     Route::get('/options', function () {

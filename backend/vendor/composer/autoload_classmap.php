@@ -6494,6 +6494,8 @@ return array(
     'Symfony\\Component\\ErrorHandler\\Internal\\TentativeTypes' => $vendorDir . '/symfony/error-handler/Internal/TentativeTypes.php',
     'Symfony\\Component\\ErrorHandler\\ThrowableUtils' => $vendorDir . '/symfony/error-handler/ThrowableUtils.php',
     'Symfony\\Component\\EventDispatcher\\Attribute\\AsEventListener' => $vendorDir . '/symfony/event-dispatcher/Attribute/AsEventListener.php',
+    'Symfony\\Component\\EventDispatcher\\Debug\\TraceableEventDispatcher' => $vendorDir . '/symfony/event-dispatcher/Debug/TraceableEventDispatcher.php',
+    'Symfony\\Component\\EventDispatcher\\Debug\\WrappedListener' => $vendorDir . '/symfony/event-dispatcher/Debug/WrappedListener.php',
     'Symfony\\Component\\EventDispatcher\\DependencyInjection\\AddEventAliasesPass' => $vendorDir . '/symfony/event-dispatcher/DependencyInjection/AddEventAliasesPass.php',
     'Symfony\\Component\\EventDispatcher\\DependencyInjection\\RegisterListenersPass' => $vendorDir . '/symfony/event-dispatcher/DependencyInjection/RegisterListenersPass.php',
     'Symfony\\Component\\EventDispatcher\\EventDispatcher' => $vendorDir . '/symfony/event-dispatcher/EventDispatcher.php',
