@@ -14,7 +14,8 @@ export default function Assignment() {
     message: "",
     type: "info",
   });
-
+  const [searchType, setSearchType] = useState("maDeTai");
+  const [searchTerm, setSearchTerm] = useState("");
   const showToast = (message, type = "info") =>
     setToast({ open: true, message, type });
 
@@ -49,6 +50,30 @@ export default function Assignment() {
     setSaving(false);
   };
 
+  // --- LOGIC TÌM KIẾM THEO DROPDOWN ---
+  const filteredData = data.filter((row) => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return true; // Nếu không nhập gì thì hiện tất cả
+
+    switch (searchType) {
+      case "maDeTai":
+        return String(row.maDeTai || "").toLowerCase().includes(term);
+      case "tenDeTai":
+        return String(row.tenDeTai || "").toLowerCase().includes(term);
+      case "mssv":
+        // Tìm trong mảng sinh viên xem có ai khớp MSSV không
+        return (row.students || []).some(sv => 
+          String(sv.mssv || "").toLowerCase().includes(term)
+        );
+      case "hoTen":
+        // Tìm trong mảng sinh viên xem có ai khớp Tên không
+        return (row.students || []).some(sv => 
+          String(sv.hoTen || "").toLowerCase().includes(term)
+        );
+      default:
+        return true;
+    }
+  });
   return (
     <div className="assignment-page">
       <Toast
@@ -58,6 +83,27 @@ export default function Assignment() {
         onClose={() => setToast((t) => ({ ...t, open: false }))}
       />
       <h2 className="pb-[10px]">Phân công giảng viên</h2>
+      <div className="toolbar" style={{ marginBottom: 16, display: "flex", gap: 8 }}>
+        <select 
+          className="custom-select" 
+          value={searchType} 
+          onChange={(e) => setSearchType(e.target.value)}
+          style={{ width: '180px' }}
+        >
+          <option value="maDeTai">Mã đề tài</option>
+          <option value="tenDeTai">Tên đề tài</option>
+          <option value="mssv">Mã sinh viên</option>
+          <option value="hoTen">Tên sinh viên</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder={`Bộ lọc theo ${searchType === 'maDeTai' ? 'mã đề tài' : searchType === 'tenDeTai' ? 'tên đề tài' : searchType === 'mssv' ? 'MSSV' : 'tên SV'}...`}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+      </div>
       {loading ? (
         <div>
           {/* Đang tải... */}
@@ -75,7 +121,7 @@ export default function Assignment() {
             </tr>
           </thead>
           <tbody>
-            {data.map((row) => (
+            {filteredData.map((row) => (
               <tr key={row.maDeTai}>
                 <td>{row.maDeTai}</td>
                 <td>{row.tenDeTai}</td>
