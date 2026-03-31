@@ -1,0 +1,644 @@
+
+
+ 
+ 	 
+
+
+MỤC LỤC 
+CHƯƠNG 1: GIỚI THIỆU	1
+1.1. Đặt vấn đề, mục tiêu	1
+1.1.1. Đặt vấn đề	1
+1.1.2. Mục tiêu đề tài	1
+1.2. Những thách thức cần giải quyết	1
+a. Thách thức về Nghiệp vụ (Business Logic)	2
+b. Thách thức về Kỹ thuật (Technical)	2
+1.3. Nội dung và phạm vi thực hiện	2
+1.3.1. Nội dung thực hiện	2
+1.3.2. Phạm vi thực hiện	2
+1.4. Kết quả cần đạt	3
+CHƯƠNG 2: PHƯƠNG PHÁP	5
+THỰC HIỆN	5
+2.1. Các hệ thống tương tự	5
+2.2. Cơ sở lý thuyết	5
+2.3. Công nghệ sử dụng	5
+2.3.1. Ngôn ngữ lập trình và Nền tảng	6
+2.3.2. Hệ quản trị Cơ sở dữ liệu	6
+2.3.3. Các công cụ và Thư viện hỗ trợ	6
+2.4. Phân tích yêu cầu	6
+2.4.1. Các quy trình, nghiệp vụ	6
+2.4.2. Sơ đồ chức năng	7
+2.4.3. Sơ đồ Use case tổng quát	7
+CHƯƠNG 3: THIẾT KẾ HỆ THỐNG	9
+3.1. Mô hình dữ liệu	9
+3.1.1. Mức ý niệm (Conceptual Level)	9
+3.1.2. Mức luận lý (Logical Level)	10
+3.1.3. Mức vật lý (Physical Level)	12
+3.2. Mô hình xử lý	13
+3.2.1. Use case chi tiết (Đặc tả Use Case)	13
+3.2.2. Sơ đồ tuần tự (Sequence Diagram)	14
+3.2.3. Sơ đồ hoạt động (Activity Diagram)	15
+	16
+3.3. Hệ thống màn hình (Thiết kế giao diện)	17
+3.3.1. Nguyên tắc thiết kế chung	17
+3.3.2. Thiết kế màn hình Đăng nhập (Login)	17
+3.3.3. Thiết kế màn hình Dashboard (Trang chủ Admin)	18
+CHƯƠNG 5: KẾT LUẬN	19
+5.1. Kết quả đối chiếu với mục tiêu	19
+5.2. Các vấn đề còn tồn đọng	20
+5.3. Mở rộng (Hướng phát triển)	21
+
+    
+
+ 
+MỤC LỤC CÁC HÌNH VẼ 
+Hình 4-1. Kiến trúc tổng thể ................................................................................. 16 
+Hình 5-1. Use case của quy trình đặt hàng ........................................................... 19 
+Hình 5-2. Use case của Nhân viên quản lý ........................................................... 20 
+Hình 7-1. Sơ đồ quan niệm dữ liệu ...................................................................... 24 
+
+
+CHƯƠNG 1: GIỚI THIỆU
+1.1. Đặt vấn đề, mục tiêu
+1.1.1. Đặt vấn đề
+Trong môi trường giáo dục đại học, việc quản lý khóa luận tốt nghiệp (KLTN) hoặc đồ án chuyên ngành là một quy trình phức tạp kéo dài nhiều tuần với sự tham gia của nhiều đối tượng: Sinh viên, Giảng viên hướng dẫn (GVHD), Giảng viên phản biện (GVPB), Hội đồng bảo vệ và Ban chủ nhiệm khoa.
+Hiện tại, nhiều quy trình vẫn còn được thực hiện thủ công hoặc bán thủ công thông qua các công cụ rời rạc như Excel, Email, Google Drive. Điều này dẫn đến các vấn đề:
+Khó khăn trong quản lý dữ liệu: Dữ liệu phân tán, dễ thất lạc, khó tra cứu lịch sử.
+Tốn thời gian tổng hợp: Giáo vụ hoặc Trưởng bộ môn mất nhiều thời gian để tổng hợp điểm từ nhiều nguồn (phiếu điểm giấy, file excel riêng lẻ).
+Sai sót trong tính toán: Việc tính điểm tổng kết theo công thức phức tạp (ví dụ: 20% HD + 20% PB + 60% HĐ) dễ xảy ra sai sót nếu làm thủ công.
+Thiếu tính tức thời: Sinh viên khó theo dõi được tiến độ, trạng thái đề tài hoặc điểm số của mình một cách nhanh chóng.
+1.1.2. Mục tiêu đề tài
+Xây dựng một hệ thống website Quản lý Luận văn Tốt nghiệp tập trung, giúp tin học hóa toàn bộ quy trình từ lúc sinh viên đăng ký đề tài cho đến khi bảo vệ và công bố điểm.
+Mục tiêu tổng quát: Tối ưu hóa quy trình quản lý, giảm tải khối lượng công việc hành chính cho giảng viên và giáo vụ.
+Mục tiêu cụ thể:
+Quản lý thông tin sinh viên, giảng viên, đề tài tập trung.
+Tự động hóa việc phân công giảng viên phản biện và hội đồng.
+Hỗ trợ chấm điểm trực tuyến cho cả 3 vai trò (Hướng Dẫn, Phản Biện, Hội đồng) và tự động tính điểm tổng kết.
+Xuất các báo cáo, phiếu chấm điểm tự động ra file Word/Excel.
+1.2. Những thách thức cần giải quyết
+Trong quá trình xây dựng hệ thống này, nhóm thực hiện cần đối mặt và giải quyết các thách thức sau về mặt kỹ thuật và nghiệp vụ:
+a. Thách thức về Nghiệp vụ (Business Logic)
+Quy trình tính điểm phức tạp: Hệ thống phải xử lý công thức điểm trọng số chính xác. Đặc biệt là điểm Hội đồng thường là điểm trung bình cộng của các thành viên, cần làm tròn số theo quy chế đào tạo.
+Quản lý trạng thái động: Một đề tài trải qua nhiều giai đoạn (Đăng ký -> Duyệt -> Làm giữa kỳ -> Được bảo vệ/Hủy -> Chấm HD/PB -> Chấm Hội đồng). Hệ thống phải kiểm soát chặt chẽ, không cho phép chấm điểm khi chưa đến giai đoạn tương ứng (Ví dụ: Chưa qua phản biện thì không được ra hội đồng).
+Phân quyền chặt chẽ (RBAC): Một giảng viên có thể vừa là GVHD của nhóm A, vừa là GVPB của nhóm B, vừa là Chủ tịch hội đồng của nhóm C. Hệ thống phải hiển thị đúng chức năng và dữ liệu tương ứng với vai trò của họ tại thời điểm đó.
+b. Thách thức về Kỹ thuật (Technical)
+Tính toàn vẹn dữ liệu (Data Integrity): Đảm bảo khi Admin xóa một đề tài hoặc một giảng viên, các dữ liệu điểm số và lịch sử liên quan không bị lỗi hoặc "mồ côi" (Orphan data).
+Xử lý đồng thời (Concurrency): Trong buổi bảo vệ hội đồng, nhiều giảng viên sẽ cùng chấm điểm một lúc. Hệ thống cần xử lý real-time (hoặc gần real-time) để cập nhật điểm số ngay lập tức mà không bị xung đột dữ liệu.
+Bảo mật ứng dụng Web: Vì hệ thống quản lý điểm số, cần đặc biệt chú trọng ngăn chặn các lỗ hổng như SQL Injection (để không bị sửa điểm), XSS (chiếm quyền session), và đảm bảo Session Management an toàn (tránh việc sinh viên truy cập vào trang của giáo viên).
+Xuất báo cáo định dạng phức tạp: Việc xuất phiếu chấm điểm ra file Word (.docx) yêu cầu giữ nguyên định dạng văn bản hành chính (form mẫu của nhà trường) là một thách thức kỹ thuật khi xử lý với thư viện PHP.
+1.3. Nội dung và phạm vi thực hiện
+1.3.1. Nội dung thực hiện
+Tìm hiểu quy trình quản lý đồ án/khóa luận thực tế tại Khoa.
+Phân tích và thiết kế cơ sở dữ liệu (CSDL) trên hệ quản trị MySQL.
+Thiết kế giao diện người dùng (UI/UX) thân thiện, responsive.
+Lập trình các chức năng Backend sử dụng ngôn ngữ PHP.
+Kiểm thử và triển khai ứng dụng.
+1.3.2. Phạm vi thực hiện
+Đối tượng sử dụng: Quản trị viên (Giáo vụ/Trưởng khoa), Giảng viên, Sinh viên.
+Phạm vi chức năng:
+Module Quản trị: Cấu hình đợt/giai đoạn, quản lý danh sách người dùng, phân công hội đồng.
+Module Giảng viên: Quản lý nhóm hướng dẫn, chấm điểm hướng dẫn, chấm điểm phản biện, chấm điểm hội đồng (nhập điểm, nhận xét).
+Module Sinh viên: Xem thông tin đề tài, xem kết quả/điểm số.
+Giới hạn (Out of scope): Hệ thống chưa tích hợp thanh toán học phí, chưa tích hợp chữ ký số điện tử (Digital Signature), chưa tích hợp AI gợi ý đề tài.
+1.4. Kết quả cần đạt
+Dưới đây là bảng tiêu chí đánh giá các kết quả cần đạt của đề tài:
+STT
+Kết quả (Sản phẩm)
+Tiêu chí đánh giá (KPIs)
+Loại yêu cầu
+1
+Cơ sở dữ liệu (Database)
+- Thiết kế đạt chuẩn 3NF, đảm bảo tính toàn vẹn dữ liệu.
+- Hỗ trợ bảng mã utf8mb4 để lưu trữ tiếng Việt không lỗi.
+- Có đầy đủ các ràng buộc khóa chính, khóa ngoại.
+Phi chức năng(Dữ liệu)
+2
+Module Phân quyền người dùng
+- Phân quyền chính xác cho 3 vai trò: Admin, Giảng viên, Sinh viên.
+- Ngăn chặn truy cập trái phép vào các trang quản trị hoặc trang chấm điểm thông qua URL.
+- Cơ chế Session hoạt động ổn định, tự động đăng xuất khi hết phiên.
+Chức năng (Bảo mật)
+3
+Module Quản lý Đề tài & Quy trình
+- Quản lý được trạng thái đề tài theo từng giai đoạn (Tuần 1 đến Tuần 7).
+- Tự động khóa chức năng chỉnh sửa (chế độ Read-only) đối với các giai đoạn đã hoàn tất.
+- Hiển thị Dashboard thống kê trực quan cho Admin.
+Chức năng
+(Nghiệp vụ)
+4
+Chức năng Chấm điểm & Tính toán
+- Tính toán điểm tổng kết tự động theo công thức trọng số (GVHD 20%, GVPB 20%, Hội đồng 60%).
+- Cập nhật điểm Real-time (thời gian thực) ngay khi nhập liệu.
+- Tự động quy đổi điểm số sang điểm chữ (A, B, C, D, F) chính xác.
+Chức năng
+(Nghiệp vụ)
+5
+Chức năng Xuất báo cáo
+- Xuất Phiếu chấm điểm ra file Word (.docx) đúng mẫu quy định của Khoa.
+- Xuất Bảng tổng kết điểm ra Excel phục vụ công tác lưu trữ.
+- Tài liệu xuất ra không bị lỗi font chữ tiếng Việt.
+Chức năng
+(Báo cáo)
+6
+Giao diện người dùng (UI/UX)
+- Giao diện hiện đại, bố cục rõ ràng, dễ sử dụng.
+
+
+
+- Tương thích tốt trên các trình duyệt phổ biến (Chrome, Edge, Firefox).
+- Tốc độ tải trang nhanh, phản hồi thao tác người dùng < 2 giây.
+Phi chức năng
+
+
+
+(Trải nghiệm)
+
+
+
+ 
+CHƯƠNG 2: PHƯƠNG PHÁP 
+THỰC HIỆN
+2.1. Các hệ thống tương tự
+Trước khi xây dựng hệ thống, nhóm thực hiện đã tiến hành khảo sát một số phương pháp và công cụ quản lý khóa luận đang được sử dụng phổ biến hiện nay:
+2.1.1. Quản lý thủ công bằng Microsoft Excel và Email
+Mô tả: Giáo vụ khoa sử dụng các file Excel để lưu danh sách sinh viên, giảng viên và nhập điểm thủ công. Việc trao đổi thông tin, nộp bài thực hiện qua Email.
+Ưu điểm: Quen thuộc, không tốn chi phí xây dựng phần mềm, linh hoạt trong việc chỉnh sửa dữ liệu.
+Nhược điểm:
+Dữ liệu phân tán, khó đồng bộ (mỗi giảng viên giữ một file điểm riêng).
+Tốn nhiều thời gian để tổng hợp và tính toán điểm tổng kết theo công thức phức tạp.
+Dễ xảy ra sai sót khi nhập liệu hoặc copy/paste.
+Sinh viên không theo dõi được trạng thái và kết quả một cách tức thời (Real-time).
+2.1.2. Hệ thống quản lý đào tạo (LMS) như Moodle, Google Classroom
+Mô tả: Sử dụng các nền tảng E-learning có sẵn để tạo khóa học "Khóa luận tốt nghiệp".
+Ưu điểm: Có sẵn các chức năng nộp bài, thông báo, chấm điểm cơ bản.
+Nhược điểm:
+Là hệ thống dùng chung, khó tùy biến sâu vào quy trình đặc thù của Khóa luận (như quy trình phân công phản biện, quy trình hội đồng).
+Không hỗ trợ xuất các biểu mẫu, phiếu chấm điểm theo đúng định dạng hành chính (.docx) của nhà trường.
+Khó thiết lập công thức tính điểm phức tạp (20% HD + 20% PB + 60% HĐ) một cách tự động hóa.
+-> Kết luận: Từ những phân tích trên, việc xây dựng một Website chuyên biệt để quản lý Khóa luận tốt nghiệp là cần thiết để khắc phục các nhược điểm của phương pháp thủ công và đáp ứng đúng nghiệp vụ đặc thù của Khoa.
+2.2. Cơ sở lý thuyết
+(Phần này được lược bỏ do đề tài tập trung vào xây dựng ứng dụng thực tế).
+2.3. Công nghệ sử dụng
+Đề tài sử dụng các công nghệ Web phổ biến, mã nguồn mở, dễ triển khai và bảo trì:
+2.3.1. Ngôn ngữ lập trình và Nền tảng
+PHP (Hypertext Preprocessor): Ngôn ngữ kịch bản phía máy chủ (Server-side) mạnh mẽ, được dùng để xử lý logic nghiệp vụ, kết nối cơ sở dữ liệu và xử lý tính toán điểm số. Phiên bản sử dụng: PHP 7.4 hoặc 8.0.
+HTML5 / CSS3 / JavaScript: Bộ ba ngôn ngữ nền tảng để xây dựng giao diện người dùng (Frontend).
+HTML5: Xây dựng cấu trúc trang web.
+CSS3: Định dạng giao diện, bố cục (Layout), màu sắc.
+JavaScript: Xử lý các sự kiện phía người dùng, tính toán điểm Real-time trên giao diện trước khi lưu xuống Server.
+2.3.2. Hệ quản trị Cơ sở dữ liệu
+MySQL: Hệ quản trị CSDL quan hệ (RDBMS) phổ biến nhất thế giới. MySQL được chọn vì tốc độ truy xuất nhanh, tính ổn định cao, và tương thích hoàn hảo với PHP.
+2.3.3. Các công cụ và Thư viện hỗ trợ
+XAMPP / Laragon: Bộ phần mềm giả lập Web Server (Apache, MySQL, PHP) trên môi trường Windows để phát triển và kiểm thử ứng dụng.
+PHPWord: Thư viện mã nguồn mở giúp tạo và chỉnh sửa file Microsoft Word (.docx) bằng PHP. Được sử dụng để xuất tự động các Phiếu chấm điểm và Biên bản hội đồng.
+FontAwesome: Thư viện icon vector giúp giao diện trực quan và hiện đại hơn.
+Visual Studio Code: Công cụ soạn thảo mã nguồn (IDE).
+2.4. Phân tích yêu cầu
+2.4.1. Các quy trình, nghiệp vụ
+Hệ thống được xây dựng dựa trên quy trình tổ chức Khóa luận tốt nghiệp thực tế, bao gồm các quy trình chính sau:
+1. Quy trình Phân công và Thực hiện (1 - 4)
+Admin (Giáo vụ) nhập danh sách Sinh viên và Giảng viên vào hệ thống.
+Sinh viên đăng ký đề tài hoặc được Giảng viên hướng dẫn (GVHD) phân công.
+Admin thực hiện chốt danh sách và phân công Giảng viên phản biện (GVPB) cho các nhóm.
+2. Quy trình Chấm điểm (5 - 7)
+Đây là quy trình nghiệp vụ quan trọng nhất của hệ thống:
+Bước 1 - Chấm Hướng dẫn (20%): GVHD đăng nhập, xem danh sách nhóm mình hướng dẫn, nhập điểm các tiêu chí (Thái độ, Nội dung, Báo cáo) và nhận xét.
+Bước 2 - Chấm Phản biện (20%): GVPB xem tài liệu và demo của sinh viên, nhập điểm phản biện và các câu hỏi chất vấn.
+Bước 3 - Tổ chức Hội đồng (60%):
+Admin tạo Hội đồng bảo vệ (gồm Chủ tịch, Thư ký, Ủy viên).
+Tại buổi bảo vệ, Thư ký Hội đồng đăng nhập hệ thống, nhập điểm Hội đồng dựa trên sự thống nhất của các thành viên.
+Hệ thống tự động tính Điểm Tổng Kết = (Điểm HD * 0.2) + (Điểm PB * 0.2) + (Điểm HĐ * 0.6).
+Hệ thống tự động quy đổi điểm số sang điểm chữ (A, B, C, D, F) theo quy chế tín chỉ.
+2.4.2. Sơ đồ chức năng
+Hệ thống được chia thành 3 nhóm chức năng chính tương ứng với 3 đối tượng người dùng:
+
+Hình 2.4: Sơ đồ chức năng
+2.3.1. Nhóm chức năng dành cho Quản trị viên (Admin)
+Quản lý danh sách Sinh viên (Thêm, Xóa, Sửa, Import).
+Quản lý danh sách Giảng viên.
+Quản lý Đề tài (Phê duyệt, Phân công GVHD, GVPB).
+Quản lý Hội đồng (Tạo hội đồng, Phân công đề tài vào hội đồng).
+Cấu hình hệ thống (Mở/Khóa các giai đoạn nhập liệu).
+Thống kê và Xuất báo cáo tổng hợp.
+2.3.2. Nhóm chức năng dành cho Giảng viên
+Xem danh sách nhóm sinh viên hướng dẫn / phản biện.
+Chấm điểm: Chức năng nhập điểm Hướng dẫn, Phản biện và Hội đồng (nếu được phân công).
+Xem và Xuất phiếu chấm điểm cá nhân (file Word).
+2.3.3. Nhóm chức năng dành cho Sinh viên
+Xem thông tin đề tài, giảng viên hướng dẫn.
+Xem kết quả điểm số chi tiết và nhận xét của giảng viên.
+2.4.3. Sơ đồ Use case tổng quát
+a. Mô tả các Actor (Tác nhân):
+Admin (Giáo vụ/Trưởng khoa): Người có quyền cao nhất, chịu trách nhiệm khởi tạo dữ liệu và điều phối quy trình.
+Giảng viên: Người tham gia vào quy trình chuyên môn (hướng dẫn, phản biện, chấm điểm). Một giảng viên có thể đóng nhiều vai trò khác nhau trong các đề tài khác nhau.
+Sinh viên: Người thực hiện đề tài và theo dõi kết quả.
+b. Sơ đồ Use Case:
+
+
+
+
+
+Hình 2.4.3: Sơ đồ use-case
+
+c. Mô tả tóm tắt các Use Case chính:
+Tên Use Case
+Tác nhân chính
+Mô tả sơ lược
+Đăng nhập
+Tất cả
+Người dùng sử dụng tài khoản được cấp để truy cập vào hệ thống theo phân quyền.
+Phân công GV
+Admin
+Admin gán GVHD và GVPB cho từng đề tài cụ thể.
+Chấm điểm Hướng dẫn
+Giảng viên
+GVHD nhập điểm quá trình và nhận xét cho sinh viên thuộc nhóm mình quản lý.
+Chấm điểm Hội đồng
+Giảng viên (Thư ký)
+Nhập điểm thống nhất của hội đồng sau buổi bảo vệ. Hệ thống tự động tính điểm tổng kết.
+Xuất Phiếu chấm
+Giảng viên
+Hệ thống trích xuất dữ liệu điểm và nhận xét để tạo ra file Word theo mẫu quy định.
+
+ 
+ 
+ CHƯƠNG 3: THIẾT KẾ HỆ THỐNG
+
+3.1. Mô hình dữ liệu
+Trong quá trình thiết kế hệ thống "Quản lý Khóa luận Tốt nghiệp", nhóm thực hiện đã xây dựng mô hình dữ liệu qua 3 cấp độ: Mức ý niệm (Conceptual), Mức luận lý (Logical) và Mức vật lý (Physical) để đảm bảo tính toàn vẹn và nhất quán của dữ liệu.
+3.1.1. Mức ý niệm (Conceptual Level)
+Mô hình mức ý niệm xác định các thực thể chính và mối quan hệ giữa chúng, cung cấp cái nhìn tổng quan về dữ liệu mà không đi sâu vào chi tiết kỹ thuật.
+Các thực thể chính: SinhVien, GiangVien, DeTai, HoiDong, Diem.
+Mối quan hệ:
+Sinh viên – Đề tài: Quan hệ 1-1 (Mỗi sinh viên thực hiện 1 đề tài).
+Giảng viên – Đề tài: Quan hệ 1-n (Một giảng viên hướng dẫn/phản biện nhiều đề tài).
+Hội đồng – Đề tài: Quan hệ 1-n (Một hội đồng chấm nhiều đề tài).
+
+
+
+
+
+c. Sơ đồ E-R mức ý niệm:
+
+Hình 3.1.1: Sơ đồ E-R
+3.1.2. Mức luận lý (Logical Level)
+Tại mức luận lý, các thực thể được chi tiết hóa thành các quan hệ (bảng) với đầy đủ các thuộc tính (Attributes), xác định rõ Khóa chính (PK - Primary Key) để định danh và Khóa ngoại (FK - Foreign Key) để liên kết dữ liệu.
+SinhVien: MSSV (PK), HoTen, Email, Lop, SoDienThoai.
+GiangVien: MaGV (PK), HoTen, Email, HocHam, HocVi, DonViCongTac.
+DeTai: MaDeTai (PK), TenDeTai, MoTa, MSSV (FK), MaGV_HD (FK), MaGV_PB (FK), TrangThai.
+Diem: ID (PK), MaDeTai (FK), DiemHuongDan, DiemPhanBien, DiemHoiDong, NhanXet.
+
+
+
+
+ 
+
+
+
+
+
+3.1.3. Mức vật lý (Physical Level)
+Mô hình vật lý mô tả cấu trúc lưu trữ thực tế trên Hệ quản trị cơ sở dữ liệu (DBMS) là MySQL. Tại đây, các thuộc tính được định nghĩa kiểu dữ liệu cụ thể (INT, VARCHAR, FLOAT...), độ dài và các ràng buộc toàn vẹn.
+1. Bảng sinhvien (Thông tin sinh viên)
+STT
+Tên trường
+Kiểu dữ liệu
+Độ dài
+Ràng buộc
+Mô tả
+1
+mssv
+VARCHAR
+20
+PK, Not Null
+Mã số sinh viên (Khóa chính)
+2
+ho_ten
+VARCHAR
+100
+Not Null
+Họ và tên sinh viên
+3
+email
+VARCHAR
+100
+Unique
+Email (dùng để đăng nhập)
+4
+mat_khau
+VARCHAR
+255
+Not Null
+Mật khẩu (đã mã hóa MD5/Bcrypt)
+5
+lop
+VARCHAR
+50
+Null
+Lớp chuyên ngành
+
+2. Bảng detai (Quản lý đề tài khóa luận)
+STT
+Tên trường
+Kiểu dữ liệu
+Độ dài
+Ràng buộc
+Mô tả
+1
+ma_de_tai
+INT
+11
+PK, Auto Inc
+Mã định danh đề tài
+2
+ten_de_tai
+TEXT
+-
+Not Null
+Tên đầy đủ của khóa luận
+3
+mssv
+VARCHAR
+20
+FK
+Liên kết bảng SinhVien
+4
+gvhd_id
+INT
+11
+FK
+Liên kết bảng GiangVien (Hướng dẫn)
+5
+gvpb_id
+INT
+11
+FK
+Liên kết bảng GiangVien (Phản biện)
+6
+trang_thai
+TINYINT
+1
+Default 0
+0: Chờ duyệt, 1: Đã duyệt, 2: Hoàn thành
+
+3. Bảng diem	
+STT
+Tên trường
+Kiểu dữ liệu
+Độ dài
+Ràng buộc
+Mô tả
+1
+id
+INT
+11
+PK, Auto Inc
+ID dòng điểm
+2
+ma_de_tai
+INT
+11
+FK
+Liên kết bảng DeTai
+3
+diem_hd
+FLOAT
+-
+Check (0-10)
+Điểm Hướng dẫn (hệ số 20%)
+4
+diem_pb
+FLOAT
+-
+Check (0-10)
+Điểm Phản biện (hệ số 20%)
+5
+diem_hdong
+FLOAT
+-
+Check (0-10)
+Điểm Hội đồng (hệ số 60%)
+6
+diem_tong
+FLOAT
+-
+-
+Điểm tổng kết cuối cùng
+
+
+3.2. Mô hình xử lý
+Mô hình xử lý mô tả chi tiết các tương tác bên trong hệ thống để thực hiện các chức năng nghiệp vụ, bao gồm đặc tả Use case, biểu diễn trình tự xử lý (Sequence Diagram) và luồng hoạt động (Activity Diagram).
+3.2.1. Use case chi tiết (Đặc tả Use Case)
+Dưới đây là bảng đặc tả chi tiết cho Use case "Chấm điểm Hướng dẫn" (UC_04). Đây là chức năng quan trọng giúp giảng viên ghi nhận kết quả quá trình của sinh viên.
+Bảng 3.1: Đặc tả Use case "Chấm điểm Hướng dẫn"
+Tên Use Case
+Chấm điểm Hướng dẫn
+Mã UC
+UC_04
+Tác nhân (Actor)
+Giảng viên hướng dẫn (GVHD)
+Mô tả
+Giảng viên thực hiện nhập điểm quá trình và nhận xét cho sinh viên thuộc nhóm mình hướng dẫn.
+Tiền điều kiện
+- Giảng viên đã đăng nhập vào hệ thống thành công.
+- Đề tài đã được duyệt và đang trong giai đoạn cho phép chấm điểm.
+- Sinh viên đã nộp báo cáo tiến độ.
+Luồng sự kiện chính
+
+
+
+(Basic Flow)
+1. Giảng viên chọn menu "Quản lý hướng dẫn" trên thanh điều hướng.
+2. Hệ thống hiển thị danh sách sinh viên do giảng viên phụ trách.
+3. Giảng viên nhấn nút "Chấm điểm" tại dòng tên sinh viên cần chấm.
+4. Hệ thống hiển thị form nhập điểm (gồm các tiêu chí: Thái độ, Tiến độ, Nội dung) và ô nhập nhận xét.
+5. Giảng viên nhập điểm số và nội dung nhận xét.
+6. Giảng viên nhấn nút "Lưu kết quả".
+7. Hệ thống kiểm tra tính hợp lệ của dữ liệu (Validate).
+8. Hệ thống lưu điểm vào CSDL và cập nhật trạng thái đã chấm.
+9. Hệ thống thông báo "Cập nhật điểm thành công".
+Luồng rẽ nhánh
+
+
+
+(Alternative Flow)
+6a. Dữ liệu không hợp lệ:
+- Nếu giảng viên nhập điểm < 0 hoặc > 10, hoặc nhập ký tự chữ cái.
+- Hệ thống hiển thị lỗi: "Điểm số không hợp lệ (0-10)".
+- Luồng quay lại bước 5.
+8a. Lỗi kết nối CSDL:
+- Hệ thống không lưu được và báo lỗi: "Có lỗi xảy ra, vui lòng thử lại sau".
+Hậu điều kiện
+- Điểm số được lưu vào bảng Diem.
+
+
+
+- Sinh viên xem được kết quả và nhận xét.
+
+3.2.2. Sơ đồ tuần tự (Sequence Diagram)
+Sơ đồ tuần tự dưới đây mô tả chi tiết dòng chảy dữ liệu và sự tương tác giữa các thành phần MVC (View, Controller, Model) khi thực hiện chức năng Chấm điểm.
+
+
+
+Hình 3.2: Sơ đồ tuần tự
+3.2.3. Sơ đồ hoạt động (Activity Diagram)
+Sơ đồ hoạt động dưới đây mô tả toàn bộ Quy trình thực hiện Khóa luận, từ lúc sinh viên đăng ký đề tài cho đến khi có điểm tổng kết cuối cùng. Sơ đồ thể hiện rõ các điểm rẽ nhánh (Decision Node) quan trọng.
+
+
+Hình 2.3.2: Sơ đồ hoạt động
+3.3. Hệ thống màn hình (Thiết kế giao diện)
+3.3.1. Nguyên tắc thiết kế chung
+Hệ thống được thiết kế dựa trên các nguyên tắc về trải nghiệm người dùng (UX) và giao diện người dùng (UI) hiện đại, đảm bảo tính nhất quán và dễ sử dụng:
+Màu sắc chủ đạo: Sử dụng tông màu Xanh - Trắng (Màu thương hiệu của Trường ĐH Công nghệ Sài Gòn - STU) tạo cảm giác tin cậy và chuyên nghiệp.
+Font chữ: Sử dụng font không chân (Sans-serif) như Roboto hoặc Arial để hiển thị rõ ràng trên thiết bị điện tử.
+Bố cục: Thiết kế theo lưới (Grid layout), tương thích (Responsive) với cả máy tính và thiết bị di động.
+3.3.2. Thiết kế màn hình Đăng nhập (Login)
+Đây là màn hình đầu tiên khi người dùng truy cập hệ thống. Thiết kế tối giản, tập trung vào khung đăng nhập trung tâm.
+a. Hình ảnh thiết kế:
+
+
+
+
+
+b. Đặc tả chức năng màn hình:
+STT
+Tên thành phần
+Loại (Control)
+Mô tả & Ràng buộc
+1
+Logo STU
+Image
+Logo nhận diện thương hiệu nhà trường.
+2
+Tên đăng nhập
+Text Input
+- Bắt buộc nhập (Required).
+- Giới hạn: Tối đa 50 ký tự.
+- Hiển thị gợi ý (Placeholder): "Nhập mã số sinh viên/giảng viên".
+3
+Mật khẩu
+Password Input
+- Bắt buộc nhập.
+- Tự động ẩn ký tự (Masked characters).
+4
+Nút Đăng nhập
+Button
+- Màu sắc: Xanh dương (Primary Color).
+- Sự kiện: Gửi yêu cầu xác thực (POST Request) khi click.
+- Trạng thái: Disabled nếu chưa nhập đủ thông tin.
+5
+Quên mật khẩu
+Hyperlink
+Chuyển hướng sang trang khôi phục mật khẩu qua Email.
+
+
+3.3.3. Thiết kế màn hình Dashboard (Trang chủ Admin)
+Màn hình tổng quan giúp Quản trị viên nắm bắt nhanh số liệu của đợt khóa luận.
+a. Hình ảnh thiết kế:
+
+
+
+b. Đặc tả chức năng màn hình:
+STT
+Tên thành phần
+Loại (Control)
+Mô tả & Ràng buộc
+1
+Thanh điều hướng
+(Sidebar)
+Navigation Menu
+Chứa liên kết đến các module chức năng: Quản lý SV, Quản lý GV, Phân công HĐ, Thống kê.
+2
+Thẻ thống kê
+(Stat Cards)
+Widget
+Hiển thị 4 chỉ số quan trọng:
+- Tổng số Đề tài.
+- Số lượng Sinh viên.
+- Số lượng Giảng viên.
+- Tiến độ chấm điểm (%).
+3
+Biểu đồ tỷ lệ
+Pie Chart
+Biểu đồ tròn thể hiện tỷ lệ sinh viên Đạt/Không đạt.
+4
+Thông báo mới
+List Group
+Danh sách các hoạt động gần nhất trên hệ thống.
+
+
+CHƯƠNG 5: KẾT LUẬN
+5.1. Kết quả đối chiếu với mục tiêu
+Sau quá trình nghiên cứu, phân tích, thiết kế và cài đặt, nhóm thực hiện đã hoàn thành cơ bản các yêu cầu đặt ra trong Đề cương chi tiết (Mục 1.4). Dưới đây là bảng tổng hợp kết quả đạt được:
+Bảng 5.1: Bảng đối chiếu kết quả thực hiện so với mục tiêu ban đầu
+STT
+Mục tiêu ban đầu (Trích mục 1.4)
+Kết quả thực tế đạt được
+Đánh giá
+Giải thích (Nếu chưa đạt)
+1
+Nghiên cứu cơ sở lý thuyết:
+Tìm hiểu quy trình quản lý khóa luận và các công nghệ phát triển Web (HTML, CSS, PHP/Laravel, MySQL).
+- Đã nắm vững quy trình nghiệp vụ.
+- Đã vận dụng thành công công nghệ vào xây dựng hệ thống.
+- Hoàn thành báo cáo phân tích thiết kế.
+Đạt
+
+
+2
+Xây dựng Phân hệ Quản trị viên (Admin):
+Quản lý danh sách sinh viên, giảng viên, cấu hình đợt khóa luận.
+- Admin có thể thêm/sửa/xóa tài khoản.
+- Cấu hình được thời gian đăng ký, bảo vệ.
+- Phân quyền người dùng chính xác.
+Đạt
+
+
+3
+Xây dựng Phân hệ Giảng viên:
+Cho phép giảng viên đề xuất đề tài, quản lý nhóm hướng dẫn và chấm điểm.
+- Giảng viên đã có thể đăng đề tài.
+- Chức năng chấm điểm Hướng dẫn, Phản biện, Hội đồng hoạt động tốt, tính điểm tự động.
+Đạt
+
+
+4
+Xây dựng Phân hệ Sinh viên:
+Cho phép sinh viên đăng ký đề tài và theo dõi kết quả.
+- Sinh viên đăng ký/hủy đề tài theo thời gian thực.
+- Xem được điểm số và nhận xét chi tiết.
+Đạt
+
+
+5
+Chức năng Xếp lịch Hội đồng:
+Hỗ trợ sắp xếp thời gian và phòng bảo vệ cho các hội đồng.
+- Đã có chức năng tạo Hội đồng và thêm sinh viên vào.
+- Tuy nhiên việc xếp lịch vẫn còn bán thủ công, chưa hoàn toàn tự động tối ưu.
+Đạt một phần
+Thuật toán xếp lịch tự động tránh trùng lặp 100% khá phức tạp, nhóm chưa đủ thời gian tối ưu hóa, hiện tại Admin vẫn cần kiểm tra lại bằng tay.
+6
+Giao diện và Trải nghiệm người dùng:
+Thiết kế thân thiện, tương thích trên nhiều thiết bị (Responsive).
+- Giao diện hiển thị tốt trên Laptop/PC.
+- Trên Mobile một số bảng dữ liệu lớn hiển thị chưa được tối ưu.
+Đạt một phần
+Do bảng điểm và danh sách quá nhiều cột, khi xem trên điện thoại cần phải cuộn ngang, chưa tối ưu trải nghiệm.
+
+
+5.2. Các vấn đề còn tồn đọng
+Mặc dù hệ thống đã đáp ứng được các nghiệp vụ cơ bản để đưa vào sử dụng, nhưng do hạn chế về thời gian và kiến thức, nhóm thực hiện nhận thấy vẫn còn một số hạn chế sau:
+Thuật toán xếp lịch chưa thông minh:
+Hiện tại hệ thống chỉ hỗ trợ gán giảng viên vào hội đồng và chọn giờ. Hệ thống chưa có thuật toán AI để tự động đề xuất lịch bảo vệ tối ưu (tránh trùng giờ dạy của giảng viên một cách tuyệt đối).
+Chưa có tính năng Ký số (Digital Signature):
+Quy trình hiện tại vẫn yêu cầu in Phiếu chấm điểm ra giấy để ký tên xác nhận. Hệ thống chưa hỗ trợ giảng viên ký số trực tiếp trên phần mềm để lưu trữ hoàn toàn online.
+Giao diện Mobile chưa hoàn thiện:
+Đối với các màn hình chứa bảng dữ liệu lớn (như Bảng tổng hợp điểm), việc hiển thị trên điện thoại di động vẫn còn khó quan sát, người dùng phải thao tác cuộn ngang nhiều.
+Thiếu tính năng giao tiếp thời gian thực (Real-time Chat):
+Sinh viên và Giảng viên chưa thể trao đổi trực tiếp (nhắn tin) trên hệ thống mà vẫn phải dùng Email hoặc Zalo bên ngoài.
+
+
+
+
+
+
+ 

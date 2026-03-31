@@ -795,7 +795,15 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     /*
         Thông tin Form đăng ký làm đồ án tốt nghiệp (ThesisForm) 
     */
-    Route::get('/thesis-form', [ThesisFormController::class, 'index']);
+    Route::get('/thesis-form', function (Request $request) {
+        $role = (string) $request->attributes->get('auth_role', '');
+        if ($role !== 'ThuKy') {
+            return response()->json([
+                'message' => 'Bạn không có quyền truy cập chức năng này.'
+            ], 403);
+        }
+        return app(ThesisFormController::class)->index($request);
+    });
     Route::post('/thesis-form', [ThesisFormController::class, 'store']);
     Route::put('/thesis-form/{form}', [ThesisFormController::class, 'update']);
     Route::delete('/thesis-form/{form}', [ThesisFormController::class, 'destroy']);
