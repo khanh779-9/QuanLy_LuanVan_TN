@@ -1,0 +1,87 @@
+Danh sach Project
+
+Project . Xây dựng ứng dụng quản lý sinh viên LVTN của khoa CNTT
+
+
+Th tóm tắt tạm: Đối tượng: SV/Giảng viên (Hướng dẫn/phản biện)/thư ký khoa (admin)
+
+Tới kỳ làm LVTN thư ký khoa sẽ có danh sách SV được làm, và phân công danh sách này cho GV để hướng dẫn. Mỗi GV tối đa 10sv.
+
+Thư Ký:
+
+- Khoa (thư ký-admin) nhận DSSV được làm LVTN từ P Đào tạo (excel). Thiết lập các thời gian làm LVTN (như các mục bên dưới) 
+
+- Khoa phân công sv cho GVHD (1 gv từ 1-10 sv)
+
+
+- Nhận kết quả nhận đề tài 
+
+- In công bố kết quả 50% LVTN
+
+- Khoa Phân công các đề tài cho GV Phản biện (là danh sách GV)
+
+- Khoa lập Hội đồng bảo vệ LVTN. Mỗi hội đồng có các thông tin: Ngày Bảo vệ, phòng, số hội đồng, danh sách trong hội đồng (3-4 GV: 1 chủ tịch, 1 thư ký và các thành viên)
+
+- Khoa Phân công các đề tài vào hội đồng (có thứ tự)
+
+- Xuất danh sách bảo vệ LVTN
+
+
+GVien
+
+- GVHD: 
+
+ Nhận danh sách SV hướng dẫn,  giao đề tài LVTN. Đề tài có thể chọn làm theo nhóm 2 hay 1 sinh viên.
+
+ Đánh giá 50%
+
+ Chấm điểm hướng dẫn -> xuất file word để in
+
+ https://tranvanhung.fitstu.net/lvtn/Mau%2001.01_PHIEU%20CHAM_HUONG%20DAN_NHOM%20SINH%20VIEN.doc
+
+https://tranvanhung.fitstu.net/lvtn/Mau%2001.02_PHIEU%20CHAM_HUONG%20DAN_SINH%20VIEN.doc 
+
+- GVPB:
+
+ Nhận danh sách phản biện
+
+ Chấm điểm -> xuất file word
+
+ https://tranvanhung.fitstu.net/lvtn/Mau%2002.01_PHIEU%20CHAM_PHAN%20BIEN_NHOM%20SINH%20VIEN.doc 
+
+https://tranvanhung.fitstu.net/lvtn/Mau%2002.02_PHIEU%20CHAM_PHAN%20BIEN_SINH%20VIEN.doc 
+
+
+SV: in ra tờ nhiệm vụ để đóng vào cuốn báo cáo (có 2 template cho 1 hay 2 sv)
+
+ https://tranvanhung.fitstu.net/lvtn/Form_NhiemvuLVTN.doc 
+
+
+
+
+
+
+
+
+
+
+
+Xây dựng web - MVC.
+
+ Phương án 1: Laravel: backend + fe
+
+ Phương án 2: Be: Laravel - Fe: React, angular,...
+
+ 
+
+
+Công việc:
+
+Dựng Laravel
+
+Tìm cài đặt các package cần thiết: 
+
+ Import from excel, export to excel: import sinh vien, export sinh viên
+
+ Export data ra template .docx: điểm GVHD, phản biện, hội đồng
+

@@ -9,8 +9,8 @@ import { calcStudentScore, recalcAllStudents } from "../../utils/scoreUtils";
 const TABS = [
   { key: "review", label: "Chấm điểm phản biện" },
   { key: "guide", label: "Chấm hướng dẫn" },
-  { key: "history", label: "Lịch sử chấm" },
-  { key: "export", label: "Xuất file" },
+  // { key: "history", label: "Lịch sử chấm" },
+  // { key: "export", label: "Xuất file" },
 ];
 
 const defaultScale = {

@@ -109,7 +109,7 @@ function ThesisLayout() {
       <main
         style={{
           flex: 1,
-          background: "url('../public/assets/background.jpg')",
+          background: "url('/assets/background.jpg')",
           padding: 24,
         }}
       >

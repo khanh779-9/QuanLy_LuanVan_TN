@@ -17,8 +17,8 @@
 | --- | ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1   | **Trần Quốc Khánh** | Team Leader + Backend | Chuyển đổi, xây dựng database, API, auth/permission, các module (CRUD)                                                              |
 | 2   | **Lê Tiến Phát**    | Backend Developer     | Kiểm tra, sửa lỗi và hoàn thiện các module, API, xử lí import/export file                                                         |
-| 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Dựng layout, routing, kết nối API, làm các trang chính và luồng điều hướng                                                     |
-| 4   | **Võ Thiên Phú**    | Frontend Developer    | Làm các màn hình form, bảng danh sách, modal, responsive, tối ưu UI/UX                                                             |
+| 3   | **Nguyễn Tuấn Anh**  | Frontend Developer    | Dựng layout, routing, kết nối API, làm các trang và luồng điều hướng                                                           |
+| 4   | **Võ Thiên Phú**    | Frontend Developer    | Tinh chỉnh responsive màn hình, modal, tối ưu UI/UX, chức năng nhập/ xuất file                                                    |
 | 5   | **Hồ Khôi Phục**    | Frontend Developer    | Kiểm tra hoạt động chức năng**search, filter, pagination, ...** test luồng thao tác, fix bug FE                            |
 | 6   | **Siêu Ngọc Tài**   | DevOps + Tester       | Kiểm tra các câu hình**Docker, Web, môi trường (.env)**, kiểm thử API và UI, viết **README, tài liệu cài đặt** |
 
@@ -48,12 +48,15 @@ php artisan serve --port=8000
 ```
 
 ## Backend
+
 - API base URL: `http://127.0.0.1:8000/api` (chỉ test trên local)
 - Trong môi trường mạng `https://quanly-luanvan-tn-backend-ae78.onrender.com`
 - Link BE dự phòng: `https://quanlyluanvantnbackend-production.up.railway.app`
 
 ## Frontend
+
 - Link frontend: `https://quan-ly-luan-van-tn.vercel.app`
 
 ## Thông tin tài khoản test
+
 ![Acc_Image](screenshot/image.png)
