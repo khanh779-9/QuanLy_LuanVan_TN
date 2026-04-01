@@ -26,7 +26,6 @@ Route::get('/', function () {
     ]);
 });
 
-
 Route::post('/login', function (Request $request) {
     $tokenStore = Cache::store('file');
     $username = (string) $request->input('username', $request->input('maGV', ''));
@@ -47,8 +46,6 @@ Route::post('/login', function (Request $request) {
     }
 
     $storedPassword = (string) $user->matKhau;
-    // $isLegacyPlainText = hash_equals($storedPassword, $password);
-    // $isValidPassword = Hash::check($password, $storedPassword) || $isLegacyPlainText;
     $isValidPassword = $password === $storedPassword;
 
     if (!$isValidPassword) {
@@ -77,7 +74,6 @@ Route::post('/login', function (Request $request) {
         ],
     ]);
 });
-
 
 // BẮT ĐẦU KHU VỰC CẦN TOKEN (BẢO MẬT)
 Route::middleware(ApiTokenAuth::class)->group(function () {
@@ -207,67 +203,12 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     Route::delete('/students/{student}', [\App\Http\Controllers\StudentController::class, 'destroy']);
     Route::delete('/students', [\App\Http\Controllers\StudentController::class, 'destroyAll']);
 
-    Route::get('/lecturers', function () {
-        return response()->json([
-            'data' => Teacher::orderBy('maGV', 'desc')->get(),
-        ]);
-    });
-
-    Route::get('/lecturers/{lecturer}', function (Teacher $lecturer) {
-        return response()->json([
-            'data' => $lecturer,
-        ]);
-    });
-
-    Route::post('/lecturers', function (Request $request) {
-        $validated = $request->validate([
-            'maGV' => 'required|string|max:20|unique:giangvien,maGV',
-            'tenGV' => 'required|string|max:100',
-            'email' => 'nullable|email|max:100|unique:giangvien,email',
-            'soDienThoai' => 'nullable|string|max:15',
-            'hocVi' => 'nullable|string|max:50',
-            'matKhau' => 'required|string|min:3',
-        ]);
-
-        $validated['matKhau'] = Hash::make($validated['matKhau']);
-
-        $lecturer = Teacher::create($validated);
-
-        return response()->json([
-            'data' => $lecturer,
-        ], 201);
-    });
-
-    Route::put('/lecturers/{lecturer}', function (Request $request, Teacher $lecturer) {
-        $validated = $request->validate([
-            'maGV' => ['required', 'string', 'max:20', Rule::unique('giangvien', 'maGV')->ignore($lecturer->maGV, 'maGV')],
-            'tenGV' => 'required|string|max:100',
-            'email' => ['nullable', 'email', 'max:100', Rule::unique('giangvien', 'email')->ignore($lecturer->maGV, 'maGV')],
-            'soDienThoai' => 'nullable|string|max:15',
-            'hocVi' => 'nullable|string|max:50',
-            'matKhau' => 'nullable|string|min:3',
-        ]);
-
-        if (!empty($validated['matKhau'])) {
-            $validated['matKhau'] = Hash::make($validated['matKhau']);
-        } else {
-            unset($validated['matKhau']);
-        }
-
-        $lecturer->update($validated);
-
-        return response()->json([
-            'data' => $lecturer,
-        ]);
-    });
-
-    Route::delete('/lecturers/{lecturer}', function (Teacher $lecturer) {
-        $lecturer->delete();
-
-        return response()->json([
-            'message' => 'Đã xóa giảng viên',
-        ]);
-    });
+    // Lecturers API RESTful
+    Route::get('/lecturers', [\App\Http\Controllers\LecturerController::class, 'index']);
+    Route::get('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'show']);
+    Route::post('/lecturers', [\App\Http\Controllers\LecturerController::class, 'store']);
+    Route::put('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'update']);
+    Route::delete('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'destroy']);
 
     Route::get('/councils', function () {
         return response()->json([
@@ -394,7 +335,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-
     Route::post('/topics/create-group-assign', function (Request $request) {
         $validated = $request->validate([
             'student_1' => 'required|exists:sinhvien,mssv',
@@ -427,15 +367,16 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     });
 
     Route::delete('/topics', function () {
-        // Lecturers API RESTful
-        Route::get('/lecturers', [\App\Http\Controllers\LecturerController::class, 'index']);
-        Route::get('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'show']);
-        Route::post('/lecturers', [\App\Http\Controllers\LecturerController::class, 'store']);
-        Route::put('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'update']);
-        Route::delete('/lecturers/{lecturer}', [\App\Http\Controllers\LecturerController::class, 'destroy']);
+        DB::transaction(function () {
+            Student::query()->update(['maDeTai' => null]);
+            Topic::truncate();
+        });
+
+        return response()->json([
+            'message' => 'Đã xóa tất cả đề tài.',
+        ]);
     });
 
-    // API Duyệt / Từ chối đề tài (Phát chèn thêm)
     Route::patch('/topics/{topic}/status', function (Request $request, Topic $topic) {
         $validated = $request->validate([
             'status' => 'required|in:Được làm tiếp,Đình chỉ,Cảnh cáo,Chờ duyệt'
@@ -608,85 +549,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-    Route::get('/topics/{topic}', function (Topic $topic) {
-        return response()->json([
-            'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
-        ]);
-    });
-
-    Route::post('/topics', function (Request $request) {
-        $validated = $request->validate([
-            'maMH' => 'nullable|string|max:20|unique:detai,maMH',
-            'tenMonHoc' => 'nullable|string|max:100',
-            'tenDeTai' => 'required|string',
-            'maGV_HD' => 'nullable|exists:giangvien,maGV',
-            'maGV_PB' => 'nullable|exists:giangvien,maGV',
-            'ghiChu_PB' => 'nullable|string',
-            'ghiChu' => 'nullable|string',
-            'diemGiuaKy' => 'nullable|numeric|min:0|max:100',
-            'trangThaiGiuaKy' => 'nullable|in:Được làm tiếp,Đình chỉ,Cảnh cáo',
-            'nhanXetGiuaKy' => 'nullable|string',
-            'maHoiDong' => 'nullable|exists:hoidong,maHoiDong',
-            'diemPhanBien' => 'nullable|numeric|min:0|max:100',
-            'nhanXetPhanBien' => 'nullable|string',
-            'diemHuongDan' => 'nullable|numeric|min:0|max:100',
-            'diemHoiDong' => 'nullable|numeric|min:0|max:100',
-            'nhanXetHoiDong' => 'nullable|string',
-            'diemTongKet' => 'nullable|numeric|min:0|max:100',
-            'diemChu' => 'nullable|string|max:5',
-            'trangThaiHoiDong' => 'nullable|string|max:50',
-        ]);
-
-        if (!array_key_exists('trangThaiGiuaKy', $validated) || $validated['trangThaiGiuaKy'] === null) {
-            $validated['trangThaiGiuaKy'] = 'Được làm tiếp';
-        }
-
-        $topic = Topic::create($validated);
-
-        return response()->json([
-            'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
-        ], 201);
-    });
-
-    Route::put('/topics/{topic}', function (Request $request, Topic $topic) {
-        $validated = $request->validate([
-            'maMH' => ['sometimes', 'nullable', 'string', 'max:20', Rule::unique('detai', 'maMH')->ignore($topic->maDeTai, 'maDeTai')],
-            'tenMonHoc' => 'sometimes|nullable|string|max:100',
-            'tenDeTai' => 'sometimes|required|string',
-            'maGV_HD' => 'sometimes|nullable|exists:giangvien,maGV',
-            'maGV_PB' => 'sometimes|nullable|exists:giangvien,maGV',
-            'ghiChu_PB' => 'sometimes|nullable|string',
-            'ghiChu' => 'sometimes|nullable|string',
-            'diemGiuaKy' => 'sometimes|nullable|numeric|min:0|max:100',
-            'trangThaiGiuaKy' => 'sometimes|nullable|in:Được làm tiếp,Đình chỉ,Cảnh cáo',
-            'nhanXetGiuaKy' => 'sometimes|nullable|string',
-            'maHoiDong' => 'sometimes|nullable|exists:hoidong,maHoiDong',
-            'diemPhanBien' => 'sometimes|nullable|numeric|min:0|max:100',
-            'nhanXetPhanBien' => 'sometimes|nullable|string',
-            'diemHuongDan' => 'sometimes|nullable|numeric|min:0|max:100',
-            'diemHoiDong' => 'sometimes|nullable|numeric|min:0|max:100',
-            'nhanXetHoiDong' => 'sometimes|nullable|string',
-            'diemTongKet' => 'sometimes|nullable|numeric|min:0|max:100',
-            'diemChu' => 'sometimes|nullable|string|max:5',
-            'trangThaiHoiDong' => 'sometimes|nullable|string|max:50',
-        ]);
-
-        $topic->update($validated);
-
-        return response()->json([
-            'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
-        ]);
-    });
-
-    Route::delete('/topics/{topic}', function (Topic $topic) {
-        Student::where('maDeTai', $topic->maDeTai)->update(['maDeTai' => null]);
-        $topic->delete();
-
-        return response()->json([
-            'message' => 'Đã xóa đề tài',
-        ]);
-    });
-
     Route::get('/scores', function (Request $request) {
         $query = Score::with(['topic', 'lecturer'])->orderBy('maDiem', 'desc');
 
@@ -739,50 +601,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
     });
 
-
-
-    // Các route import/export Excel/Word tạm thời trả về lỗi 501 Not Implemented
-    Route::any('/students/import-excel', function () {
-        return response()->json([
-            'message' => 'Chức năng import Excel chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/midterm', function () {
-        return response()->json([
-            'message' => 'Chức năng export midterm chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/hoidong', function () {
-        return response()->json([
-            'message' => 'Chức năng export hội đồng chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/phanbien', function () {
-        return response()->json([
-            'message' => 'Chức năng export phản biện chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/tongket', function () {
-        return response()->json([
-            'message' => 'Chức năng export tổng kết chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/word/assignment', function () {
-        return response()->json([
-            'message' => 'Chức năng export Word assignment chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/word/gvhd/{topic}', function () {
-        return response()->json([
-            'message' => 'Chức năng export Word GVHD chưa được hỗ trợ.'
-        ], 501);
-    });
-    Route::any('/exports/word/gvpb/{topic}', function () {
-        return response()->json([
-            'message' => 'Chức năng export Word GVPB chưa được hỗ trợ.'
-        ], 501);
-    });
-
     Route::get('/options', function () {
         return response()->json([
             'giangvien' => Teacher::orderBy('tenGV')->get(['maGV', 'tenGV']),
@@ -790,7 +608,6 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'hoidong' => Council::orderBy('tenHoiDong')->get(['maHoiDong', 'tenHoiDong']),
         ]);
     });
-
 
     /*
         Thông tin Form đăng ký làm đồ án tốt nghiệp (ThesisForm) 
@@ -809,6 +626,140 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     Route::delete('/thesis-form/{form}', [ThesisFormController::class, 'destroy']);
     Route::delete('/thesis-forms', [ThesisFormController::class, 'destroyAll']);
 
+    // ==========================================
+    // KHU VỰC IMPORT EXCEL (Nạp dữ liệu từ file KQ_QUATRINHTHUCHIEN)
+    // ==========================================
+    Route::post('/imports/excel/full-data', function (Request $request) {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+
+        $file = $request->file('file');
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+        $data = $spreadsheet->getActiveSheet()->toArray();
+
+        $count = 0;
+        try {
+            DB::transaction(function () use ($data, &$count) {
+                foreach ($data as $index => $row) {
+                    if ($index < 1 || empty($row[1])) continue; // Bỏ qua header và dòng trống
+
+                    // 1. Tạo/Cập nhật GVHD (Cột F)
+                    $gvhd = Teacher::firstOrCreate(
+                        ['tenGV' => $row[5]],
+                        ['maGV' => 'GV'.Str::random(5)] 
+                    );
+
+                    // 2. Tạo/Cập nhật Đề tài (Cột E)
+                    $topic = Topic::updateOrCreate(
+                        ['tenDeTai' => $row[4]],
+                        [
+                            'maGV_HD' => $gvhd->maGV,
+                            'diemHuongDan' => $row[6] ?? null,
+                            'diemPhanBien' => $row[7] ?? null,
+                        ]
+                    );
+
+                    // 3. Tạo/Cập nhật Sinh viên (Cột B, C, D)
+                    Student::updateOrCreate(
+                        ['mssv' => $row[1]],
+                        [
+                            'hoTen' => $row[2],
+                            'lop' => $row[3],
+                            'maDeTai' => $topic->maDeTai
+                        ]
+                    );
+                    $count++;
+                }
+            });
+            return response()->json(['message' => "Đã import thành công $count dòng dữ liệu!"]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi Import: ' . $e->getMessage()], 500);
+        }
+    });
+
+    // ==========================================
+    // KHU VỰC EXPORT WORD (- Nhận diện Nhóm/Cá nhân)
+    // ==========================================
+    Route::get('/exports/word/assignment/{topic}', function (Topic $topic) {
+        $topic->load(['students', 'lecturer']);
+        $template = new \PhpOffice\PhpWord\TemplateProcessor(storage_path('app/templates/Bản sao Form_Nhiemvu.doc'));
+        $template->setValue('tenDeTai', $topic->tenDeTai);
+        $template->setValue('tenGVHD', $topic->lecturer->tenGV ?? '');
+        $sv1 = $topic->students->first();
+        $template->setValue(['tenSV1' => $sv1->hoTen ?? '', 'mssv1' => $sv1->mssv ?? '', 'lop1' => $sv1->lop ?? '']);
+        $sv2 = $topic->students->skip(1)->first();
+        $template->setValue(['tenSV2' => $sv2->hoTen ?? '', 'mssv2' => $sv2->mssv ?? '', 'lop2' => $sv2->lop ?? '']);
+        $path = storage_path('app/temp_nv_'.$topic->maDeTai.'.doc');
+        $template->saveAs($path);
+        return response()->download($path)->deleteFileAfterSend(true);
+    });
+
+    Route::get('/exports/word/gvhd/{topic}', function (Topic $topic) {
+        $topic->load(['students', 'lecturer']);
+        $file = $topic->students->count() > 1 ? 'Bản sao PhieuCham_HD_Nhom.doc' : 'Bản sao PhieuCham_HD_CaNhan.doc';
+        $template = new \PhpOffice\PhpWord\TemplateProcessor(storage_path('app/templates/'.$file));
+        $template->setValue(['tenDeTai' => $topic->tenDeTai, 'tenGV' => $topic->lecturer->tenGV ?? '', 'tenSV1' => $topic->students->first()->hoTen ?? '']);
+        $path = storage_path('app/temp_hd_'.$topic->maDeTai.'.doc');
+        $template->saveAs($path);
+        return response()->download($path)->deleteFileAfterSend(true);
+    });
+
+    Route::get('/exports/word/gvpb/{topic}', function (Topic $topic) {
+        $topic->load(['students', 'reviewer']);
+        $file = $topic->students->count() > 1 ? 'Bản sao PhieuCham_PB_Nhom.doc' : 'Bản sao PhieuCham_PB_CaNhan.doc';
+        $template = new \PhpOffice\PhpWord\TemplateProcessor(storage_path('app/templates/'.$file));
+        $template->setValue(['tenDeTai' => $topic->tenDeTai, 'tenGVPB' => $topic->reviewer->tenGV ?? '', 'tenSV1' => $topic->students->first()->hoTen ?? '']);
+        $path = storage_path('app/temp_pb_'.$topic->maDeTai.'.doc');
+        $template->saveAs($path);
+        return response()->download($path)->deleteFileAfterSend(true);
+    });
+
+    // ==========================================
+    // KHU VỰC EXPORT EXCEL (- Dựng bảng xịn)
+    // ==========================================
+    Route::get('/exports/excel/danhsach', function () {
+        $topics = Topic::with(['students', 'lecturer', 'reviewer', 'council'])->get();
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Danh Sach Sinh Vien');
+
+        $headers = ['STT', 'MSSV', 'HỌ VÀ TÊN', 'LỚP', 'TÊN ĐỀ TÀI', 'GVHD', 'GVPB', 'UỶ VIÊN'];
+        $sheet->fromArray($headers, null, 'A1');
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        $row = 2;
+        $stt = 1;
+
+        foreach ($topics as $topic) {
+            $tenUyVien = '';
+            if ($topic->council) {
+                $maGV_UyVien = CouncilMember::where('maHoiDong', $topic->maHoiDong)->where('vaiTro', 'UyVien')->value('maGV');
+                if ($maGV_UyVien) $tenUyVien = Teacher::where('maGV', $maGV_UyVien)->value('tenGV');
+            }
+
+            foreach ($topic->students as $student) {
+                $sheet->setCellValue('A' . $row, $stt++);
+                $sheet->setCellValueExplicit('B' . $row, $student->mssv, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->setCellValue('C' . $row, $student->hoTen);
+                $sheet->setCellValue('D' . $row, $student->lop);
+                $sheet->setCellValue('E' . $row, $topic->tenDeTai);
+                $sheet->setCellValue('F' . $row, $topic->lecturer->tenGV ?? '');
+                $sheet->setCellValue('G' . $row, $topic->reviewer->tenGV ?? '');
+                $sheet->setCellValue('H' . $row, $tenUyVien);
+                $row++;
+            }
+        }
+
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $fileName = 'DanhSach_SVSinhVien_LVTN_' . date('Y_m_d_His') . '.xlsx';
+        $tempPath = storage_path('app/' . $fileName);
+        
+        $writer->save($tempPath);
+        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+    });
 
     // Nếu chưa login mà cố gắng truy cập API, trả về lỗi 401 Unauthorized
     Route::middleware('auth.api')->any('/{any}', function () {
@@ -816,4 +767,5 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'message' => 'Unauthorized. Vui lòng đăng nhập để truy cập API.',
         ], 401);
     })->where('any', '.*');
-});
+
+}); 
