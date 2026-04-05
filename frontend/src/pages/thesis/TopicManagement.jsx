@@ -242,13 +242,242 @@ export default function DataManagement() {
       {loading && <LoadingSection />}
       {!loading && (
         <div>
-          {/* ...existing code... */}
+          <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setEditingId(null);
+                setForm(initialForm);
+                setShowForm(true);
+              }}
+            >
+              Thêm đăng ký
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={async () => {
+                if (window.confirm("Xóa toàn bộ đăng ký?")) {
+                  setLoading(true);
+                  try {
+                    await deleteAllThesisForms();
+                    await loadData();
+                    setToast({
+                      show: true,
+                      type: "success",
+                      message: "Đã xóa toàn bộ đăng ký.",
+                    });
+                  } catch (e) {
+                    setToast({
+                      show: true,
+                      type: "error",
+                      message: e?.message || "Không thể xóa dữ liệu.",
+                    });
+                  }
+                  setLoading(false);
+                }
+              }}
+            >
+              Xóa tất cả
+            </button>
+          </div>
+
+          {error && (
+            <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>
+          )}
+
+          <table className="thesis-table">
+            <thead>
+              <tr>
+                <th>Tiêu đề</th>
+                <th>Loại</th>
+                <th>SV 1</th>
+                <th>SV 2</th>
+                <th>GVHD</th>
+                <th>Trạng thái</th>
+                <th>Ngày</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.length === 0 ? (
+                <tr>
+                  <td colSpan={8} style={{ textAlign: "center", padding: 16 }}>
+                    Chưa có đăng ký nào.
+                  </td>
+                </tr>
+              ) : (
+                data.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.topic_title}</td>
+                    <td>
+                      {item.topic_type === "group" ? "2 SV" : "1 SV"}
+                    </td>
+                    <td>
+                      {item.student1_name} ({item.student1_id})
+                    </td>
+                    <td>
+                      {item.student2_name
+                        ? `${item.student2_name} (${item.student2_id})`
+                        : "-"}
+                    </td>
+                    <td>{item.gvhd_code || "-"}</td>
+                    <td>
+                      {statusOptions.find((s) => s.value === item.status)
+                        ?.label || item.status}
+                    </td>
+                    <td>{formatDate(item.registered_at || item.created_at)}</td>
+                    <td>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => handleEdit(item)}
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(item.id)}
+                        style={{ marginLeft: 8 }}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       )}
       {showForm && (
         <div className="overlay">
           <div className="modal">
-            {/* ...existing code... */}
+            <h3 style={{ marginBottom: 12 }}>
+              {editingId ? "Cập nhật đăng ký" : "Thêm đăng ký"}
+            </h3>
+            <form onSubmit={handleSubmit}>
+              <FormField
+                label="Tiêu đề"
+                name="topic_title"
+                value={form.topic_title}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Mô tả"
+                name="topic_description"
+                value={form.topic_description}
+                onChange={handleChange}
+              />
+              <FormField
+                as="select"
+                label="Loại đề tài"
+                name="topic_type"
+                value={form.topic_type}
+                onChange={handleChange}
+              >
+                {typeOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </FormField>
+              <FormField
+                label="MSSV 1"
+                name="student1_id"
+                value={form.student1_id}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Tên SV 1"
+                name="student1_name"
+                value={form.student1_name}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Lớp SV 1"
+                name="student1_class"
+                value={form.student1_class}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Email SV 1"
+                name="student1_email"
+                value={form.student1_email}
+                onChange={handleChange}
+              />
+              <FormField
+                label="MSSV 2"
+                name="student2_id"
+                value={form.student2_id}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Tên SV 2"
+                name="student2_name"
+                value={form.student2_name}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Lớp SV 2"
+                name="student2_class"
+                value={form.student2_class}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Email SV 2"
+                name="student2_email"
+                value={form.student2_email}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Mã GVHD"
+                name="gvhd_code"
+                value={form.gvhd_code}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Nơi công tác GVHD"
+                name="gvhd_workplace"
+                value={form.gvhd_workplace}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Mã GVPB"
+                name="gvpb_code"
+                value={form.gvpb_code}
+                onChange={handleChange}
+              />
+              <FormField
+                label="Ghi chú"
+                name="note"
+                value={form.note}
+                onChange={handleChange}
+              />
+              <FormField
+                as="select"
+                label="Trạng thái"
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+              >
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </FormField>
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                <button className="btn btn-primary" type="submit">
+                  Lưu
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  type="button"
+                  onClick={handleCancel}
+                >
+                  Hủy
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
