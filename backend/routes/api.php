@@ -196,6 +196,88 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     });
 
     // Students API RESTful
+    Route::post('/students/import', function (Request $request) {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file');
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, true);
+
+        if (count($rows) < 2) {
+            return response()->json([
+                'imported' => 0,
+                'errors' => [['row' => 1, 'msg' => 'File không có dữ liệu.']],
+            ], 422);
+        }
+
+        $headerRow = array_shift($rows);
+        $headerMap = [];
+        foreach ($headerRow as $col => $label) {
+            $key = strtolower(trim((string) $label));
+            $key = str_replace([' ', '-', '_'], '', $key);
+            if (in_array($key, ['mssv', 'masv', 'masinhvien'], true)) {
+                $headerMap['mssv'] = $col;
+            } elseif (in_array($key, ['hoten', 'tensv', 'hovaten'], true)) {
+                $headerMap['hoTen'] = $col;
+            } elseif ($key === 'lop') {
+                $headerMap['lop'] = $col;
+            } elseif ($key === 'email') {
+                $headerMap['email'] = $col;
+            } elseif (in_array($key, ['sodienthoai', 'sdt', 'dienthoai'], true)) {
+                $headerMap['soDienThoai'] = $col;
+            }
+        }
+
+        if (!isset($headerMap['mssv']) || !isset($headerMap['hoTen'])) {
+            return response()->json([
+                'imported' => 0,
+                'errors' => [[
+                    'row' => 1,
+                    'msg' => 'Thiếu cột bắt buộc: MSSV hoặc Họ tên.',
+                ]],
+            ], 422);
+        }
+
+        $imported = 0;
+        $errors = [];
+
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2;
+            $mssv = trim((string) ($row[$headerMap['mssv']] ?? ''));
+            $hoTen = trim((string) ($row[$headerMap['hoTen']] ?? ''));
+
+            if ($mssv === '' && $hoTen === '') {
+                continue;
+            }
+
+            if ($mssv === '' || $hoTen === '') {
+                $errors[] = ['row' => $rowNumber, 'msg' => 'Thiếu MSSV hoặc Họ tên.'];
+                continue;
+            }
+
+            if (Student::where('mssv', $mssv)->exists()) {
+                $errors[] = ['row' => $rowNumber, 'msg' => 'MSSV đã tồn tại.'];
+                continue;
+            }
+
+            Student::create([
+                'mssv' => $mssv,
+                'hoTen' => $hoTen,
+                'lop' => isset($headerMap['lop']) ? trim((string) ($row[$headerMap['lop']] ?? '')) : null,
+                'email' => isset($headerMap['email']) ? trim((string) ($row[$headerMap['email']] ?? '')) : null,
+                'soDienThoai' => isset($headerMap['soDienThoai']) ? trim((string) ($row[$headerMap['soDienThoai']] ?? '')) : null,
+            ]);
+            $imported++;
+        }
+
+        return response()->json([
+            'imported' => $imported,
+            'errors' => $errors,
+        ]);
+    });
     Route::get('/students', [\App\Http\Controllers\StudentController::class, 'index']);
     Route::get('/students/{student}', [\App\Http\Controllers\StudentController::class, 'show']);
     Route::post('/students', [\App\Http\Controllers\StudentController::class, 'store']);
@@ -332,6 +414,63 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     Route::get('/topics/{topic}', function (Topic $topic) {
         return response()->json([
             'data' => $topic->load(['lecturer', 'reviewer', 'council', 'students']),
+        ]);
+    });
+
+    Route::get('/topics/{topic}/students', function (Topic $topic) {
+        return response()->json([
+            'data' => $topic->students()->orderBy('mssv')->get(),
+        ]);
+    });
+
+    Route::put('/topics/{topic}', function (Request $request, Topic $topic) {
+        $validated = $request->validate([
+            'maMH' => 'nullable|string|max:20',
+            'tenMonHoc' => 'nullable|string|max:255',
+            'tenDeTai' => 'nullable|string|max:255',
+            'maGV_HD' => 'nullable|exists:giangvien,maGV',
+            'maGV_PB' => 'nullable|exists:giangvien,maGV',
+            'maHoiDong' => 'nullable|exists:hoidong,maHoiDong',
+            'ghiChu' => 'nullable|string',
+            'ghiChu_PB' => 'nullable|string',
+            'diemGiuaKy' => 'nullable|numeric|min:0|max:100',
+            'trangThaiGiuaKy' => 'nullable|string|max:50',
+            'nhanXetGiuaKy' => 'nullable|string',
+            'diemHuongDan' => 'nullable|numeric|min:0|max:10',
+            'diemPhanBien' => 'nullable|numeric|min:0|max:10',
+            'nhanXetPhanBien' => 'nullable|string',
+            'diemHoiDong' => 'nullable|numeric|min:0|max:10',
+            'nhanXetHoiDong' => 'nullable|string',
+            'diemTongKet' => 'nullable|numeric|min:0|max:10',
+            'diemChu' => 'nullable|string|max:5',
+            'trangThaiHoiDong' => 'nullable|string|max:50',
+        ]);
+
+        if (!empty($validated['maGV_HD']) && !empty($validated['maGV_PB']) && $validated['maGV_HD'] === $validated['maGV_PB']) {
+            return response()->json([
+                'message' => 'GVPB không được trùng GVHD.',
+            ], 422);
+        }
+
+        if (!empty($validated['maGV_HD']) && $validated['maGV_HD'] !== $topic->maGV_HD) {
+            $studentCount = Student::whereHas('topic', function ($query) use ($validated) {
+                $query->where('maGV_HD', $validated['maGV_HD']);
+            })->count();
+
+            $currentTopicStudents = Student::where('maDeTai', $topic->maDeTai)->count();
+
+            if (($studentCount + $currentTopicStudents) > 10) {
+                return response()->json([
+                    'message' => 'GVHD đã đủ 10 sinh viên, không thể phân công thêm.',
+                ], 422);
+            }
+        }
+
+        $topic->update($validated);
+
+        return response()->json([
+            'message' => 'Cập nhật đề tài thành công.',
+            'data' => $topic->fresh()->load(['lecturer', 'reviewer', 'council', 'students']),
         ]);
     });
 
@@ -681,34 +820,60 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     // ==========================================
     Route::get('/exports/word/assignment/{topic}', function (Topic $topic) {
         $topic->load(['students', 'lecturer']);
-        $template = new \PhpOffice\PhpWord\TemplateProcessor(storage_path('app/templates/Bản sao Form_Nhiemvu.doc'));
-        $template->setValue('tenDeTai', $topic->tenDeTai);
-        $template->setValue('tenGVHD', $topic->lecturer->tenGV ?? '');
+        $template = new \PhpOffice\PhpWord\TemplateProcessor(base_path('huong_dan/Form_NhiemvuLVTN.docx'));
         $sv1 = $topic->students->first();
-        $template->setValue(['tenSV1' => $sv1->hoTen ?? '', 'mssv1' => $sv1->mssv ?? '', 'lop1' => $sv1->lop ?? '']);
         $sv2 = $topic->students->skip(1)->first();
-        $template->setValue(['tenSV2' => $sv2->hoTen ?? '', 'mssv2' => $sv2->mssv ?? '', 'lop2' => $sv2->lop ?? '']);
-        $path = storage_path('app/temp_nv_'.$topic->maDeTai.'.doc');
+        $template->setValue('tenDeTai', $topic->tenDeTai ?? '');
+        $template->setValue('tenGVHD', $topic->lecturer->tenGV ?? '');
+        $template->setValue('tenSV1', $sv1->hoTen ?? '');
+        $template->setValue('mssv1', $sv1->mssv ?? '');
+        $template->setValue('lop1', $sv1->lop ?? '');
+        $template->setValue('tenSV2', $sv2->hoTen ?? '');
+        $template->setValue('mssv2', $sv2->mssv ?? '');
+        $template->setValue('lop2', $sv2->lop ?? '');
+        $path = storage_path('app/temp_nv_' . $topic->maDeTai . '.docx');
         $template->saveAs($path);
         return response()->download($path)->deleteFileAfterSend(true);
     });
 
     Route::get('/exports/word/gvhd/{topic}', function (Topic $topic) {
         $topic->load(['students', 'lecturer']);
-        $file = $topic->students->count() > 1 ? 'Bản sao PhieuCham_HD_Nhom.doc' : 'Bản sao PhieuCham_HD_CaNhan.doc';
-        $template = new \PhpOffice\PhpWord\TemplateProcessor(storage_path('app/templates/'.$file));
-        $template->setValue(['tenDeTai' => $topic->tenDeTai, 'tenGV' => $topic->lecturer->tenGV ?? '', 'tenSV1' => $topic->students->first()->hoTen ?? '']);
-        $path = storage_path('app/temp_hd_'.$topic->maDeTai.'.doc');
+        $file = $topic->students->count() > 1
+            ? 'Mau 01.01_PHIEU CHAM_HUONG DAN_NHOM SINH VIEN.docx'
+            : 'Mau 01.02_PHIEU CHAM_HUONG DAN_SINH VIEN.docx';
+        $template = new \PhpOffice\PhpWord\TemplateProcessor(base_path('huong_dan/' . $file));
+        $sv1 = $topic->students->first();
+        $sv2 = $topic->students->skip(1)->first();
+        $template->setValue('tenDeTai', $topic->tenDeTai ?? '');
+        $template->setValue('tenGV', $topic->lecturer->tenGV ?? '');
+        $template->setValue('tenSV1', $sv1->hoTen ?? '');
+        $template->setValue('mssv1', $sv1->mssv ?? '');
+        $template->setValue('lop1', $sv1->lop ?? '');
+        $template->setValue('tenSV2', $sv2->hoTen ?? '');
+        $template->setValue('mssv2', $sv2->mssv ?? '');
+        $template->setValue('lop2', $sv2->lop ?? '');
+        $path = storage_path('app/temp_hd_' . $topic->maDeTai . '.docx');
         $template->saveAs($path);
         return response()->download($path)->deleteFileAfterSend(true);
     });
 
     Route::get('/exports/word/gvpb/{topic}', function (Topic $topic) {
         $topic->load(['students', 'reviewer']);
-        $file = $topic->students->count() > 1 ? 'Bản sao PhieuCham_PB_Nhom.doc' : 'Bản sao PhieuCham_PB_CaNhan.doc';
-        $template = new \PhpOffice\PhpWord\TemplateProcessor(storage_path('app/templates/'.$file));
-        $template->setValue(['tenDeTai' => $topic->tenDeTai, 'tenGVPB' => $topic->reviewer->tenGV ?? '', 'tenSV1' => $topic->students->first()->hoTen ?? '']);
-        $path = storage_path('app/temp_pb_'.$topic->maDeTai.'.doc');
+        $file = $topic->students->count() > 1
+            ? 'Mau 02.01_PHIEU CHAM_PHAN BIEN_NHOM SINH VIEN.docx'
+            : 'Mau 02.02_PHIEU CHAM_PHAN BIEN_SINH VIEN.docx';
+        $template = new \PhpOffice\PhpWord\TemplateProcessor(base_path('huong_dan/' . $file));
+        $sv1 = $topic->students->first();
+        $sv2 = $topic->students->skip(1)->first();
+        $template->setValue('tenDeTai', $topic->tenDeTai ?? '');
+        $template->setValue('tenGVPB', $topic->reviewer->tenGV ?? '');
+        $template->setValue('tenSV1', $sv1->hoTen ?? '');
+        $template->setValue('mssv1', $sv1->mssv ?? '');
+        $template->setValue('lop1', $sv1->lop ?? '');
+        $template->setValue('tenSV2', $sv2->hoTen ?? '');
+        $template->setValue('mssv2', $sv2->mssv ?? '');
+        $template->setValue('lop2', $sv2->lop ?? '');
+        $path = storage_path('app/temp_pb_' . $topic->maDeTai . '.docx');
         $template->saveAs($path);
         return response()->download($path)->deleteFileAfterSend(true);
     });

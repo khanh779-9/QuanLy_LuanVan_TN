@@ -44,3 +44,16 @@ export async function deleteStudent(id) {
   });
   await parseResponse(response, "Không thể xóa luận văn.");
 }
+
+export async function importStudents(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetchWithAuth(`${API_BASE_URL}/students/import`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const payload = await parseResponse(response, "Không thể import sinh viên.");
+  return payload;
+}

@@ -1,6 +1,13 @@
 
 import React, { useEffect, useState } from "react";
-import { fetchTheses, updateThesis } from "../../services/thesisService";
+import {
+  fetchTheses,
+  updateThesis,
+  saveGvhdScore,
+  saveGvpbScore,
+  exportGvhdWord,
+  exportGvpbWord,
+} from "../../services/thesisService";
 import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
 import FormField from "../../components/FormField";
@@ -126,11 +133,22 @@ export default function Review() {
     if (!selected) return showToast("Vui lòng chọn đề tài", "error");
     setSaving(true);
     try {
+      await saveGvhdScore(selected, {
+        maxPhanTich: guideScale.maxPhanTich,
+        maxThietKe: guideScale.maxThietKe,
+        maxHienThuc: guideScale.maxHienThuc,
+        maxBaoCao: guideScale.maxBaoCao,
+        diemPhanTich1: guideStudents[0].diemPhanTich,
+        diemThietKe1: guideStudents[0].diemThietKe,
+        diemHienThuc1: guideStudents[0].diemHienThuc,
+        diemBaoCao1: guideStudents[0].diemBaoCao,
+        diemPhanTich2: guideStudents[1].diemPhanTich || null,
+        diemThietKe2: guideStudents[1].diemThietKe || null,
+        diemHienThuc2: guideStudents[1].diemHienThuc || null,
+        diemBaoCao2: guideStudents[1].diemBaoCao || null,
+      });
       await updateThesis(selected, {
-        ...guideForm,
-        diemHuongDan1: guideStudents[0].diemFinal,
-        diemHuongDan2: guideStudents[1].diemFinal,
-        scale: guideScale,
+        ghiChu: JSON.stringify(guideForm),
       });
       showToast("Lưu thành công!", "success");
     } catch (e) {
@@ -158,11 +176,23 @@ export default function Review() {
     if (!selected) return showToast("Vui lòng chọn đề tài", "error");
     setSaving(true);
     try {
+      await saveGvpbScore(selected, {
+        maxPhanTich: scale.maxPhanTich,
+        maxThietKe: scale.maxThietKe,
+        maxHienThuc: scale.maxHienThuc,
+        maxBaoCao: scale.maxBaoCao,
+        diemPhanTich1_PB: students[0].diemPhanTich,
+        diemThietKe1_PB: students[0].diemThietKe,
+        diemHienThuc1_PB: students[0].diemHienThuc,
+        diemBaoCao1_PB: students[0].diemBaoCao,
+        diemPhanTich2_PB: students[1].diemPhanTich || null,
+        diemThietKe2_PB: students[1].diemThietKe || null,
+        diemHienThuc2_PB: students[1].diemHienThuc || null,
+        diemBaoCao2_PB: students[1].diemBaoCao || null,
+      });
       await updateThesis(selected, {
-        ...form,
-        diemPhanBien1: students[0].diemFinal,
-        diemPhanBien2: students[1].diemFinal,
-        scale,
+        ghiChu_PB: JSON.stringify(form),
+        nhanXetPhanBien: form.nxTongQuat_PB || "",
       });
       showToast("Lưu thành công!", "success");
     } catch (e) {
@@ -171,9 +201,45 @@ export default function Review() {
     setSaving(false);
   };
 
-  const handleExport = () => {
-    // TODO: Gọi API xuất file hoặc tạo file từ dữ liệu form
-    showToast("Chức năng xuất file đang phát triển", "info");
+  const triggerDownload = (blob, filename) => {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportGvpb = async () => {
+    if (!selected) return showToast("Vui lòng chọn đề tài", "error");
+    setSaving(true);
+    try {
+      const result = await exportGvpbWord(selected);
+      if (result?.blob) {
+        triggerDownload(result.blob, result.filename || `phieu_gvpb_${selected}.docx`);
+      }
+      showToast("Xuất file thành công!", "success");
+    } catch (e) {
+      showToast(e.message, "error");
+    }
+    setSaving(false);
+  };
+
+  const handleExportGvhd = async () => {
+    if (!selected) return showToast("Vui lòng chọn đề tài", "error");
+    setSaving(true);
+    try {
+      const result = await exportGvhdWord(selected);
+      if (result?.blob) {
+        triggerDownload(result.blob, result.filename || `phieu_gvhd_${selected}.docx`);
+      }
+      showToast("Xuất file thành công!", "success");
+    } catch (e) {
+      showToast(e.message, "error");
+    }
+    setSaving(false);
   };
 
   return (
@@ -305,7 +371,7 @@ export default function Review() {
                   Lưu điểm
                 </button>
                 <button
-                  onClick={handleExport}
+                  onClick={handleExportGvpb}
                   style={{ background: "#2563eb", color: "#fff", padding: "12px 32px", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #2563eb22" }}
                 >
                   Xuất file
@@ -407,7 +473,7 @@ export default function Review() {
                   Lưu điểm
                 </button>
                 <button
-                  onClick={handleExport}
+                  onClick={handleExportGvhd}
                   style={{ background: "#2563eb", color: "#fff", padding: "12px 32px", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #2563eb22" }}
                 >
                   Xuất file
