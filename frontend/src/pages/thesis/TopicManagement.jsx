@@ -458,118 +458,144 @@ export default function DataManagement() {
             <h3 style={{ marginBottom: 12 }}>
               {editingId ? "Cập nhật đăng ký" : "Thêm đăng ký"}
             </h3>
-            <form onSubmit={handleSubmit}>
-              <FormField
-                label="Tiêu đề"
-                name="topic_title"
-                value={form.topic_title}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Mô tả"
-                name="topic_description"
-                value={form.topic_description}
-                onChange={handleChange}
-              />
-              <FormField
-                as="select"
-                label="Loại đề tài"
-                name="topic_type"
-                value={form.topic_type}
-                onChange={handleChange}
-              >
-                {typeOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </FormField>
-              <FormField
-                label="MSSV 1"
-                name="student1_id"
-                value={form.student1_id}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Tên SV 1"
-                name="student1_name"
-                value={form.student1_name}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Lớp SV 1"
-                name="student1_class"
-                value={form.student1_class}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Email SV 1"
-                name="student1_email"
-                value={form.student1_email}
-                onChange={handleChange}
-              />
-              <FormField
-                label="MSSV 2"
-                name="student2_id"
-                value={form.student2_id}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Tên SV 2"
-                name="student2_name"
-                value={form.student2_name}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Lớp SV 2"
-                name="student2_class"
-                value={form.student2_class}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Email SV 2"
-                name="student2_email"
-                value={form.student2_email}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Mã GVHD"
-                name="gvhd_code"
-                value={form.gvhd_code}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Nơi công tác GVHD"
-                name="gvhd_workplace"
-                value={form.gvhd_workplace}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Mã GVPB"
-                name="gvpb_code"
-                value={form.gvpb_code}
-                onChange={handleChange}
-              />
-              <FormField
-                label="Ghi chú"
-                name="note"
-                value={form.note}
-                onChange={handleChange}
-              />
-              <FormField
-                as="select"
-                label="Trạng thái"
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-              >
-                {statusOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </FormField>
-              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+            <form onSubmit={handleSubmit} className="thesis-form">
+              <div className="thesis-form-grid">
+                <section className="thesis-form-section">
+                  <h4>Thông tin đề tài</h4>
+                  <div className="thesis-form-fields">
+                    <FormField
+                      label="Tiêu đề"
+                      name="topic_title"
+                      value={form.topic_title}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Mô tả"
+                      name="topic_description"
+                      value={form.topic_description}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      as="select"
+                      label="Loại đề tài"
+                      name="topic_type"
+                      value={form.topic_type}
+                      onChange={handleChange}
+                    >
+                      {typeOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </FormField>
+                  </div>
+                </section>
+
+                <section className="thesis-form-section">
+                  <h4>Thông tin sinh viên 1</h4>
+                  <div className="thesis-form-fields">
+                    <FormField
+                      label="MSSV 1"
+                      name="student1_id"
+                      value={form.student1_id}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Tên SV 1"
+                      name="student1_name"
+                      value={form.student1_name}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Lớp SV 1"
+                      name="student1_class"
+                      value={form.student1_class}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Email SV 1"
+                      name="student1_email"
+                      value={form.student1_email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </section>
+
+                <section className="thesis-form-section">
+                  <h4>Thông tin sinh viên 2</h4>
+                  <div className="thesis-form-fields">
+                    <FormField
+                      label="MSSV 2"
+                      name="student2_id"
+                      value={form.student2_id}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Tên SV 2"
+                      name="student2_name"
+                      value={form.student2_name}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Lớp SV 2"
+                      name="student2_class"
+                      value={form.student2_class}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Email SV 2"
+                      name="student2_email"
+                      value={form.student2_email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </section>
+
+                <section className="thesis-form-section">
+                  <h4>Giảng viên & trạng thái</h4>
+                  <div className="thesis-form-fields">
+                    <FormField
+                      label="Mã GVHD"
+                      name="gvhd_code"
+                      value={form.gvhd_code}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Nơi công tác GVHD"
+                      name="gvhd_workplace"
+                      value={form.gvhd_workplace}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Mã GVPB"
+                      name="gvpb_code"
+                      value={form.gvpb_code}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      label="Ghi chú"
+                      name="note"
+                      value={form.note}
+                      onChange={handleChange}
+                    />
+                    <FormField
+                      as="select"
+                      label="Trạng thái"
+                      name="status"
+                      value={form.status}
+                      onChange={handleChange}
+                    >
+                      {statusOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </FormField>
+                  </div>
+                </section>
+              </div>
+
+              <div className="thesis-form-actions">
                 <button className="btn btn-primary" type="submit">
                   Lưu
                 </button>

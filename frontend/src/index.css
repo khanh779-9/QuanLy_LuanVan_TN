@@ -538,11 +538,70 @@ Added responsive design for better usability on mobile devices.
   background: #fff;
   border-radius: 14px;
   padding: 24px;
-  width: 520px;
+  width: min(880px, 96vw);
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   position: relative;
+}
+
+.thesis-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.thesis-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.thesis-form-section {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.thesis-form-section h4 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.thesis-form-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.thesis-form-fields .form-row {
+  gap: 4px;
+}
+
+.thesis-form-fields .form-row label {
+  font-size: 13px;
+  color: #475569;
+}
+
+.thesis-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .thesis-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .thesis-form-fields {
+    grid-template-columns: 1fr;
+  }
 }
 
 .title {
