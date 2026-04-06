@@ -79,7 +79,7 @@
 
 1. **Đăng nhập**
 
-   - Sử dụng tài khoản mẫu cho từng vai trò (admin, giáo viên, sinh viên).
+   - Sử dụng tài khoản mẫu cho từng vai trò (admin, giáo viên).
    - Minh họa sự khác biệt về giao diện, quyền truy cập của từng vai trò.
    - Kiểm tra các trường hợp nhập sai thông tin, tài khoản bị khóa.
 2. **Quản lý đề tài**
