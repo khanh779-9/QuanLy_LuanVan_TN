@@ -20,7 +20,6 @@ import {
   createStudents,
   updateStudent,
   deleteStudent,
-  importStudents,
 } from "../../services/studentService";
 
 export default function Dashboard() {
@@ -50,9 +49,6 @@ export default function Dashboard() {
     message: "",
     type: "info",
   });
-  const [importFile, setImportFile] = useState(null);
-  const [importErrors, setImportErrors] = useState([]);
-  const [importing, setImporting] = useState(false);
 
   // Các bộ lọc
   const [filterStatus, setFilterStatus] = useState("");
@@ -191,25 +187,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleImportStudents = async () => {
-    if (!importFile) {
-      showToast("Vui lòng chọn file Excel trước khi import.", "error");
-      return;
-    }
-    setImporting(true);
-    setImportErrors([]);
-    try {
-      const result = await importStudents(importFile);
-      showToast(`Import thành công ${result.imported || 0} sinh viên.`, "success");
-      if (result.errors?.length) {
-        setImportErrors(result.errors);
-      }
-      await loadData();
-    } catch (e) {
-      showToast(e.message, "error");
-    }
-    setImporting(false);
-  };
 
   return (
     <div className="dashboard-page">
@@ -318,48 +295,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {aboutMe?.role === "ThuKy" && (
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 8,
-            padding: 16,
-            marginBottom: 16,
-            boxShadow: "0 2px 8px #0001",
-          }}
-        >
-          <h3 style={{ marginBottom: 12, color: "#1e293b" }}>Import danh sách sinh viên</h3>
-          <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-            <input
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-            />
-            <button
-              className="btn btn-secondary"
-              onClick={handleImportStudents}
-              disabled={importing}
-            >
-              {importing ? "Đang import..." : "Import"}
-            </button>
-          </div>
-          {importErrors.length > 0 && (
-            <div style={{ marginTop: 12 }}>
-              <div style={{ fontWeight: 600, color: "#b91c1c" }}>Lỗi import:</div>
-              <ul style={{ marginTop: 8, paddingLeft: 18 }}>
-                {importErrors.slice(0, 10).map((err, idx) => (
-                  <li key={`${err.row}-${idx}`}>
-                    Dòng {err.row}: {err.msg}
-                  </li>
-                ))}
-                {importErrors.length > 10 && (
-                  <li>...và {importErrors.length - 10} lỗi khác</li>
-                )}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
       <div
         className="toolbar"
         style={{

@@ -54,3 +54,15 @@ export async function deleteAllThesisForms() {
     "Không thể xóa tất cả biểu mẫu luận văn.",
   );
 }
+
+export async function importThesisForms(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetchWithAuth(`${API_BASE_URL}/thesis-form/import`, {
+    method: "POST",
+    body: formData,
+  });
+  const payload = await parseResponse(response, "Không thể import dữ liệu.");
+  return payload;
+}

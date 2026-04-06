@@ -9,6 +9,7 @@ import {
   updateThesisForm,
   deleteThesisForm,
   deleteAllThesisForms,
+  importThesisForms,
 } from "../../services/thesisFormService";
 
 import Toast from "../../components/Toast";
@@ -86,6 +87,9 @@ export default function DataManagement() {
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importErrors, setImportErrors] = useState([]);
+  const [importing, setImporting] = useState(false);
   const [toast, setToast] = useState({
     show: false,
     type: "success",
@@ -245,6 +249,39 @@ export default function DataManagement() {
     setError("");
   };
 
+  const handleImport = async () => {
+    if (!importFile) {
+      setToast({
+        show: true,
+        type: "error",
+        message: "Vui lòng chọn file Excel trước khi import.",
+      });
+      return;
+    }
+
+    setImporting(true);
+    setImportErrors([]);
+    try {
+      const result = await importThesisForms(importFile);
+      setToast({
+        show: true,
+        type: "success",
+        message: `Import thành công ${result.imported || 0} dòng.`,
+      });
+      if (result.errors?.length) {
+        setImportErrors(result.errors);
+      }
+      await loadData();
+    } catch (e) {
+      setToast({
+        show: true,
+        type: "error",
+        message: e?.message || "Không thể import dữ liệu.",
+      });
+    }
+    setImporting(false);
+  };
+
   // RBAC: Only ThuKy can access
   if (!user || user.role !== ROLES.THUKY) {
     return (
@@ -310,6 +347,43 @@ export default function DataManagement() {
             >
               Xóa tất cả
             </button>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <h3 style={{ marginBottom: 12, color: "#1e293b" }}>
+              Import đăng ký đề tài
+            </h3>
+            <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={(e) => setImportFile(e.target.files?.[0] || null)}
+              />
+              <button
+                className="btn btn-secondary"
+                onClick={handleImport}
+                disabled={importing}
+              >
+                {importing ? "Đang import..." : "Import"}
+              </button>
+            </div>
+            {importErrors.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <div style={{ fontWeight: 600, color: "#b91c1c" }}>
+                  Lỗi import:
+                </div>
+                <ul style={{ marginTop: 8, paddingLeft: 18 }}>
+                  {importErrors.slice(0, 10).map((err, idx) => (
+                    <li key={`${err.row}-${idx}`}>
+                      Dòng {err.row}: {err.msg}
+                    </li>
+                  ))}
+                  {importErrors.length > 10 && (
+                    <li>...và {importErrors.length - 10} lỗi khác</li>
+                  )}
+                </ul>
+              </div>
+            )}
           </div>
 
           {error && (

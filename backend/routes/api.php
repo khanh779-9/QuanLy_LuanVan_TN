@@ -760,6 +760,213 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         }
         return app(ThesisFormController::class)->index($request);
     });
+    Route::post('/thesis-form/import', function (Request $request) {
+        $role = (string) $request->attributes->get('auth_role', '');
+        if ($role !== 'ThuKy') {
+            return response()->json([
+                'message' => 'Bạn không có quyền truy cập chức năng này.'
+            ], 403);
+        }
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file');
+        $spreadsheet = 
+            \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+
+        $sheet = $spreadsheet->getSheetByName('SVĐK theo link')
+            ?? $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, true);
+
+        if (count($rows) < 2) {
+            return response()->json([
+                'imported' => 0,
+                'errors' => [['row' => 1, 'msg' => 'File không có dữ liệu.']],
+            ], 422);
+        }
+
+        $headerRowIndex = null;
+        $headerMap = [];
+        foreach ($rows as $index => $row) {
+            $normalized = array_map(function ($label) {
+                $value = strtolower(trim((string) $label));
+                $value = Str::ascii($value);
+                $value = preg_replace('/[^a-z0-9]+/', '', $value);
+                return $value;
+            }, $row);
+
+            if (in_array('mssv', $normalized, true) || in_array('masv', $normalized, true)) {
+                $headerRowIndex = $index;
+                foreach ($row as $col => $label) {
+                    $key = strtolower(trim((string) $label));
+                    $key = Str::ascii($key);
+                    $key = preg_replace('/[^a-z0-9]+/', '', $key);
+
+                    if (in_array($key, ['mssv', 'masv', 'masinhvien', 'masinhvien1'], true)) {
+                        $headerMap['student1_id'] = $col;
+                    } elseif (
+                        in_array(
+                            $key,
+                            ['hotensinhvien', 'hovatensinhvien', 'hoten', 'hovatensinhvien1'],
+                            true
+                        )
+                    ) {
+                        $headerMap['student1_name'] = $col;
+                    } elseif (in_array($key, ['lop', 'lopsinhvien1'], true)) {
+                        $headerMap['student1_class'] = $col;
+                    } elseif (in_array($key, ['email', 'emailaddress'], true)) {
+                        $headerMap['student1_email'] = $col;
+                    } elseif (in_array($key, ['sonhom', 'nhom', 'nhomsv'], true)) {
+                        $headerMap['group_id'] = $col;
+                    } elseif (in_array($key, ['nhom', 'nhomsv'], true)) {
+                        $headerMap['topic_type'] = $col;
+                    } elseif ($key === 'gvhd') {
+                        $headerMap['gvhd_code'] = $col;
+                    } elseif ($key === 'noicongtac') {
+                        $headerMap['gvhd_workplace'] = $col;
+                    } elseif ($key === 'tendetai') {
+                        $headerMap['topic_title'] = $col;
+                    } elseif (
+                        in_array($key, ['noidungtomtatdetai', 'noidungtomtat'], true)
+                    ) {
+                        $headerMap['topic_description'] = $col;
+                    } elseif ($key === 'ghichu') {
+                        $headerMap['note'] = $col;
+                    }
+                }
+                break;
+            }
+        }
+
+        if ($headerRowIndex === null || !isset($headerMap['student1_id']) || !isset($headerMap['student1_name'])) {
+            return response()->json([
+                'imported' => 0,
+                'errors' => [[
+                    'row' => 1,
+                    'msg' => 'Thiếu cột bắt buộc: MSSV hoặc Họ tên.',
+                ]],
+            ], 422);
+        }
+
+        $rows = array_slice($rows, $headerRowIndex + 1);
+        $imported = 0;
+        $errors = [];
+        $groups = [];
+
+        foreach ($rows as $index => $row) {
+            $rowNumber = $headerRowIndex + $index + 2;
+            $studentId = trim((string) ($row[$headerMap['student1_id']] ?? ''));
+            $studentName = trim((string) ($row[$headerMap['student1_name']] ?? ''));
+
+            if ($studentId === '' && $studentName === '') {
+                continue;
+            }
+
+            $groupRaw = isset($headerMap['group_id'])
+                ? trim((string) ($row[$headerMap['group_id']] ?? ''))
+                : '';
+            $groupKey = $groupRaw !== '' ? $groupRaw : 'row-' . $rowNumber;
+
+            $groups[$groupKey][] = [
+                'rowNumber' => $rowNumber,
+                'row' => $row,
+            ];
+        }
+
+        foreach ($groups as $groupKey => $groupRows) {
+            if (count($groupRows) > 2) {
+                $errors[] = [
+                    'row' => $groupRows[0]['rowNumber'],
+                    'msg' => 'Nhóm có hơn 2 sinh viên. Vui lòng kiểm tra lại.',
+                ];
+                continue;
+            }
+
+            $first = $groupRows[0];
+            $row = $first['row'];
+
+            $student1Id = trim((string) ($row[$headerMap['student1_id']] ?? ''));
+            $student1Name = trim((string) ($row[$headerMap['student1_name']] ?? ''));
+            $student1Class = isset($headerMap['student1_class'])
+                ? trim((string) ($row[$headerMap['student1_class']] ?? ''))
+                : '';
+            $student1Email = isset($headerMap['student1_email'])
+                ? trim((string) ($row[$headerMap['student1_email']] ?? ''))
+                : null;
+
+            if ($student1Id === '' || $student1Name === '' || $student1Class === '') {
+                $errors[] = [
+                    'row' => $first['rowNumber'],
+                    'msg' => 'Thiếu MSSV, Họ tên hoặc Lớp.',
+                ];
+                continue;
+            }
+
+            $student2Id = null;
+            $student2Name = null;
+            $student2Class = null;
+            $student2Email = null;
+
+            if (count($groupRows) === 2) {
+                $secondRow = $groupRows[1]['row'];
+                $student2Id = trim((string) ($secondRow[$headerMap['student1_id']] ?? ''));
+                $student2Name = trim((string) ($secondRow[$headerMap['student1_name']] ?? ''));
+                $student2Class = isset($headerMap['student1_class'])
+                    ? trim((string) ($secondRow[$headerMap['student1_class']] ?? ''))
+                    : '';
+                $student2Email = isset($headerMap['student1_email'])
+                    ? trim((string) ($secondRow[$headerMap['student1_email']] ?? ''))
+                    : null;
+            }
+
+            $topicTitle = isset($headerMap['topic_title'])
+                ? trim((string) ($row[$headerMap['topic_title']] ?? ''))
+                : '';
+            if ($topicTitle === '') {
+                $topicTitle = 'Chua cap nhat ten de tai';
+            }
+
+            $gvhdCode = isset($headerMap['gvhd_code'])
+                ? trim((string) ($row[$headerMap['gvhd_code']] ?? ''))
+                : null;
+            if ($gvhdCode !== null && $gvhdCode !== '' && !Teacher::where('maGV', $gvhdCode)->exists()) {
+                $gvhdCode = null;
+            }
+
+            ThesisForm::create([
+                'topic_title' => $topicTitle,
+                'topic_description' => isset($headerMap['topic_description'])
+                    ? trim((string) ($row[$headerMap['topic_description']] ?? ''))
+                    : null,
+                'topic_type' => count($groupRows) === 2 ? 'hai_sinh_vien' : 'mot_sinh_vien',
+                'student1_id' => $student1Id,
+                'student1_name' => $student1Name,
+                'student1_class' => $student1Class,
+                'student1_email' => $student1Email ?: null,
+                'student2_id' => $student2Id ?: null,
+                'student2_name' => $student2Name ?: null,
+                'student2_class' => $student2Class ?: null,
+                'student2_email' => $student2Email ?: null,
+                'gvhd_code' => $gvhdCode,
+                'gvhd_workplace' => isset($headerMap['gvhd_workplace'])
+                    ? trim((string) ($row[$headerMap['gvhd_workplace']] ?? ''))
+                    : null,
+                'note' => isset($headerMap['note'])
+                    ? trim((string) ($row[$headerMap['note']] ?? ''))
+                    : null,
+                'source' => 'excel_import',
+                'status' => 'cho_duyet',
+            ]);
+            $imported++;
+        }
+
+        return response()->json([
+            'imported' => $imported,
+            'errors' => $errors,
+        ]);
+    });
     Route::post('/thesis-form', [ThesisFormController::class, 'store']);
     Route::put('/thesis-form/{form}', [ThesisFormController::class, 'update']);
     Route::delete('/thesis-form/{form}', [ThesisFormController::class, 'destroy']);
