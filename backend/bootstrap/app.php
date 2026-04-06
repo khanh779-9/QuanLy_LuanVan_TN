@@ -20,5 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Đăng ký custom Exception Handler
+        // $exceptions->handler(\App\Exceptions\Handler::class);
     })->create();
