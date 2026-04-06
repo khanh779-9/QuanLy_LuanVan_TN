@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `detai` (
   `ghiChu_PB` text COLLATE utf8mb4_general_ci,
   `ghiChu` text COLLATE utf8mb4_general_ci,
   `diemGiuaKy` float DEFAULT NULL,
-  `trangThaiGiuaKy` enum('Được làm tiếp','Đình chỉ','Cảnh cáo') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `trangThaiGiuaKy` enum('duoc_lam_tiep','dinh_chi','canh_cao') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `nhanXetGiuaKy` text COLLATE utf8mb4_general_ci,
   `maHoiDong` int DEFAULT NULL,
   `diemPhanBien` float DEFAULT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `detai` (
   `nhanXetHoiDong` text COLLATE utf8mb4_general_ci,
   `diemTongKet` float DEFAULT NULL,
   `diemChu` varchar(5) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `trangThaiHoiDong` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Đạt / Cần chỉnh sửa / Không đạt',
+  `trangThaiHoiDong` enum('dat','can_chinh_sua','khong_dat') COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Đạt / Cần chỉnh sửa / Không đạt',
   PRIMARY KEY (`maDeTai`),
   KEY `fk_detai_gvhd` (`maGV_HD`),
   KEY `fk_detai_gvpb` (`maGV_PB`),
@@ -99,9 +99,9 @@ CREATE TABLE IF NOT EXISTS `detai` (
 --
 
 INSERT INTO `detai` (`maDeTai`, `maMH`, `tenMonHoc`, `tenDeTai`, `maGV_HD`, `maGV_PB`, `ghiChu_PB`, `ghiChu`, `diemGiuaKy`, `trangThaiGiuaKy`, `nhanXetGiuaKy`, `maHoiDong`, `diemPhanBien`, `nhanXetPhanBien`, `diemHuongDan`, `diemHoiDong`, `nhanXetHoiDong`, `diemTongKet`, `diemChu`, `trangThaiHoiDong`) VALUES
-(10, '1', NULL, 'Chưa cập nhật tên đề tài', 'MA5642', 'MA2431', '', NULL, NULL, 'Được làm tiếp', NULL, NULL, 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(11, '2', 'Đồ án / Khóa luận tốt nghiệp', 'Làm web bán áo thời trang', 'MA2431', 'MA3214', '', NULL, 30, 'Đình chỉ', 'adawdaw', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(12, '3', 'Đồ án / Khóa luận tốt nghiệp', 'Làm quản lý sinh viên', 'MA2431', 'MA5136', '', NULL, 50, 'Được làm tiếp', '', 13, NULL, NULL, 8, 8, '', 6.4, 'C', NULL);
+(10, '1', NULL, 'Chưa cập nhật tên đề tài', 'MA5642', 'MA2431', '', NULL, NULL, 'duoc_lam_tiep', NULL, NULL, 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(11, '2', 'Đồ án / Khóa luận tốt nghiệp', 'Làm web bán áo thời trang', 'MA2431', 'MA3214', '', NULL, 30, 'dinh_chi', 'adawdaw', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(12, '3', 'Đồ án / Khóa luận tốt nghiệp', 'Làm quản lý sinh viên', 'MA2431', 'MA5136', '', NULL, 50, 'duoc_lam_tiep', '', 13, NULL, NULL, 8, 8, '', 6.4, 'C', NULL);
 
 -- --------------------------------------------------------
 
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `diem` (
   `maDiem` int NOT NULL AUTO_INCREMENT,
   `maDeTai` int NOT NULL,
   `maGV` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `loaiDiem` enum('HuongDan','PhanBien','HoiDong') COLLATE utf8mb4_general_ci NOT NULL,
+  `loaiDiem` enum('huong_dan','phan_bien','hoi_dong') COLLATE utf8mb4_general_ci NOT NULL,
   `diemSo` float NOT NULL,
   `nhanXet` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`maDiem`),
@@ -383,7 +383,7 @@ CREATE TABLE topic_registrations_form (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     topic_title VARCHAR(255) NOT NULL,
     topic_description TEXT NULL,
-    topic_type ENUM('single', 'group') NOT NULL, -- 1 SV / 2 SV
+    topic_type ENUM('mot_sinh_vien', 'hai_sinh_vien') NOT NULL, -- 1 SV / 2 SV
     student1_id VARCHAR(20) NOT NULL,
     student1_name VARCHAR(255) NOT NULL,
     student1_class VARCHAR(50) NOT NULL,
@@ -397,7 +397,7 @@ CREATE TABLE topic_registrations_form (
     gvpb_code VARCHAR(20) NULL,
     note TEXT NULL,
     source VARCHAR(50) DEFAULT 'google_form',
-    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    status ENUM('cho_duyet', 'da_duyet', 'tu_choi') DEFAULT 'cho_duyet',
     registered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

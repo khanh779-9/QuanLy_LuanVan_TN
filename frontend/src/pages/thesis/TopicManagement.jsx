@@ -20,7 +20,7 @@ import { formatDate } from "../../utils/convertFormat";
 const initialForm = {
   topic_title: "",
   topic_description: "",
-  topic_type: "single",
+  topic_type: "mot_sinh_vien",
   student1_id: "",
   student1_name: "",
   student1_class: "",
@@ -34,19 +34,46 @@ const initialForm = {
   gvpb_code: "",
   note: "",
   source: "google_form",
-  status: "pending",
+  status: "cho_duyet",
 };
 
 const statusOptions = [
-  { value: "pending", label: "Chờ duyệt" },
-  { value: "approved", label: "Đã duyệt" },
-  { value: "rejected", label: "Từ chối" },
+  { value: "cho_duyet", label: "Chờ duyệt" },
+  { value: "da_duyet", label: "Đã duyệt" },
+  { value: "tu_choi", label: "Từ chối" },
 ];
 
 const typeOptions = [
-  { value: "single", label: "1 sinh viên" },
-  { value: "group", label: "2 sinh viên" },
+  { value: "mot_sinh_vien", label: "1 sinh viên" },
+  { value: "hai_sinh_vien", label: "2 sinh viên" },
 ];
+
+const statusLabelMap = {
+  cho_duyet: "Chờ duyệt",
+  da_duyet: "Đã duyệt",
+  tu_choi: "Từ chối",
+  pending: "Chờ duyệt",
+  approved: "Đã duyệt",
+  rejected: "Từ chối",
+};
+
+const statusValueMap = {
+  pending: "cho_duyet",
+  approved: "da_duyet",
+  rejected: "tu_choi",
+};
+
+const typeLabelMap = {
+  mot_sinh_vien: "1 SV",
+  hai_sinh_vien: "2 SV",
+  single: "1 SV",
+  group: "2 SV",
+};
+
+const typeValueMap = {
+  single: "mot_sinh_vien",
+  group: "hai_sinh_vien",
+};
 
 const user = localStorage.getItem("user")
   ? JSON.parse(localStorage.getItem("user"))
@@ -178,7 +205,11 @@ export default function DataManagement() {
   };
 
   const handleEdit = (item) => {
-    setForm({ ...item });
+    setForm({
+      ...item,
+      status: statusValueMap[item.status] || item.status,
+      topic_type: typeValueMap[item.topic_type] || item.topic_type,
+    });
     setEditingId(item.id);
     setShowForm(true);
     setError("");
@@ -310,7 +341,7 @@ export default function DataManagement() {
                   <tr key={item.id}>
                     <td>{item.topic_title}</td>
                     <td>
-                      {item.topic_type === "group" ? "2 SV" : "1 SV"}
+                      {typeLabelMap[item.topic_type] || item.topic_type}
                     </td>
                     <td>
                       {item.student1_name} ({item.student1_id})
@@ -322,8 +353,7 @@ export default function DataManagement() {
                     </td>
                     <td>{item.gvhd_code || "-"}</td>
                     <td>
-                      {statusOptions.find((s) => s.value === item.status)
-                        ?.label || item.status}
+                      {statusLabelMap[item.status] || item.status}
                     </td>
                     <td>{formatDate(item.registered_at || item.created_at)}</td>
                     <td>

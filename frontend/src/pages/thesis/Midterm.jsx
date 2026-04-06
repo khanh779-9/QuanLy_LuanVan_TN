@@ -4,7 +4,11 @@ import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
 import FormField from "../../components/FormField";
 
-const STATUS_OPTIONS = ["Được làm tiếp", "Đình chỉ", "Cảnh cáo"];
+const STATUS_OPTIONS = [
+  { value: "duoc_lam_tiep", label: "Được làm tiếp" },
+  { value: "dinh_chi", label: "Đình chỉ" },
+  { value: "canh_cao", label: "Cảnh cáo" },
+];
 
 export default function Midterm() {
   const [data, setData] = useState([]);
@@ -112,8 +116,8 @@ export default function Midterm() {
                   >
                     <option value="">-- Chọn --</option>
                     {STATUS_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
                       </option>
                     ))}
                   </FormField>

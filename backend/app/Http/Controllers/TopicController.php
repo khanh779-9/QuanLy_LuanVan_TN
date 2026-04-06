@@ -40,7 +40,7 @@ class TopicController extends Controller
             $topic = Topic::create([
                 'tenDeTai' => 'Chưa cập nhật tên đề tài',
                 'maGV_HD' => $request->lecturer_id,
-                'trangThaiGiuaKy' => 'Được làm tiếp',
+                'trangThaiGiuaKy' => 'duoc_lam_tiep',
             ]);
 
             // Gán sinh viên vào đề tài
@@ -92,7 +92,7 @@ class TopicController extends Controller
     public function updateStatus(Request $request, Topic $topic)
     {
         $request->validate([
-            'status' => 'required|string'
+            'status' => 'required|in:duoc_lam_tiep,dinh_chi,canh_cao'
         ]);
 
         // Cập nhật đúng vào cột trạng thái tiếng Việt

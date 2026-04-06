@@ -111,6 +111,7 @@ function ThesisLayout() {
           flex: 1,
           background: "url('/assets/background.jpg')",
           padding: 24,
+          backgroundSize: "cover",
         }}
       >
         <Outlet />

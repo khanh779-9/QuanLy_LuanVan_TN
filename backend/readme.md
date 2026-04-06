@@ -202,7 +202,7 @@ Request mẫu tạo điểm:
 {
 	"maDeTai": 1,
 	"maGV": "GV001",
-	"loaiDiem": "HuongDan",
+	"loaiDiem": "huong_dan",
 	"diemSo": 8.0,
 	"nhanXet": "Đạt yêu cầu"
 }

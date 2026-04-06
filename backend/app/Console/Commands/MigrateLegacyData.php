@@ -152,7 +152,13 @@ class MigrateLegacyData extends Command
                     $code = $dt->maDeTai;
 
                 // Safe access helpers
-                $trangThaiGK = $dt->trangThaiGiuaKy ?? ($dt->trangThaiGK ?? 'Được làm tiếp');
+                $trangThaiGKRaw = $dt->trangThaiGiuaKy ?? ($dt->trangThaiGK ?? 'duoc_lam_tiep');
+                $trangThaiGKMap = [
+                    'Được làm tiếp' => 'duoc_lam_tiep',
+                    'Đình chỉ' => 'dinh_chi',
+                    'Cảnh cáo' => 'canh_cao',
+                ];
+                $trangThaiGK = $trangThaiGKMap[$trangThaiGKRaw] ?? $trangThaiGKRaw;
                 $nhanXetGK = $dt->nhanXetGiuaKy ?? ($dt->nhanXetGK ?? null);
 
                 // Try to find other comments if they exist

@@ -434,7 +434,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'ghiChu' => 'nullable|string',
             'ghiChu_PB' => 'nullable|string',
             'diemGiuaKy' => 'nullable|numeric|min:0|max:100',
-            'trangThaiGiuaKy' => 'nullable|string|max:50',
+            'trangThaiGiuaKy' => 'nullable|in:duoc_lam_tiep,dinh_chi,canh_cao',
             'nhanXetGiuaKy' => 'nullable|string',
             'diemHuongDan' => 'nullable|numeric|min:0|max:10',
             'diemPhanBien' => 'nullable|numeric|min:0|max:10',
@@ -443,7 +443,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
             'nhanXetHoiDong' => 'nullable|string',
             'diemTongKet' => 'nullable|numeric|min:0|max:10',
             'diemChu' => 'nullable|string|max:5',
-            'trangThaiHoiDong' => 'nullable|string|max:50',
+            'trangThaiHoiDong' => 'nullable|in:dat,can_chinh_sua,khong_dat',
         ]);
 
         if (!empty($validated['maGV_HD']) && !empty($validated['maGV_PB']) && $validated['maGV_HD'] === $validated['maGV_PB']) {
@@ -488,7 +488,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
                 'maMH' => $validated['maMH'],
                 'maGV_HD' => $validated['maGV_HD'],
                 'maGV_PB' => null,
-                'trangThaiGiuaKy' => 'Được làm tiếp',
+                'trangThaiGiuaKy' => 'duoc_lam_tiep',
             ]);
 
             Student::where('mssv', $validated['student_1'])->update(['maDeTai' => $topic->maDeTai]);
@@ -518,7 +518,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
 
     Route::patch('/topics/{topic}/status', function (Request $request, Topic $topic) {
         $validated = $request->validate([
-            'status' => 'required|in:Được làm tiếp,Đình chỉ,Cảnh cáo,Chờ duyệt'
+            'status' => 'required|in:duoc_lam_tiep,dinh_chi,canh_cao'
         ]);
 
         $topic->update([
@@ -539,7 +539,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         ]);
 
         $blocked = Topic::whereIn('maDeTai', $validated['maDeTai'])
-            ->where('trangThaiGiuaKy', 'Đình chỉ')
+            ->where('trangThaiGiuaKy', 'dinh_chi')
             ->pluck('tenDeTai')
             ->all();
 
@@ -704,7 +704,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         $validated = $request->validate([
             'maDeTai' => 'required|exists:detai,maDeTai',
             'maGV' => 'required|exists:giangvien,maGV',
-            'loaiDiem' => 'required|in:HuongDan,PhanBien,HoiDong',
+            'loaiDiem' => 'required|in:huong_dan,phan_bien,hoi_dong',
             'diemSo' => 'required|numeric|min:0|max:100',
             'nhanXet' => 'nullable|string',
         ]);
@@ -720,7 +720,7 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
         $validated = $request->validate([
             'maDeTai' => 'sometimes|exists:detai,maDeTai',
             'maGV' => 'sometimes|exists:giangvien,maGV',
-            'loaiDiem' => 'sometimes|in:HuongDan,PhanBien,HoiDong',
+            'loaiDiem' => 'sometimes|in:huong_dan,phan_bien,hoi_dong',
             'diemSo' => 'sometimes|numeric|min:0|max:100',
             'nhanXet' => 'sometimes|nullable|string',
         ]);
