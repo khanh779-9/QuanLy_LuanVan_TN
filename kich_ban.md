@@ -5,7 +5,7 @@
 - Giới thiệu tên dự án, mục tiêu (giải quyết bài toán quản lý luận văn tốt nghiệp, hỗ trợ nhà trường, giáo viên, sinh viên quản lý, theo dõi, đánh giá luận văn hiệu quả).
 - Giới thiệu các thành viên, vai trò từng người.
 - Trình bày sơ đồ kiến trúc tổng thể: Backend (Laravel API), Frontend (React), Database (MySQL), Docker, CI/CD (nếu có).
-- Đối tượng sử dụng: Quản trị viên, giáo viên, sinh viên.
+- Đối tượng sử dụng: Quản trị viên, giáo viên.
 
 ---
 
