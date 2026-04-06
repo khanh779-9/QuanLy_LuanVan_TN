@@ -209,8 +209,24 @@ export default function DataManagement() {
   };
 
   const handleEdit = (item) => {
+    const normalize = (value) => (value === null || value === undefined ? "" : value);
+
     setForm({
       ...item,
+      topic_title: normalize(item.topic_title),
+      topic_description: normalize(item.topic_description),
+      student1_id: normalize(item.student1_id),
+      student1_name: normalize(item.student1_name),
+      student1_class: normalize(item.student1_class),
+      student1_email: normalize(item.student1_email),
+      student2_id: normalize(item.student2_id),
+      student2_name: normalize(item.student2_name),
+      student2_class: normalize(item.student2_class),
+      student2_email: normalize(item.student2_email),
+      gvhd_code: normalize(item.gvhd_code),
+      gvhd_workplace: normalize(item.gvhd_workplace),
+      gvpb_code: normalize(item.gvpb_code),
+      note: normalize(item.note),
       status: statusValueMap[item.status] || item.status,
       topic_type: typeValueMap[item.topic_type] || item.topic_type,
     });
