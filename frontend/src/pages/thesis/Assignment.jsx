@@ -129,7 +129,7 @@ export default function Assignment() {
                 <td>{row.tenDeTai}</td>
                 <td>{row.students?.map((sv) => sv.hoTen).join(", ")}</td>
                 <td>
-                  {role === "thu_ky" ? (
+                  {role === "ThuKy" ? (
                     <select
                       className="custom-select"
                       value={row.maGV_HD || ""}
@@ -150,7 +150,7 @@ export default function Assignment() {
                   )}
                 </td>
                 <td>
-                  {role === "thu_ky" ? (
+                  {role === "ThuKy" ? (
                     <select
                       className="custom-select"
                       value={row.maGV_PB || ""}
