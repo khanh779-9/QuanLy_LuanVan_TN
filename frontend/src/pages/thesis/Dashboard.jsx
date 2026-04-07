@@ -104,9 +104,9 @@ export default function Dashboard() {
     loadData();
   }, []);
 
-  // --- 2. LOGIC TÌM KIẾM VÀ LỌC BẰNG JAVASCRIPT (MỚI) ---
+  
   const finalFilteredData = data.filter((row) => {
-    // 1. Kiểm tra Search theo Mã Đề Tài
+  
     const termMaDeTai = searchMaDeTai.toLowerCase();
     const passMaDeTai =
       !termMaDeTai ||
@@ -114,12 +114,12 @@ export default function Dashboard() {
         .toLowerCase()
         .includes(termMaDeTai);
 
-    // 2. Kiểm tra Search theo Sinh Viên (Lấy cả mssv và hoTen)
+  
     const termSinhVien = searchSinhVien.toLowerCase();
     const passSinhVien =
       !termSinhVien ||
       (row.students || []).some((sv) => {
-        // Dùng hàm .some() để kiểm tra xem có sinh viên nào khớp không
+  
         const matchMSSV = String(sv.mssv || "")
           .toLowerCase()
           .includes(termSinhVien);
@@ -129,7 +129,6 @@ export default function Dashboard() {
         return matchMSSV || matchTen;
       });
 
-    // 3. Kiểm tra các bộ lọc Cột (Giữ nguyên như cũ)
     const passStatus = !filterStatus || row.trangThai === filterStatus;
     const passGVHD_Filter =
       !filterGVHD ||
@@ -142,7 +141,6 @@ export default function Dashboard() {
         .toLowerCase()
         .includes(filterGVPB.toLowerCase());
 
-    // Trả về true nếu thỏa mãn TẤT CẢ các điều kiện (ô nào bỏ trống thì tự động pass)
     return (
       passMaDeTai &&
       passSinhVien &&

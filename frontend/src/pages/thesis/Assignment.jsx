@@ -5,6 +5,8 @@ import Toast from "../../components/Toast";
 import LoadingSection from "../../components/LoadingSection";
 
 export default function Assignment() {
+    
+    const role = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : null;
   const [data, setData] = useState([]);
   const [lecturers, setLecturers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -127,38 +129,46 @@ export default function Assignment() {
                 <td>{row.tenDeTai}</td>
                 <td>{row.students?.map((sv) => sv.hoTen).join(", ")}</td>
                 <td>
-                  <select
-                    className="custom-select"
-                    value={row.maGV_HD || ""}
-                    onChange={(e) =>
-                      handleAssign(row, "maGV_HD", e.target.value)
-                    }
-                    disabled={saving}
-                  >
-                    <option value="">-- Chọn --</option>
-                    {lecturers.map((l) => (
-                      <option key={l.maGV} value={l.maGV}>
-                        {l.tenGV}
-                      </option>
-                    ))}
-                  </select>
+                  {role === "thu_ky" ? (
+                    <select
+                      className="custom-select"
+                      value={row.maGV_HD || ""}
+                      onChange={(e) =>
+                        handleAssign(row, "maGV_HD", e.target.value)
+                      }
+                      disabled={saving}
+                    >
+                      <option value="">-- Chọn --</option>
+                      {lecturers.map((l) => (
+                        <option key={l.maGV} value={l.maGV}>
+                          {l.tenGV}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    lecturers.find((l) => l.maGV === row.maGV_HD)?.tenGV || ""
+                  )}
                 </td>
                 <td>
-                  <select
-                    className="custom-select"
-                    value={row.maGV_PB || ""}
-                    onChange={(e) =>
-                      handleAssign(row, "maGV_PB", e.target.value)
-                    }
-                    disabled={saving}
-                  >
-                    <option value="">-- Chọn --</option>
-                    {lecturers.map((l) => (
-                      <option key={l.maGV} value={l.maGV}>
-                        {l.tenGV}
-                      </option>
-                    ))}
-                  </select>
+                  {role === "thu_ky" ? (
+                    <select
+                      className="custom-select"
+                      value={row.maGV_PB || ""}
+                      onChange={(e) =>
+                        handleAssign(row, "maGV_PB", e.target.value)
+                      }
+                      disabled={saving}
+                    >
+                      <option value="">-- Chọn --</option>
+                      {lecturers.map((l) => (
+                        <option key={l.maGV} value={l.maGV}>
+                          {l.tenGV}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    lecturers.find((l) => l.maGV === row.maGV_PB)?.tenGV || ""
+                  )}
                 </td>
               </tr>
             ))}

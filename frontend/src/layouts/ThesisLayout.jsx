@@ -44,7 +44,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faHouse} className="pr-3" />
-          Dashboard
+          Trang chủ
         </NavLink>
 
         <NavLink
@@ -54,7 +54,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faInfo} className="pr-3" />
-          Topic Management
+          Quản lý đề tài
         </NavLink>
 
         <NavLink
@@ -64,7 +64,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faListCheck} className="pr-3" />
-          Assignment
+          Phân công
         </NavLink>
         <NavLink
           to="/thesis/midterm"
@@ -73,7 +73,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faBook} className="pr-3" />
-          Midterm
+          Giữa kỳ
         </NavLink>
         <NavLink
           to="/thesis/review"
@@ -82,7 +82,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faGavel} className="pr-3" />
-          Counter-Argument
+          Phản biện
         </NavLink>
         <NavLink
           to="/thesis/council"
@@ -91,7 +91,7 @@ function ThesisLayout() {
           }
         >
           <FontAwesomeIcon icon={faPeopleGroup} className="pr-3" />
-          Council
+          Hội đồng
         </NavLink>
 
         <div className="sidebar-footer">
