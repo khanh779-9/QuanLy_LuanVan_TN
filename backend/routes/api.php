@@ -756,173 +756,28 @@ Route::middleware(ApiTokenAuth::class)->group(function () {
     Route::put('/thesis-form/{form}', [ThesisFormController::class, 'update']);
     Route::delete('/thesis-form/{form}', [ThesisFormController::class, 'destroy']);
     Route::delete('/thesis-forms', [ThesisFormController::class, 'destroyAll']);
-
+// ==========================================
+    // KHU VỰC IMPORT EXCEL (Bắt buộc Login)
     // ==========================================
-    // KHU VỰC IMPORT EXCEL (Nạp dữ liệu từ file KQ_QUATRINHTHUCHIEN)
-    // ==========================================
-    Route::post('/imports/excel/full-data', function (Request $request) {
-        $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+    Route::post('/imports/excel/full-data', [\App\Http\Controllers\ImportController::class, 'importFullData']);
 
-        $file = $request->file('file');
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
-        $data = $spreadsheet->getActiveSheet()->toArray();
+}); // <--- DẤU NGOẶC NÀY ĐỂ ĐÓNG KHU VỰC BẢO MẬT VIP (QUAN TRỌNG)
 
-        $count = 0;
-        try {
-            DB::transaction(function () use ($data, &$count) {
-                foreach ($data as $index => $row) {
-                    if ($index < 1 || empty($row[1])) continue; // Bỏ qua header và dòng trống
 
-                    // 1. Tạo/Cập nhật GVHD (Cột F)
-                    $gvhd = Teacher::firstOrCreate(
-                        ['tenGV' => $row[5]],
-                        ['maGV' => 'GV'.Str::random(5)] 
-                    );
+// ==========================================
+// KHU VỰC EXPORT WORD/EXCEL (Public - Trình duyệt tải thoải mái)
+// ĐỂ Ở ĐÂY MỚI KHÔNG BỊ THẰNG HỐT RÁC NUỐT NÈ!
+// ==========================================
+Route::get('/exports/word/assignment/{topic}', [\App\Http\Controllers\ExportController::class, 'exportAssignmentWord']);
+Route::get('/exports/word/gvhd/{topic}', [\App\Http\Controllers\ExportController::class, 'exportHdWord']);
+Route::get('/exports/word/gvpb/{topic}', [\App\Http\Controllers\ExportController::class, 'exportPbWord']);
+Route::get('/exports/excel/danhsach', [\App\Http\Controllers\ExportController::class, 'exportExcelList']);
 
-                    // 2. Tạo/Cập nhật Đề tài (Cột E)
-                    $topic = Topic::updateOrCreate(
-                        ['tenDeTai' => $row[4]],
-                        [
-                            'maGV_HD' => $gvhd->maGV,
-                            'diemHuongDan' => $row[6] ?? null,
-                            'diemPhanBien' => $row[7] ?? null,
-                        ]
-                    );
-
-                    // 3. Tạo/Cập nhật Sinh viên (Cột B, C, D)
-                    Student::updateOrCreate(
-                        ['mssv' => $row[1]],
-                        [
-                            'hoTen' => $row[2],
-                            'lop' => $row[3],
-                            'maDeTai' => $topic->maDeTai
-                        ]
-                    );
-                    $count++;
-                }
-            });
-            return response()->json(['message' => "Đã import thành công $count dòng dữ liệu!"]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Lỗi Import: ' . $e->getMessage()], 500);
-        }
-    });
-
-    // ==========================================
-    // KHU VỰC EXPORT WORD (- Nhận diện Nhóm/Cá nhân)
-    // ==========================================
-    Route::get('/exports/word/assignment/{topic}', function (Topic $topic) {
-        $topic->load(['students', 'lecturer']);
-        $template = new \PhpOffice\PhpWord\TemplateProcessor(base_path('huong_dan/Form_NhiemvuLVTN.docx'));
-        $sv1 = $topic->students->first();
-        $sv2 = $topic->students->skip(1)->first();
-        $template->setValue('tenDeTai', $topic->tenDeTai ?? '');
-        $template->setValue('tenGVHD', $topic->lecturer->tenGV ?? '');
-        $template->setValue('tenSV1', $sv1->hoTen ?? '');
-        $template->setValue('mssv1', $sv1->mssv ?? '');
-        $template->setValue('lop1', $sv1->lop ?? '');
-        $template->setValue('tenSV2', $sv2->hoTen ?? '');
-        $template->setValue('mssv2', $sv2->mssv ?? '');
-        $template->setValue('lop2', $sv2->lop ?? '');
-        $path = storage_path('app/temp_nv_' . $topic->maDeTai . '.docx');
-        $template->saveAs($path);
-        return response()->download($path)->deleteFileAfterSend(true);
-    });
-
-    Route::get('/exports/word/gvhd/{topic}', function (Topic $topic) {
-        $topic->load(['students', 'lecturer']);
-        $file = $topic->students->count() > 1
-            ? 'Mau 01.01_PHIEU CHAM_HUONG DAN_NHOM SINH VIEN.docx'
-            : 'Mau 01.02_PHIEU CHAM_HUONG DAN_SINH VIEN.docx';
-        $template = new \PhpOffice\PhpWord\TemplateProcessor(base_path('huong_dan/' . $file));
-        $sv1 = $topic->students->first();
-        $sv2 = $topic->students->skip(1)->first();
-        $template->setValue('tenDeTai', $topic->tenDeTai ?? '');
-        $template->setValue('tenGV', $topic->lecturer->tenGV ?? '');
-        $template->setValue('tenSV1', $sv1->hoTen ?? '');
-        $template->setValue('mssv1', $sv1->mssv ?? '');
-        $template->setValue('lop1', $sv1->lop ?? '');
-        $template->setValue('tenSV2', $sv2->hoTen ?? '');
-        $template->setValue('mssv2', $sv2->mssv ?? '');
-        $template->setValue('lop2', $sv2->lop ?? '');
-        $path = storage_path('app/temp_hd_' . $topic->maDeTai . '.docx');
-        $template->saveAs($path);
-        return response()->download($path)->deleteFileAfterSend(true);
-    });
-
-    Route::get('/exports/word/gvpb/{topic}', function (Topic $topic) {
-        $topic->load(['students', 'reviewer']);
-        $file = $topic->students->count() > 1
-            ? 'Mau 02.01_PHIEU CHAM_PHAN BIEN_NHOM SINH VIEN.docx'
-            : 'Mau 02.02_PHIEU CHAM_PHAN BIEN_SINH VIEN.docx';
-        $template = new \PhpOffice\PhpWord\TemplateProcessor(base_path('huong_dan/' . $file));
-        $sv1 = $topic->students->first();
-        $sv2 = $topic->students->skip(1)->first();
-        $template->setValue('tenDeTai', $topic->tenDeTai ?? '');
-        $template->setValue('tenGVPB', $topic->reviewer->tenGV ?? '');
-        $template->setValue('tenSV1', $sv1->hoTen ?? '');
-        $template->setValue('mssv1', $sv1->mssv ?? '');
-        $template->setValue('lop1', $sv1->lop ?? '');
-        $template->setValue('tenSV2', $sv2->hoTen ?? '');
-        $template->setValue('mssv2', $sv2->mssv ?? '');
-        $template->setValue('lop2', $sv2->lop ?? '');
-        $path = storage_path('app/temp_pb_' . $topic->maDeTai . '.docx');
-        $template->saveAs($path);
-        return response()->download($path)->deleteFileAfterSend(true);
-    });
-
-    // ==========================================
-    // KHU VỰC EXPORT EXCEL (- Dựng bảng xịn)
-    // ==========================================
-    Route::get('/exports/excel/danhsach', function () {
-        $topics = Topic::with(['students', 'lecturer', 'reviewer', 'council'])->get();
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Danh Sach Sinh Vien');
-
-        $headers = ['STT', 'MSSV', 'HỌ VÀ TÊN', 'LỚP', 'TÊN ĐỀ TÀI', 'GVHD', 'GVPB', 'UỶ VIÊN'];
-        $sheet->fromArray($headers, null, 'A1');
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-
-        $row = 2;
-        $stt = 1;
-
-        foreach ($topics as $topic) {
-            $tenUyVien = '';
-            if ($topic->council) {
-                $maGV_UyVien = CouncilMember::where('maHoiDong', $topic->maHoiDong)->where('vaiTro', 'UyVien')->value('maGV');
-                if ($maGV_UyVien) $tenUyVien = Teacher::where('maGV', $maGV_UyVien)->value('tenGV');
-            }
-
-            foreach ($topic->students as $student) {
-                $sheet->setCellValue('A' . $row, $stt++);
-                $sheet->setCellValueExplicit('B' . $row, $student->mssv, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->setCellValue('C' . $row, $student->hoTen);
-                $sheet->setCellValue('D' . $row, $student->lop);
-                $sheet->setCellValue('E' . $row, $topic->tenDeTai);
-                $sheet->setCellValue('F' . $row, $topic->lecturer->tenGV ?? '');
-                $sheet->setCellValue('G' . $row, $topic->reviewer->tenGV ?? '');
-                $sheet->setCellValue('H' . $row, $tenUyVien);
-                $row++;
-            }
-        }
-
-        foreach (range('A', 'H') as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
-        }
-
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-        $fileName = 'DanhSach_SVSinhVien_LVTN_' . date('Y_m_d_His') . '.xlsx';
-        $tempPath = storage_path('app/' . $fileName);
-        
-        $writer->save($tempPath);
-        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
-    });
-
-    // Nếu chưa login mà cố gắng truy cập API, trả về lỗi 401 Unauthorized
-    Route::middleware('auth.api')->any('/{any}', function () {
-        return response()->json([
-            'message' => 'Unauthorized. Vui lòng đăng nhập để truy cập API.',
-        ], 401);
-    })->where('any', '.*');
-
-}); 
+// ==========================================
+// THẰNG HỐT RÁC (BẮT BUỘC PHẢI NẰM DƯỚI CÙNG CỦA FILE)
+// ==========================================
+Route::any('/{any}', function () {
+    return response()->json([
+        'message' => 'Đường dẫn API không tồn tại hoặc bạn chưa đăng nhập.',
+    ], 401);
+})->where('any', '.*');

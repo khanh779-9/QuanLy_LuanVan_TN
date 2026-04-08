@@ -365,7 +365,7 @@ export default function DataManagement() {
             </button>
           </div>
 
-          <div style={{ marginBottom: 16 }}>
+          {/* <div style={{ marginBottom: 16 }}>
             <h3 style={{ marginBottom: 12, color: "#1e293b" }}>
               Import đăng ký đề tài
             </h3>
@@ -400,7 +400,7 @@ export default function DataManagement() {
                 </ul>
               </div>
             )}
-          </div>
+          </div> */}
 
           {error && (
             <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>
