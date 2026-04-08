@@ -67,7 +67,7 @@ export default function Council() {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <div style={{ flex: 1 }}>
             <h3>Danh sách hội đồng</h3>
-            <table className="thesis-table">
+            <div className="table-responsive"><table className="thesis-table">
               <thead>
                 <tr>
                   <th>Tên hội đồng</th>
@@ -95,11 +95,11 @@ export default function Council() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </div>
           <div style={{ flex: 1 }}>
             <h3>Phân công đề tài vào hội đồng</h3>
-            <table className="thesis-table">
+            <div className="table-responsive"><table className="thesis-table">
               <thead>
                 <tr>
                   <th>Mã đề tài</th>
@@ -140,7 +140,7 @@ export default function Council() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </div>
         </div>
       )}

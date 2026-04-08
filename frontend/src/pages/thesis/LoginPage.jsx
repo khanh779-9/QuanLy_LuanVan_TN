@@ -40,7 +40,7 @@ export default function LoginPage() {
       }}
     >
       <form
-        className="w-120 mt-20"
+        className="login-form mt-20"
         onSubmit={handleSubmit}
         style={{
           background: "#fff",
@@ -48,6 +48,7 @@ export default function LoginPage() {
           padding: 32,
           borderRadius: 8,
           boxShadow: "0 2px 8px #0001",
+          width: "min(480px, 90vw)",
         }}
       >
         <img src="/assets/Logo_STU.png" alt="Logo" width={80} height={80} />

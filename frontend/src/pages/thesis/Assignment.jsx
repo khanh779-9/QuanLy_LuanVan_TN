@@ -85,12 +85,12 @@ export default function Assignment() {
         onClose={() => setToast((t) => ({ ...t, open: false }))}
       />
       <h2 className="pb-[10px]">Phân công giảng viên</h2>
-      <div className="toolbar" style={{ marginBottom: 16, display: "flex", gap: 8 }}>
-        <select 
-          className="custom-select" 
-          value={searchType} 
+      <div className="toolbar-responsive">
+        <select
+          className="custom-select"
+          value={searchType}
           onChange={(e) => setSearchType(e.target.value)}
-          style={{ width: '180px' }}
+          style={{ minWidth: '150px', flex: '0 0 auto' }}
         >
           <option value="maDeTai">Mã đề tài</option>
           <option value="tenDeTai">Tên đề tài</option>
@@ -103,7 +103,7 @@ export default function Assignment() {
           placeholder={`Bộ lọc theo ${searchType === 'maDeTai' ? 'mã đề tài' : searchType === 'tenDeTai' ? 'tên đề tài' : searchType === 'mssv' ? 'MSSV' : 'tên SV'}...`}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+          style={{ flex: 1, minWidth: 0, padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
         />
       </div>
       {loading ? (
@@ -112,7 +112,7 @@ export default function Assignment() {
           <LoadingSection />
         </div>
       ) : (
-        <table className="thesis-table">
+        <div className="table-responsive"><table className="thesis-table">
           <thead>
             <tr>
               <th>Mã đề tài</th>
@@ -173,7 +173,7 @@ export default function Assignment() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
     </div>
   );

@@ -406,7 +406,7 @@ export default function DataManagement() {
             <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>
           )}
 
-          <table className="thesis-table">
+          <div className="table-responsive"><table className="thesis-table">
             <thead>
               <tr>
                 <th>Tiêu đề</th>
@@ -465,7 +465,7 @@ export default function DataManagement() {
                 ))
               )}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
       {showForm && (

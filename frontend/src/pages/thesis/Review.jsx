@@ -254,7 +254,7 @@ export default function Review() {
     
     <div className="overflow-auto scrollbar-thin p-2" style={{ maxHeight: "calc(100vh - 160px)" }}>
         {/* Tabs */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
+      <div className="tab-buttons">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -279,7 +279,7 @@ export default function Review() {
       {loading ? (
         <LoadingSection />
       ) : tab === "review" ? (
-        <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 2px 12px #0001", padding: 32 }}>
+        <div className="review-panel" style={{ background: "#fff", borderRadius: 12, boxShadow: "0 2px 12px #0001", padding: 32 }}>
           <div style={{ marginBottom: 24 }}>
             <FormField
               as="select"
@@ -307,7 +307,7 @@ export default function Review() {
               {/* Thang điểm */}
               <div style={{ marginBottom: 24, background: "#f8fafc", borderRadius: 8, padding: 20, border: "1px solid #e2e8f0" }}>
                 <h4 style={{ color: "#2563eb", margin: 0, marginBottom: 12 }}>Thang điểm</h4>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                <div className="score-grid">
                   <FormField label="Phân tích" type="number" min={0} max={10} step={0.1} value={scale.maxPhanTich} onChange={e => handleScaleChange("maxPhanTich", e.target.value)} />
                   <FormField label="Thiết kế" type="number" min={0} max={10} step={0.1} value={scale.maxThietKe} onChange={e => handleScaleChange("maxThietKe", e.target.value)} />
                   <FormField label="Hiện thực" type="number" min={0} max={10} step={0.1} value={scale.maxHienThuc} onChange={e => handleScaleChange("maxHienThuc", e.target.value)} />
@@ -317,7 +317,7 @@ export default function Review() {
               {/* Sinh viên 1 */}
               <div style={{ marginBottom: 24, background: "#f8fafc", borderRadius: 8, padding: 20, border: "1px solid #e2e8f0" }}>
                 <h4 style={{ color: "#2563eb", margin: 0, marginBottom: 12 }}>Sinh viên 1</h4>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                <div className="score-grid">
                   <FormField label="Phân tích" type="number" min={0} step={0.1} value={students[0].diemPhanTich} onChange={e => calcStudent(0, "diemPhanTich", e.target.value)} />
                   <FormField label="Thiết kế" type="number" min={0} step={0.1} value={students[0].diemThietKe} onChange={e => calcStudent(0, "diemThietKe", e.target.value)} />
                   <FormField label="Hiện thực" type="number" min={0} step={0.1} value={students[0].diemHienThuc} onChange={e => calcStudent(0, "diemHienThuc", e.target.value)} />
@@ -331,7 +331,7 @@ export default function Review() {
               {/* Sinh viên 2 */}
               <div style={{ marginBottom: 24, background: "#f8fafc", borderRadius: 8, padding: 20, border: "1px solid #e2e8f0" }}>
                 <h4 style={{ color: "#2563eb", margin: 0, marginBottom: 12 }}>Sinh viên 2 (nếu có)</h4>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                <div className="score-grid">
                   <FormField label="Phân tích" type="number" min={0} step={0.1} value={students[1].diemPhanTich} onChange={e => calcStudent(1, "diemPhanTich", e.target.value)} />
                   <FormField label="Thiết kế" type="number" min={0} step={0.1} value={students[1].diemThietKe} onChange={e => calcStudent(1, "diemThietKe", e.target.value)} />
                   <FormField label="Hiện thực" type="number" min={0} step={0.1} value={students[1].diemHienThuc} onChange={e => calcStudent(1, "diemHienThuc", e.target.value)} />
@@ -362,7 +362,7 @@ export default function Review() {
                   <label><input type="radio" name="deNghi_PB" value="bosung" checked={form.deNghi_PB === "bosung"} onChange={e => handleFormChange("deNghi_PB", e.target.value)} /> Bổ sung</label>
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 16, justifyContent: "flex-end" }}>
+              <div className="review-actions" style={{ display: "flex", gap: 16, justifyContent: "flex-end", flexWrap: "wrap" }}>
                 <button
                   onClick={handleSave}
                   disabled={saving}
@@ -381,7 +381,7 @@ export default function Review() {
           )}
         </div>
       ) : tab === "guide" ? (
-        <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 2px 12px #0001", padding: 32 }}>
+        <div className="review-panel" style={{ background: "#fff", borderRadius: 12, boxShadow: "0 2px 12px #0001", padding: 32 }}>
           <div style={{ marginBottom: 24 }}>
             <FormField
               as="select"
@@ -409,7 +409,7 @@ export default function Review() {
               {/* Thang điểm hướng dẫn */}
               <div style={{ marginBottom: 24, background: "#f8fafc", borderRadius: 8, padding: 20, border: "1px solid #e2e8f0" }}>
                 <h4 style={{ color: "#2563eb", margin: 0, marginBottom: 12 }}>Thang điểm</h4>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                <div className="score-grid">
                   <FormField label="Phân tích" type="number" min={0} max={10} step={0.1} value={guideScale.maxPhanTich} onChange={e => handleGuideScaleChange("maxPhanTich", e.target.value)} />
                   <FormField label="Thiết kế" type="number" min={0} max={10} step={0.1} value={guideScale.maxThietKe} onChange={e => handleGuideScaleChange("maxThietKe", e.target.value)} />
                   <FormField label="Hiện thực" type="number" min={0} max={10} step={0.1} value={guideScale.maxHienThuc} onChange={e => handleGuideScaleChange("maxHienThuc", e.target.value)} />
@@ -419,7 +419,7 @@ export default function Review() {
               {/* Sinh viên 1 */}
               <div style={{ marginBottom: 24, background: "#f8fafc", borderRadius: 8, padding: 20, border: "1px solid #e2e8f0" }}>
                 <h4 style={{ color: "#2563eb", margin: 0, marginBottom: 12 }}>Sinh viên 1</h4>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                <div className="score-grid">
                   <FormField label="Phân tích" type="number" min={0} step={0.1} value={guideStudents[0].diemPhanTich} onChange={e => calcGuideStudent(0, "diemPhanTich", e.target.value)} />
                   <FormField label="Thiết kế" type="number" min={0} step={0.1} value={guideStudents[0].diemThietKe} onChange={e => calcGuideStudent(0, "diemThietKe", e.target.value)} />
                   <FormField label="Hiện thực" type="number" min={0} step={0.1} value={guideStudents[0].diemHienThuc} onChange={e => calcGuideStudent(0, "diemHienThuc", e.target.value)} />
@@ -433,7 +433,7 @@ export default function Review() {
               {/* Sinh viên 2 */}
               <div style={{ marginBottom: 24, background: "#f8fafc", borderRadius: 8, padding: 20, border: "1px solid #e2e8f0" }}>
                 <h4 style={{ color: "#2563eb", margin: 0, marginBottom: 12 }}>Sinh viên 2 (nếu có)</h4>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                <div className="score-grid">
                   <FormField label="Phân tích" type="number" min={0} step={0.1} value={guideStudents[1].diemPhanTich} onChange={e => calcGuideStudent(1, "diemPhanTich", e.target.value)} />
                   <FormField label="Thiết kế" type="number" min={0} step={0.1} value={guideStudents[1].diemThietKe} onChange={e => calcGuideStudent(1, "diemThietKe", e.target.value)} />
                   <FormField label="Hiện thực" type="number" min={0} step={0.1} value={guideStudents[1].diemHienThuc} onChange={e => calcGuideStudent(1, "diemHienThuc", e.target.value)} />
@@ -464,7 +464,7 @@ export default function Review() {
                   <label><input type="radio" name="deNghi_HD" value="bosung" checked={guideForm.deNghi_HD === "bosung"} onChange={e => handleGuideFormChange("deNghi_HD", e.target.value)} /> Bổ sung</label>
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 16, justifyContent: "flex-end" }}>
+              <div className="review-actions" style={{ display: "flex", gap: 16, justifyContent: "flex-end", flexWrap: "wrap" }}>
                 <button
                   onClick={handleGuideSave}
                   disabled={saving}

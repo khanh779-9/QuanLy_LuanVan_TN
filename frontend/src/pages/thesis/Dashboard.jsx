@@ -198,6 +198,7 @@ export default function Dashboard() {
       {/* <h2>Dashboard</h2> */}
 
       <div
+        className="dashboard-banner"
         style={{
           background: "var(--primary-color)",
           padding: "12px 16px",
@@ -215,34 +216,19 @@ export default function Dashboard() {
 
           <div style={{ color: "#f1f1f1" }}>
             <div>Mã giảng viên: {aboutMe?.maGV || "N/A"}</div>
-            {/* <div>Email: {aboutMe?.email || "N/A"}</div>
-          <div>Số điện thoại: {aboutMe?.soDienThoai || "N/A"}</div>
-          <div>Học vị: {aboutMe?.hocVi || "N/A"}</div>
-          <div>Khoa: {aboutMe?.khoa || "N/A"}</div> */}
             <div>Vai trò: {aboutMe?.role || "N/A"}</div>
           </div>
         </div>
 
-        {/* Ảnh động Lottie sẽ hiển thị ở đây nếu bạn đã cài đặt lottie-react và có file JSON hợp lệ. */}
-        <div style={{ width: "150px" }}>
+        <div className="dashboard-banner-lottie" style={{ width: "150px" }}>
           <Lottie animationData={studentWithLaptop} loop={true} />
         </div>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          marginBottom: "14px",
-          marginTop: "10px",
-        }}
-      >
+      <div className="stat-cards-row">
         <div
           className="stat-card"
-          style={{
-            border: "1px solid #ddd",
-            boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-          }}
+          style={{ border: "1px solid #ddd", boxShadow: "2px 2px 4px rgba(0,0,0,0.1)" }}
         >
           <div className="stat-label">Giai đoạn hiện tại</div>
           <div className="stat-value">{stats.presentations || 0}</div>
@@ -250,10 +236,7 @@ export default function Dashboard() {
 
         <div
           className="stat-card"
-          style={{
-            border: "1px solid #ddd",
-            boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-          }}
+          style={{ border: "1px solid #ddd", boxShadow: "2px 2px 4px rgba(0,0,0,0.1)" }}
         >
           <div className="stat-label">Số đề tài</div>
           <div className="stat-value">{stats.total}</div>
@@ -261,50 +244,22 @@ export default function Dashboard() {
 
         <div
           className="stat-card"
-          style={{
-            border: "1px solid #ddd",
-            boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-          }}
+          style={{ border: "1px solid #ddd", boxShadow: "2px 2px 4px rgba(0,0,0,0.1)" }}
         >
           <div className="stat-label">Số sinh viên</div>
           <div className="stat-value">{stats.students}</div>
         </div>
 
-        {/* <div
-          className="stat-card"
-          style={{
-            border: "1px solid #ddd",
-            boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-          }}
-        >
-          <div className="stat-label">Số sinh viên</div>
-          <div className="stat-value">{stats.students_all}</div>
-        </div> */}
-
         <div
           className="stat-card"
-          style={{
-            border: "1px solid #ddd",
-            boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-          }}
+          style={{ border: "1px solid #ddd", boxShadow: "2px 2px 4px rgba(0,0,0,0.1)" }}
         >
           <div className="stat-label">Đề tài đã xong</div>
           <div className="stat-value">{stats.finished}</div>
         </div>
       </div>
 
-      <div
-        className="toolbar"
-        style={{
-          marginBottom: 16,
-          display: "flex",
-          alignItems: "center",
-          gap: 16,
-        }}
-      >
-        {/* <button className="btn btn-primary" onClick={handleAdd}>
-          Thêm mới
-        </button> */}
+      <div className="toolbar-responsive">
         <input
           type="text"
           placeholder="Tìm theo mã đề tài..."
@@ -347,12 +302,14 @@ export default function Dashboard() {
           <LoadingSection />
         </div>
       ) : (
-        <ThesisTable
-          data={finalFilteredData}
-          onDetail={handleDetail}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <div className="table-responsive">
+          <ThesisTable
+            data={finalFilteredData}
+            onDetail={handleDetail}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </div>
       )}
       <ThesisFormModal
         open={modalOpen}

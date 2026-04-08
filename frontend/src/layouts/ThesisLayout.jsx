@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, Navigate, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
+  faBars,
+  faXmark,
   faGavel,
   faHouse,
   faInfo,
@@ -15,13 +17,23 @@ import { logout } from "../services/authService";
 
 function ThesisLayout() {
   const token = localStorage.getItem("token");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   if (!token) {
     return <Navigate to="/thesis/login" replace />;
   }
+
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={closeSidebar} />
+      )}
+
       <aside
-        className="sidebar"
+        className={`sidebar${sidebarOpen ? " sidebar-mobile-open" : ""}`}
         style={{ boxShadow: "2px 0px 10px rgba(0,0,0,0.2)" }}
       >
         <div className="sidebar-header flex items-center gap-4">
@@ -35,10 +47,13 @@ function ThesisLayout() {
             <h2 className="mt-[10px] font-bold">MANAGING</h2>
             <h3>Graduation Theses</h3>
           </div>
+          <button className="sidebar-close-btn" onClick={closeSidebar}>
+          </button>
         </div>
         <div className="mt-5"></div>
         <NavLink
           to="/thesis/dashboard"
+          onClick={closeSidebar}
           className={({ isActive }) =>
             isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
           }
@@ -49,6 +64,7 @@ function ThesisLayout() {
 
         <NavLink
           to="/thesis/topicmanagement"
+          onClick={closeSidebar}
           className={({ isActive }) =>
             isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
           }
@@ -59,6 +75,7 @@ function ThesisLayout() {
 
         <NavLink
           to="/thesis/assignment"
+          onClick={closeSidebar}
           className={({ isActive }) =>
             isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
           }
@@ -68,6 +85,7 @@ function ThesisLayout() {
         </NavLink>
         <NavLink
           to="/thesis/midterm"
+          onClick={closeSidebar}
           className={({ isActive }) =>
             isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
           }
@@ -77,6 +95,7 @@ function ThesisLayout() {
         </NavLink>
         <NavLink
           to="/thesis/review"
+          onClick={closeSidebar}
           className={({ isActive }) =>
             isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
           }
@@ -86,6 +105,7 @@ function ThesisLayout() {
         </NavLink>
         <NavLink
           to="/thesis/council"
+          onClick={closeSidebar}
           className={({ isActive }) =>
             isActive ? "sidebar-link sidebar-link-active" : "sidebar-link"
           }
@@ -106,16 +126,31 @@ function ThesisLayout() {
           </div>
         </div>
       </aside>
-      <main
-        style={{
-          flex: 1,
-          background: "url('/assets/background.jpg')",
-          padding: 24,
-          backgroundSize: "cover",
-        }}
-      >
-        <Outlet />
-      </main>
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+        {/* Mobile topbar */}
+        <header className="mobile-topbar">
+          <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+          <div className="mobile-topbar-title">
+            <img src={StuLogo} alt="STU Logo" style={{ width: 32, height: 32, objectFit: "contain" }} />
+            <span>MANAGING</span>
+          </div>
+        </header>
+
+        <main
+          style={{
+            flex: 1,
+            background: "url('/assets/background.jpg')",
+            padding: 24,
+            backgroundSize: "cover",
+          }}
+          className="main-content"
+        >
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

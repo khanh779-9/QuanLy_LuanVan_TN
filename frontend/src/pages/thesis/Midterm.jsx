@@ -78,7 +78,7 @@ export default function Midterm() {
           <LoadingSection />
         </div>
       ) : (
-        <table className="thesis-table">
+        <div className="table-responsive"><table className="thesis-table">
           <thead>
             <tr>
               <th>Mã đề tài</th>
@@ -142,7 +142,7 @@ export default function Midterm() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
     </div>
   );
