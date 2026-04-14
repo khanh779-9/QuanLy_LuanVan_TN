@@ -146,7 +146,16 @@ export default function NhapLieu() {
                 Họ tên SV1
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Lớp
+                Lớp SV1
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                MSSV SV2
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Họ tên SV2
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Lớp SV2
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 GVHD
@@ -203,6 +212,15 @@ export default function NhapLieu() {
                   </td>
                   <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">
                     {row.student1_class}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">
+                    {row.student2_id}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">
+                    {row.student2_name}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">
+                    {row.student2_class}
                   </td>
                   <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">
                     {row.gvhd_code || "—"}
