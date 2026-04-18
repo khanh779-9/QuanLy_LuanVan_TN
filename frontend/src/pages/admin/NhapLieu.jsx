@@ -22,8 +22,6 @@ export default function AdminNhapLieuPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
   const [showImportModal, setShowImportModal] = useState(false);
-
-  // THÊM: Các state và hàm xử lý Checkbox bị thiếu
   const [selectedIds, setSelectedIds] = useState([]);
 
   const { data: listData, isLoading } = useQuery({
@@ -46,8 +44,16 @@ export default function AdminNhapLieuPage() {
       queryClient.invalidateQueries({ queryKey: ['nhaplieu'] });
     },
   });
-
-  // THÊM: Xử lý logic chọn Checkbox
+  const approveAllPendingMut = useMutation({
+    mutationFn: () => api.post('/nhap-lieu/approve-all-pending'),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['nhaplieu'] });
+      alert(res.data.message || "Đã duyệt toàn bộ thành công!");
+    },
+    onError: (err) => {
+      alert(err.response?.data?.message || "Có lỗi xảy ra khi duyệt toàn bộ!");
+    }
+  });
   const handleSelectAll = (e) => {
     if (e.target.checked && Array.isArray(listData?.data)) {
         setSelectedIds(listData.data.map(item => item.id));
@@ -100,6 +106,17 @@ export default function AdminNhapLieuPage() {
         >
           Thêm bản ghi
         </button>
+        <button
+          onClick={() => {
+            if(confirm("Bạn có chắc chắn muốn duyệt tất cả?")) {
+              approveAllPendingMut.mutate();
+            }
+          }}
+          disabled={approveAllPendingMut.isPending}
+          className="bg-green-500 hover:bg-green-700 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+        >
+          {approveAllPendingMut.isPending ? 'Đang xử lý...' : 'Duyệt toàn bộ'}
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -107,9 +124,7 @@ export default function AdminNhapLieuPage() {
           <table className="w-full border-collapse">
             <thead className="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
               <tr>
-                <th className="px-4 py-4 text-left w-10">
-                    <input type="checkbox" className="rounded border-slate-300" onChange={handleSelectAll} checked={selectedIds.length === listData?.data?.length && selectedIds.length > 0} />
-                </th>
+                
                 <th className="px-4 py-4 text-left whitespace-nowrap">Nhóm</th>
                 <th className="px-4 py-4 text-left">Sinh viên 1</th>
                 <th className="px-4 py-4 text-left">Sinh viên 2</th>
@@ -124,9 +139,7 @@ export default function AdminNhapLieuPage() {
               ) : Array.isArray(listData?.data) && listData.data.length > 0 ? (
                 listData.data.map((row) => (
                   <tr key={row.id} className={`hover:bg-slate-50/50 transition-colors ${selectedIds.includes(row.id) ? 'bg-blue-50/30' : ''}`}>
-                    <td className="px-4 py-4">
-                      <input type="checkbox" className="rounded border-slate-300" checked={selectedIds.includes(row.id)} onChange={() => handleSelectItem(row.id)} />
-                    </td>
+                    
                     
                     <td className="px-4 py-4">
                         <span className='text-sm font-medium'>
@@ -166,8 +179,17 @@ export default function AdminNhapLieuPage() {
                     
                     <td className="px-4 py-4 text-right">
                       <div className="flex justify-end gap-1">
+                        {row.status === 'cho_duyet' && (
+  <button 
+    onClick={() => approveMut.mutate(row.id)} 
+    className="text-green-600 hover:bg-green-50 rounded-lg transition-colors mr-1 font-semibold text-xs"
+  >
+    Duyệt
+  </button>
+)}
                         <button onClick={() => { setEditItem(row); setShowFormModal(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mr-1 font-semibold text-xs">Sửa</button>
                         <button onClick={() => { setDeleteItem(row); setShowDeleteConfirm(true); }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors font-semibold text-xs">Xóa</button>
+
                       </div>
                     </td>
                   </tr>

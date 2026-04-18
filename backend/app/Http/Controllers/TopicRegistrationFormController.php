@@ -26,6 +26,7 @@ class LimitReadFilter implements IReadFilter
 
 class TopicRegistrationFormController extends Controller
 {
+    // 1. Duyệt từng hàng (Sử dụng khi nhấn nút Duyệt ở cuối mỗi dòng)
     public function approve($id)
     {
         $form = TopicRegistrationForm::findOrFail($id);
@@ -33,35 +34,77 @@ class TopicRegistrationFormController extends Controller
             return response()->json(['message' => 'Bản đăng ký đã được duyệt trước đó!'], 400);
         }
 
-        $tenDeTaiChinhThuc = ($form->topic_title === 'Chưa có tên đề tài') ? null : $form->topic_title;
+        DB::beginTransaction();
+        try {
+            // Tạo đề tài mới để lấy maDeTai (Tên đề tài để NULL chờ GVHD nhập sau)
+            $deTai = DeTai::create([
+                'tenDeTai' => ($form->topic_title === 'Chưa có tên đề tài') ? null : $form->topic_title,
+                'moTa' => $form->topic_description, // Hướng đề tài
+                'trangThai' => 'dat'
+            ]);
 
-        $deTai = DeTai::create([
-            'tenDeTai' => $tenDeTaiChinhThuc,
-            'moTa' => $form->topic_description, // Lưu Hướng đề tài vào đây để GVHD tham khảo
-            'maGV_HD' => $form->gvhd_code,
-            'maGV_PB' => $form->gvpb_code,
-            'maHoiDong' => null,
-            'trangThai' => 'dat',
-            'diemGiuaKy' => null,
-            'trangThaiGiuaKy' => null,
-            'nhanXetGiuaKy' => null,
-            'diemHuongDan' => null,
-            'nhanXetHuongDan' => null,
-            'diemPhanBien' => null,
-            'nhanXetPhanBien' => null,
-            'diemHoiDong' => null,
-            'diemTongKet' => null,
-        ]);
+            $maDeTaiMoi = $deTai->maDeTai;
 
-        $form->status = 'da_duyet';
-        $form->save();
+            // Cập nhật maDeTai vào bảng sinhvien cho SV1
+            SinhVien::where('mssv', $form->student1_id)->update(['maDeTai' => $maDeTaiMoi]);
 
-        return response()->json([
-            'message' => 'Đã duyệt và tạo đề tài thành công!',
-            'de_tai' => $deTai,
-        ]);
+            // Cập nhật cho SV2 nếu là nhóm 2 người
+            if ($form->topic_type === 'hai_sinh_vien' && $form->student2_id) {
+                SinhVien::where('mssv', $form->student2_id)->update(['maDeTai' => $maDeTaiMoi]);
+            }
+
+            $form->status = 'da_duyet';
+            $form->save();
+
+            DB::commit();
+            return response()->json([
+                'message' => 'Đã duyệt và cấp mã đề tài thành công!',
+                'maDeTai' => $maDeTaiMoi
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+        }
     }
 
+    // 2. Duyệt TOÀN BỘ (Sử dụng khi nhấn nút Duyệt TOÀN BỘ hệ thống ở phía trên)
+    public function approveAllPending(Request $request)
+    {
+        $forms = TopicRegistrationForm::where('status', 'cho_duyet')->get();
+
+        if ($forms->isEmpty()) {
+            return response()->json(['message' => 'Hệ thống hiện không có bản ghi nào cần duyệt!'], 400);
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($forms as $form) {
+                // Tạo đề tài cho từng form
+                $deTai = DeTai::create([
+                    'tenDeTai' => ($form->topic_title === 'Chưa có tên đề tài') ? null : $form->topic_title,
+                    'moTa' => $form->topic_description,
+                    'trangThai' => 'dat'
+                ]);
+
+                $maDeTaiMoi = $deTai->maDeTai;
+
+                // Gắn mã đề tài cho sinh viên
+                SinhVien::where('mssv', $form->student1_id)->update(['maDeTai' => $maDeTaiMoi]);
+                if ($form->topic_type === 'hai_sinh_vien' && $form->student2_id) {
+                    SinhVien::where('mssv', $form->student2_id)->update(['maDeTai' => $maDeTaiMoi]);
+                }
+
+                $form->status = 'da_duyet';
+                $form->save();
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Đã duyệt toàn bộ ' . $forms->count() . ' bản đăng ký thành công!']);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Lỗi hệ thống: ' . $e->getMessage()], 500);
+        }
+    }
     public function index(Request $request)
     {
         $query = TopicRegistrationForm::query();
@@ -225,7 +268,7 @@ class TopicRegistrationFormController extends Controller
                     if (isset($cells[$idx['hoTen'] + 1]) && ($idx['hoTen'] + 1 !== $idx['lop'])) {
                         $nextCell = trim($this->normalizeExcelText($cells[$idx['hoTen'] + 1]));
                         // Bỏ qua nếu cột kế tiếp là chữ cái của Lớp (như TH1, TH2...)
-                        if ($nextCell !== '' && !str_contains(mb_strtolower($nextCell), 'th')) {
+                        if ($nextCell !== '' && !preg_match('/\d/', $nextCell)) {
                             $hoTen .= ' ' . $nextCell;
                         }
                     }
