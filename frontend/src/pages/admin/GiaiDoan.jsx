@@ -30,6 +30,9 @@ export default function AdminGiaiDoanPage() {
   const [formError, setFormError] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
+  const [isTimeLoading, setIsTimeLoading] = useState(false); 
+  const [statusMsg, setStatusMsg] = useState("");
+  const [dateError, setDateError] = useState("");
   const [customDate, setCustomDate] = useState("");
   const [useCustom, setUseCustom] = useState(false);
 
@@ -132,19 +135,32 @@ export default function AdminGiaiDoanPage() {
 
   };
 
-const handleCustomTimeChange = async (checked, date) => {
-  let tgTuyChinh = { day: 1, month: 1, year: 2000 }; // Giá trị mặc định hợp lệ
-  if (checked && date) {
-    const [year, month, day] = date.split("-");
-    tgTuyChinh = { day: Number(day), month: Number(month), year: Number(year) };
-  }
-  await setThoiGianTuyChinh({
-    thoiGianTuyChinh: checked,
-    tg_TuyChinh: tgTuyChinh,
-  });
+
+  const handleKichHoatGiaLapTime = async () => {
+  if (!customDate) return setStatusMsg("Hãy chọn ngày!");
+  setIsTimeLoading(true);
+  try {
+    const [y, m, d] = customDate.split("-");
+    await setThoiGianTuyChinh({
+      thoiGianTuyChinh: true,
+      tg_TuyChinh: { day: Number(d), month: Number(m), year: Number(y) }
+    });
+    setUseCustom(true);
+    setStatusMsg("Đã bật giả lập thời gian");
+    queryClient.invalidateQueries(["thoiGianTuyChinh"]);
+  } catch (e) { setStatusMsg("Lỗi kết nối"); }
+  setIsTimeLoading(false);
 };
-
-
+  const handleTraLaiRealTime = async () => {
+  setIsTimeLoading(true);
+  try {
+    await setThoiGianTuyChinh({ thoiGianTuyChinh: false, tg_TuyChinh: { day: 20, month: 4, year: 2026 } });
+    setUseCustom(false);
+    setStatusMsg("Đã tắt giả lập thời gian");
+    queryClient.invalidateQueries(["thoiGianTuyChinh"]);
+  } catch (e) { setStatusMsg("Lỗi kết nối"); }
+  setIsTimeLoading(false);
+};
   return (
     <div>
       <h1 className="text-xl font-semibold text-slate-900 mb-6">Giai đoạn</h1>
@@ -208,24 +224,31 @@ const handleCustomTimeChange = async (checked, date) => {
                 type="date"
                 className="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 value={customDate}
-                onChange={(e) => setCustomDate(e.target.value)}
-                disabled={!useCustom}
-              />
-            </div>
-            <label className="inline-flex items-center gap-2 text-sm text-slate-500">
-              <input
-                type="checkbox"
-                className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                checked={useCustom}
                 onChange={(e) => {
-                  const checked = e.target.checked;
-                  setUseCustom(checked);
-                  handleCustomTimeChange(checked, customDate);
-                }}
+        setCustomDate(e.target.value);setStatusMsg("");
+      }}
+                
               />
-              Dùng thời gian hiện tại tuỳ chỉnh (tắt: dùng thời gian thực tế của
-              hệ thống)
-            </label>
+              <button 
+      onClick={handleKichHoatGiaLapTime} 
+      disabled={isTimeLoading}
+      className="bg-blue-500 text-white text-sm px-4 py-1.5 rounded hover:bg-blue-600 disabled:opacity-50"
+    >
+      {isTimeLoading && !useCustom ? "..." : "Bật giả lập thời gian"}
+    </button>
+  <button 
+      onClick={handleTraLaiRealTime} 
+      disabled={isTimeLoading || !useCustom}
+      className="bg-gray-500 text-white text-sm px-4 py-1.5 rounded hover:bg-gray-600 disabled:opacity-50"
+    >
+      {isTimeLoading && useCustom ? "..." : "Tắt giả lập thời gian"}
+    </button>
+            </div>
+            {statusMsg && (
+    <span className={`text-xs font-semibold ml-[125px] ${statusMsg.includes("✓") ? "text-green-600" : "text-red-500"}`}>
+      {statusMsg}
+    </span>
+  )}
           </>
         )}
       </div>
