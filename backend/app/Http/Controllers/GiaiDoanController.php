@@ -33,14 +33,43 @@ class GiaiDoanController extends Controller
         return response()->json(['message' => 'Cập nhật giai đoạn thành công', 'data' => $giaiDoan]);
     }
 
-    public function create(Request $request)
-    {
-        $data = $request->only(['mo_ta', 'loai', 'ngay_bat_dau', 'ngay_ket_thuc', 'data']);
-        $giaiDoan = GiaiDoan::create($data);
-        return response()->json(['message' => 'Tạo giai đoạn thành công', 'data' => $giaiDoan], 201);
+    public function store(Request $request) // Đổi tên từ create thành store
+{
+    // 1. Kiểm tra dữ liệu đầu vào
+    $validated = $request->validate([
+        'mo_ta' => 'required|string',
+        'loai' => 'nullable|string',
+        'ngay_bat_dau' => 'required|date',
+        'ngay_ket_thuc' => 'required|date',
+        'data' => 'nullable'
+    ]);
+
+    // 2. Ép kiểu mảng 'data' thành chuỗi JSON trước khi lưu
+    if (isset($validated['data']) && is_array($validated['data'])) {
+        $validated['data'] = json_encode($validated['data']);
     }
 
- 
+    // 3. Lưu vào database
+    $giaiDoan = GiaiDoan::create($validated);
+
+    return response()->json([
+        'message' => 'Tạo giai đoạn thành công', 
+        'data' => $giaiDoan
+    ], 201);
+}
+
+ public function destroy($id)
+{
+    $giaiDoan = GiaiDoan::find($id);
+    
+    if (!$giaiDoan) {
+        return response()->json(['message' => 'Không tìm thấy giai đoạn để xóa'], 404);
+    }
+
+    $giaiDoan->delete();
+
+    return response()->json(['message' => 'Xóa giai đoạn thành công']);
+}
     public function current()
     {
         // $today = date('Y-m-d');
