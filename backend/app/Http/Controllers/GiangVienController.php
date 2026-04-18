@@ -30,7 +30,7 @@ class GiangVienController extends Controller
             'maGV' => 'required|unique:giangvien,maGV',
             'tenGV' => 'required',
             'email' => 'required|email|unique:giangvien,email',
-            'password' => 'required|min:6',
+            'password' => 'required|min:1',
             'hocVi' => 'nullable|in:ThS,TS,PGS.TS,GS.TS',
             'soDienThoai' => 'nullable',
         ]);
@@ -49,7 +49,6 @@ class GiangVienController extends Controller
         'password' => $request->password,
         'role_name' => 'giangvien',
         'created_at' => now(),
-            'updated_at' => now(),
     ]);
     DB::commit();
     return response()->json([
@@ -74,7 +73,7 @@ class GiangVienController extends Controller
         $request->validate([
             'tenGV' => 'required',
             'email' => 'required|email|unique:giangvien,email,' . $maGV . ',maGV',
-            'password' => 'nullable|min:6',
+            'password' => 'nullable|min:1',
             'hocVi' => 'nullable|in:ThS,TS,PGS.TS,GS.TS',
             'soDienThoai' => 'nullable',
         ]);
