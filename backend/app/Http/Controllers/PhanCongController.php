@@ -33,7 +33,26 @@ class PhanCongController extends Controller
         $detais = $query->orderByDesc('maDeTai')->paginate($pageSize);
         return response()->json($detais);
     }
+    public function getDanhSachChuaCoGVHD()
+    {
+        return DeTai::with('sinhVien')
+            ->whereNull('maGV_HD')
+            ->get();
+    }
 
+    public function phancongGVHD(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'maGV_HD' => 'required|exists:giangvien,maGV'
+        ]);
+
+        // Cập nhật maGV_HD cho danh sách maDeTai gửi lên
+        DeTai::whereIn('maDeTai', $request->ids)
+            ->update(['maGV_HD' => $request->maGV_HD]);
+
+        return response()->json(['message' => 'Phân công thành công!']);
+    }
     
     public function update(Request $request, $id)
     {

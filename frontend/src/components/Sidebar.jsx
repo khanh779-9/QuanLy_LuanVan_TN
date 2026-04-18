@@ -34,7 +34,7 @@ export default function Sidebar({ isOpen, onClose }) {
       { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers },
       { label: "Giảng viên", path: "/admin/giangvien", icon: HiOutlineAcademicCap },
       { label: "Nhập liệu", path: "/admin/nhaplieu", icon: HiOutlineDocumentText },
-      { label: "Phân công", path: "/admin/phancong", icon: HiOutlineUserGroup },
+      { label: "Phân công GVHD", path: "/admin/phanconggvhd", icon: HiOutlineUserGroup },
       { label: "Giai đoạn", path: "/admin/giaidoan", icon: HiOutlineCog6Tooth },
     ],
     gv: [
