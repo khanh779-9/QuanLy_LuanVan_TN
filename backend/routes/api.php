@@ -46,7 +46,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/nhap-lieu/{id}', [TopicRegistrationFormController::class, 'destroy']);
 
     Route::post('/topic-registration-form/{id}/approve', [TopicRegistrationFormController::class, 'approve']);
-    Route::post('/nhap-lieu/bulk-approve', [TopicRegistrationFormController::class, 'bulkApprove']);
     Route::post('/nhap-lieu/approve-all-pending', [TopicRegistrationFormController::class, 'approveAllPending']);
     Route::post('/nhap-lieu-import-excel', [TopicRegistrationFormController::class, 'importExcel']);
 
