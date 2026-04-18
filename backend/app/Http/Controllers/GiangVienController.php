@@ -8,12 +8,12 @@ use App\Models\SinhVien;
 use App\Models\ThanhVienHoiDong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\DB;
 class GiangVienController extends Controller
 {
     public function index()
     {
-        $list = GiangVien::all();
+        $list = GiangVien::where('maGV', 'NOT LIKE', 'TK%')->get();
         foreach ($list as $gv) {
             $gv->so_sv_hd = \App\Models\SinhVien::whereHas('deTai', function ($q) use ($gv) {
                 $q->where('maGV_HD', $gv->maGV);
@@ -34,6 +34,8 @@ class GiangVienController extends Controller
             'hocVi' => 'nullable|in:ThS,TS,PGS.TS,GS.TS',
             'soDienThoai' => 'nullable',
         ]);
+        try {
+        DB::beginTransaction();
         $gv = GiangVien::create([
             'maGV' => $request->maGV,
             'tenGV' => $request->tenGV,
@@ -42,8 +44,24 @@ class GiangVienController extends Controller
             'hocVi' => $request->hocVi,
             'matKhau' => Hash::make($request->password),
         ]);
-
-        return response()->json(['data' => $gv], 201);
+        DB::table('user_role')->insert([
+        'username' => $request->maGV,
+        'password' => $request->password,
+        'role_name' => 'giangvien',
+        'created_at' => now(),
+            'updated_at' => now(),
+    ]);
+    DB::commit();
+    return response()->json([
+            'message' => 'Thêm giảng viên thành công',
+            'data' => $gv
+        ], 201);
+        } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Lỗi khi thêm giảng viên: ' . $e->getMessage()
+        ], 500);
+    }
     }
 
     public function update(Request $request, $maGV)
