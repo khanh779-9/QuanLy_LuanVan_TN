@@ -115,23 +115,35 @@ export default function AdminGiaiDoanPage() {
       setFormError("Có lỗi khi cập nhật. Vui lòng thử lại.");
     },
   });
-
+  const createMut = useMutation({
+  mutationFn: (data) => createStage(data), // Gọi service tạo mới
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["giaidoan"] });
+    setShowFormModal(false);
+  },
+  onError: () => setFormError("Có lỗi khi thêm mới."),
+});
   // Xử lý lưu sửa
   const handleSave = () => {
     if (!formMoTa.trim() || !formNgayBatDau || !formNgayKetThuc) {
       setFormError("Vui lòng nhập đầy đủ mô tả, ngày bắt đầu, ngày kết thúc.");
       return;
     }
-    updateMut.mutate({
-      id: editItem.id,
-      data: {
-        mo_ta: formMoTa,
-        loai: formLoai,
-        data: formData,
-        ngay_bat_dau: formNgayBatDau,
-        ngay_ket_thuc: formNgayKetThuc,
-      },
-    });
+    const payload = {
+    mo_ta: formMoTa,
+    loai: formLoai,
+    data: formData,
+    ngay_bat_dau: formNgayBatDau,
+    ngay_ket_thuc: formNgayKetThuc,
+  };
+
+  if (editItem) {
+    // Nếu có editItem thì là đang SỬA
+    updateMut.mutate({ id: editItem.id, data: payload });
+  } else {
+    // Nếu KHÔNG có editItem thì là đang THÊM MỚI
+    createMut.mutate(payload);
+  }
 
   };
 
@@ -168,7 +180,7 @@ export default function AdminGiaiDoanPage() {
       <div className="flex items-center gap-4 mb-4">
         <input
           type="text"
-          placeholder="Tìm kiếm mô tả, loại..."
+          placeholder="Tìm kiếm mô tả..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none flex-1"
@@ -183,7 +195,7 @@ export default function AdminGiaiDoanPage() {
             setFormError("");
             setShowFormModal(true);
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg"
         >
           Thêm giai đoạn
         </button>
@@ -217,7 +229,7 @@ export default function AdminGiaiDoanPage() {
         ) : (
           <>
             <div className="flex items-center gap-4 mb-4">
-              <p className="text-sm text-slate-500">
+              <p className="text-sm">
                 Thời gian hiện tại tuỳ chỉnh:{" "}
               </p>
               <input
@@ -232,16 +244,16 @@ export default function AdminGiaiDoanPage() {
               <button 
       onClick={handleKichHoatGiaLapTime} 
       disabled={isTimeLoading}
-      className="bg-blue-500 text-white text-sm px-4 py-1.5 rounded hover:bg-blue-600 disabled:opacity-50"
+      className="bg-blue-500 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-blue-600 "
     >
-      {isTimeLoading && !useCustom ? "..." : "Bật giả lập thời gian"}
+      {isTimeLoading && !useCustom ? "Đang xử lý..." : "Bật giả lập thời gian"}
     </button>
   <button 
       onClick={handleTraLaiRealTime} 
       disabled={isTimeLoading || !useCustom}
-      className="bg-gray-500 text-white text-sm px-4 py-1.5 rounded hover:bg-gray-600 disabled:opacity-50"
+      className="bg-gray-500 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-gray-600 "
     >
-      {isTimeLoading && useCustom ? "..." : "Tắt giả lập thời gian"}
+      {isTimeLoading && useCustom ? "Đang xử lý..." : "Tắt giả lập thời gian"}
     </button>
             </div>
             {statusMsg && (
@@ -341,14 +353,14 @@ export default function AdminGiaiDoanPage() {
       </div>
 
       {/* Modal sửa giai đoạn */}
-      {showFormModal && editItem && (
+      {showFormModal && (
         <Modal
           isOpen={true}
           onClose={() => {
             setShowFormModal(false);
             setEditItem(null);
           }}
-          title="Sửa giai đoạn"
+          title={editItem ? "Sửa giai đoạn" : "Thêm giai đoạn"}
           maxWidth="max-w-lg"
         >
           <div className="space-y-4">
