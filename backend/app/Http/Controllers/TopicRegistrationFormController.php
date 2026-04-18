@@ -61,7 +61,105 @@ class TopicRegistrationFormController extends Controller
             'de_tai' => $deTai,
         ]);
     }
+        public function bulkApprove(Request $request)
+    {
+        // Nhận mảng các ID từ Frontend gửi xuống
+        $request->validate([
+            'ids' => 'required|array',
+        ]);
 
+        // Lọc ra các bản ghi có ID nằm trong mảng và CHƯA được duyệt
+        $forms = TopicRegistrationForm::whereIn('id', $request->ids)
+            ->where('status', '!=', 'da_duyet')
+            ->get();
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($forms as $form) {
+                $tenDeTaiChinhThuc = ($form->topic_title === 'Chưa có tên đề tài') ? null : $form->topic_title;
+
+                // Tạo đề tài mới trong bảng detai
+                DeTai::create([
+                    'tenDeTai' => $tenDeTaiChinhThuc,
+                    'moTa' => $form->topic_description, // Lưu Hướng đề tài
+                    'maGV_HD' => $form->gvhd_code,
+                    'maGV_PB' => $form->gvpb_code,
+                    'maHoiDong' => null,
+                    'trangThai' => 'dat',
+                    'diemGiuaKy' => null,
+                    'trangThaiGiuaKy' => null,
+                    'nhanXetGiuaKy' => null,
+                    'diemHuongDan' => null,
+                    'nhanXetHuongDan' => null,
+                    'diemPhanBien' => null,
+                    'nhanXetPhanBien' => null,
+                    'diemHoiDong' => null,
+                    'diemTongKet' => null,
+                ]);
+
+                // Đổi trạng thái form thành đã duyệt
+                $form->status = 'da_duyet';
+                $form->save();
+            }
+
+            DB::commit();
+            return response()->json([
+                'message' => 'Đã duyệt hàng loạt ' . $forms->count() . ' bản ghi thành công!'
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+        }
+    }
+    public function approveAllPending(Request $request)
+    {
+        // Quét thẳng vào DB, lấy TẤT CẢ các bản ghi đang chờ duyệt
+        $forms = TopicRegistrationForm::where('status', 'cho_duyet')->get();
+
+        if ($forms->isEmpty()) {
+            return response()->json(['message' => 'Hệ thống hiện không có bản ghi nào cần duyệt!'], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($forms as $form) {
+                $tenDeTaiChinhThuc = ($form->topic_title === 'Chưa có tên đề tài') ? null : $form->topic_title;
+
+                DeTai::create([
+                    'tenDeTai' => $tenDeTaiChinhThuc,
+                    'moTa' => $form->topic_description,
+                    'maGV_HD' => $form->gvhd_code,
+                    'maGV_PB' => $form->gvpb_code,
+                    'maHoiDong' => null,
+                    'trangThai' => 'dat',
+                    'diemGiuaKy' => null,
+                    'trangThaiGiuaKy' => null,
+                    'nhanXetGiuaKy' => null,
+                    'diemHuongDan' => null,
+                    'nhanXetHuongDan' => null,
+                    'diemPhanBien' => null,
+                    'nhanXetPhanBien' => null,
+                    'diemHoiDong' => null,
+                    'diemTongKet' => null,
+                ]);
+
+                $form->status = 'da_duyet';
+                $form->save();
+            }
+
+            DB::commit();
+            return response()->json([
+                'message' => 'Tuyệt vời! Đã duyệt thành công toàn bộ ' . $forms->count() . ' bản đăng ký.'
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Lỗi hệ thống: ' . $e->getMessage()], 500);
+        }
+    }
     public function index(Request $request)
     {
         $query = TopicRegistrationForm::query();
@@ -225,7 +323,7 @@ class TopicRegistrationFormController extends Controller
                     if (isset($cells[$idx['hoTen'] + 1]) && ($idx['hoTen'] + 1 !== $idx['lop'])) {
                         $nextCell = trim($this->normalizeExcelText($cells[$idx['hoTen'] + 1]));
                         // Bỏ qua nếu cột kế tiếp là chữ cái của Lớp (như TH1, TH2...)
-                        if ($nextCell !== '' && !str_contains(mb_strtolower($nextCell), 'th')) {
+                        if ($nextCell !== '' && !preg_match('/\d/', $nextCell)) {
                             $hoTen .= ' ' . $nextCell;
                         }
                     }
