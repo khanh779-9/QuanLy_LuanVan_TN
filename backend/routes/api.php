@@ -53,12 +53,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Cập nhật giai đoạn (yêu cầu đăng nhập)
     Route::put('/giai-doan/{id}', [\App\Http\Controllers\GiaiDoanController::class, 'update']);
-
+    Route::post('/giai-doan', [\App\Http\Controllers\GiaiDoanController::class, 'store']);
+    Route::delete('/giai-doan/{id}', [\App\Http\Controllers\GiaiDoanController::class, 'destroy']);
     // API Phân công (Cấu trúc mới: Phân trang và Tách rời controller)
     Route::get('/phan-cong', [\App\Http\Controllers\PhanCongController::class, 'index']);
     Route::put('/phan-cong/{id}', [\App\Http\Controllers\PhanCongController::class, 'update']);
     Route::delete('/phan-cong/{id}', [\App\Http\Controllers\PhanCongController::class, 'destroy']);
-
+    Route::get('/phan-cong/danh-sach-chua-co-gvhd', [\App\Http\Controllers\PhanCongController::class, 'getDanhSachChuaCoGVHD']);
+    Route::post('/phan-cong/phan-cong-gvhd', [\App\Http\Controllers\PhanCongController::class, 'phancongGVHD']);
     // CRUD Đề tài
     Route::get('/de-tai', [\App\Http\Controllers\DeTaiController::class, 'index']);
     Route::get('/de-tai/{id}', [\App\Http\Controllers\DeTaiController::class, 'show']);
