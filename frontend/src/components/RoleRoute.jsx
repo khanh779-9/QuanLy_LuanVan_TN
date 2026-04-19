@@ -15,10 +15,7 @@ export default function RoleRoute({ allowed }) {
   // Chuẩn hoá role
   let role = user?.role?.toLowerCase();
   
-  // Nếu không phải thư ký, gộp chung thành 'gv' cho mục đích phân quyền routing
-  if (role && role !== 'thuky') {
-    role = 'gv';
-  }
+  
 
   // Chặn nếu gv (tất cả các giảng viên) cố vào trang thuky
   if (allowed === 'thuky' && role !== 'thuky') {

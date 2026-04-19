@@ -13,7 +13,7 @@ class GiangVienController extends Controller
 {
     public function index()
     {
-        $list = GiangVien::all();
+        $list = GiangVien::where('maGV', 'NOT LIKE', 'TK%')->get();
         foreach ($list as $gv) {
             $gv->so_sv_hd = \App\Models\SinhVien::whereHas('deTai', function ($q) use ($gv) {
                 $q->where('maGV_HD', $gv->maGV);

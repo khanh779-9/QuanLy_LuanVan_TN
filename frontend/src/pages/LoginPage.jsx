@@ -4,8 +4,12 @@ import { login } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
 function getDefaultRoute(user) {
-  if (user.type === "giangvien") {
+  if (user.role === "thuky") {
     return "/admin/tong-quan";
+  }
+  // Các trường hợp giảng viên còn lại (mã GV...)
+  if (user.type === "giangvien") {
+    return "/gv/tong-quan";
   }
   return "/login";
 }
