@@ -191,6 +191,7 @@ function SvFormModal({ editItem, onClose }) {
     hoTen: editItem?.hoTen || '',
     lop: editItem?.lop || '',
     email: editItem?.email || '',
+    soDienThoai: editItem?.soDienThoai || '',
   });
   const [errors, setErrors] = useState({});
 
@@ -211,7 +212,7 @@ function SvFormModal({ editItem, onClose }) {
   function handleSubmit(e) {
     e.preventDefault();
     setErrors({});
-    if (editItem) updateMut.mutate({ hoTen: form.hoTen, lop: form.lop, email: form.email });
+    if (editItem) updateMut.mutate({ hoTen: form.hoTen, lop: form.lop, email: form.email,soDienThoai: form.soDienThoai });
     else createMut.mutate(form);
   }
 
@@ -245,6 +246,12 @@ function SvFormModal({ editItem, onClose }) {
           <input type="email" value={form.email} onChange={e => handleChange('email', e.target.value)} disabled={loading}
             className={`w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 ${errors.email ? 'border-red-300' : 'border-slate-200'}`} />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email[0]}</p>}
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-slate-700 mb-1">SĐT</label>
+          <input type="text" value={form.soDienThoai} onChange={e => handleChange('soDienThoai', e.target.value)} disabled={loading}
+            className={`w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 ${errors.soDienThoai ? 'border-red-300' : 'border-slate-200'}`} />
+          {errors.soDienThoai && <p className="text-red-500 text-xs mt-1">{errors.soDienThoai[0]}</p>}
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <button type="button" onClick={onClose} className="border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 text-sm rounded-lg">Hủy</button>
