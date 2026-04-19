@@ -39,6 +39,7 @@ export default function Sidebar({ isOpen, onClose }) {
     ],
     gv: [
       { label: "Tổng quan", path: "/gv/tong-quan", icon: HiOutlineHome },
+      { label: "Đề tài", path: "/gv/de-tai", icon: HiOutlineDocumentText },
       { label: "Chấm giữa kỳ", path: "/gv/giua-ky", icon: HiOutlineChartBar },
       { label: "Chấm hướng dẫn", path: "/gv/huongdan", icon: HiOutlinePencilSquare },
       { label: "Chấm phản biện", path: "/gv/phanbien", icon: HiOutlineClipboardDocumentCheck },

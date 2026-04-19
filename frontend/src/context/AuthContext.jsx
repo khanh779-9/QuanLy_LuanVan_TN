@@ -6,9 +6,12 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [token, setToken] = useState(() => {
+    const saved = localStorage.getItem('token');
+    return saved && saved !== 'undefined' ? saved : null;
+  });
 
   // Đồng bộ lại token vào axios interceptor khi mount (fix mất token khi reload)
   useEffect(() => {

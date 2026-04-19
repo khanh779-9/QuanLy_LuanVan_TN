@@ -84,12 +84,16 @@ class SinhVienController extends Controller
             'hoTen' => 'required',
             'email' => 'nullable|email|unique:sinhvien,email',
             'lop' => 'nullable',
+            'soDienThoai' => 'nullable',
+            'maDeTai' => 'nullable|exists:detai,maDeTai',
         ]);
         $sv = SinhVien::create([
             'mssv' => $request->mssv,
             'hoTen' => $request->hoTen,
             'email' => $request->email,
             'lop' => $request->lop,
+            'soDienThoai' => $request->soDienThoai,
+            'maDeTai' => $request->maDeTai,
         ]);
 
         return response()->json(['data' => $sv], 201);
@@ -106,11 +110,15 @@ class SinhVienController extends Controller
             'hoTen' => 'required',
             'email' => 'nullable|email|unique:sinhvien,email,' . $mssv . ',mssv',
             'lop' => 'nullable',
+            'soDienThoai' => 'nullable',
+            'maDeTai' => 'nullable|exists:detai,maDeTai',
         ]);
         $sv->update([
             'hoTen' => $request->hoTen,
             'email' => $request->email,
             'lop' => $request->lop,
+            'soDienThoai' => $request->soDienThoai,
+            'maDeTai' => $request->maDeTai,
         ]);
 
         return response()->json(['data' => $sv]);

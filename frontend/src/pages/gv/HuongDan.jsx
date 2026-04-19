@@ -1,9 +1,89 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  HiOutlineAcademicCap,
+  HiOutlineArrowTrendingUp,
+  HiOutlineCheckBadge,
+  HiOutlineClipboardDocumentList,
+  HiOutlineMagnifyingGlass,
+  HiOutlinePencilSquare,
+  HiOutlineSparkles,
+} from 'react-icons/hi2';
 import { getDeTais, chamDiemHD } from '../../services/deTaiService';
 import Modal from '../../components/common/Modal';
 
 import { useAuth } from '../../context/AuthContext';
+
+function OverviewCard({ icon: Icon, title, value, helper, tone = 'emerald' }) {
+  const tones = {
+    emerald: {
+      chip: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      icon: 'text-emerald-600',
+      value: 'text-emerald-600',
+    },
+    teal: {
+      chip: 'bg-teal-50 text-teal-700 border-teal-100',
+      icon: 'text-teal-600',
+      value: 'text-teal-600',
+    },
+    amber: {
+      chip: 'bg-amber-50 text-amber-700 border-amber-100',
+      icon: 'text-amber-600',
+      value: 'text-amber-600',
+    },
+  };
+
+  const currentTone = tones[tone];
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{title}</p>
+          <p className={`mt-4 text-4xl font-extrabold ${currentTone.value}`}>{value}</p>
+        </div>
+        <div className={`rounded-2xl border px-3 py-3 ${currentTone.chip}`}>
+          <Icon className={currentTone.icon} size={22} />
+        </div>
+      </div>
+      <p className="mt-4 text-sm leading-6 text-slate-500">{helper}</p>
+    </div>
+  );
+}
+
+function StatusBadge({ scored }) {
+  if (scored) {
+    return (
+      <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">
+        Đã nhập
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+      Chưa nhập
+    </span>
+  );
+}
+
+function GuidanceRow({ label, value, tone }) {
+  const tones = {
+    emerald: 'bg-emerald-500',
+    teal: 'bg-teal-500',
+    amber: 'bg-amber-400',
+  };
+
+  return (
+    <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+      <div className="flex items-center gap-3">
+        <span className={`h-3 w-3 rounded-full ${tones[tone]}`} />
+        <span className="text-sm font-medium text-slate-600">{label}</span>
+      </div>
+      <span className="text-xl font-bold text-slate-800">{value}</span>
+    </div>
+  );
+}
 
 export default function GVHDHuongDanPage() {
   const queryClient = useQueryClient();
@@ -38,6 +118,21 @@ export default function GVHDHuongDanPage() {
     queryFn: () => getDeTais({ maGV_HD, q: search || undefined }),
   });
   const tableData = deTaiData?.data || [];
+  const scoredItems = tableData.filter((deTai) => deTai.diemHuongDan !== undefined && deTai.diemHuongDan !== null);
+  const daChamCount = scoredItems.length;
+  const chuaChamCount = tableData.length - daChamCount;
+  const averageScore = scoredItems.length > 0
+    ? (scoredItems.reduce((sum, deTai) => sum + Number(deTai.diemHuongDan || 0), 0) / scoredItems.length)
+    : 0;
+  const highestScore = scoredItems.length > 0
+    ? Math.max(...scoredItems.map((deTai) => Number(deTai.diemHuongDan || 0)))
+    : 0;
+  const completionRate = tableData.length > 0 ? Math.round((daChamCount / tableData.length) * 100) : 0;
+  const studentCount = tableData.reduce((sum, deTai) => sum + (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.length : 0), 0);
+  const readyCount = scoredItems.filter((deTai) => {
+    const students = Array.isArray(deTai?.data_json?.gvhd?.sinh_viens) ? deTai.data_json.gvhd.sinh_viens : [];
+    return students.some((sv) => sv.deNghi === 'Được bảo vệ');
+  }).length;
 
   const updateMut = useMutation({
     mutationFn: ({ deTaiId, data }) => chamDiemHD(deTaiId, data),
@@ -78,78 +173,226 @@ export default function GVHDHuongDanPage() {
     setShowEditModal(true);
   }
 
+  function tinhDiemHuongDanTuChiTiet() {
+    const validScores = (editForm.diemTongCong || [])
+      .map((value) => Number(value))
+      .filter((value) => Number.isFinite(value));
+
+    if (validScores.length === 0) {
+      return editForm.tong_diem === '' || editForm.tong_diem === null || editForm.tong_diem === undefined
+        ? null
+        : Number(editForm.tong_diem);
+    }
+
+    const average = validScores.reduce((sum, value) => sum + value, 0) / validScores.length;
+    return Number(average.toFixed(1));
+  }
+
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-slate-900 mb-6">Chấm điểm hướng dẫn</h1>
-      <div className="flex items-center gap-4 mb-4 flex-wrap">
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Tìm kiếm đề tài, sinh viên..."
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
+    <div className="space-y-6">
+      <div className="relative overflow-hidden rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-6 shadow-sm">
+        <div className="absolute -left-8 -top-8 h-28 w-28 rounded-full bg-emerald-100/60 blur-2xl" />
+        <div className="absolute bottom-0 right-1/4 h-24 w-24 rounded-full bg-teal-100/70 blur-xl" />
+        <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 shadow-sm">
+              <HiOutlineSparkles size={14} />
+              Chấm Điểm Hướng Dẫn
+            </div>
+            <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl uppercase">
+              Không gian chấm điểm hướng dẫn
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-slate-600 md:text-base">
+              Theo dõi tiến độ hướng dẫn, mở nhanh phiếu chấm và quản lý nhận xét theo cùng nhịp giao diện với phần phản biện.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-sm backdrop-blur-sm">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Tìm kiếm nhanh
+            </label>
+            <div className="relative">
+              <HiOutlineMagnifyingGlass className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Tìm kiếm đề tài, sinh viên..."
+                className="min-w-[260px] rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm shadow-sm outline-none transition focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <OverviewCard
+          icon={HiOutlinePencilSquare}
+          title="Điểm trung bình"
+          value={daChamCount > 0 ? averageScore.toFixed(1) : '0.0'}
+          helper="Điểm hướng dẫn trung bình của các đề tài đã được nhập nhận xét."
+          tone="emerald"
+        />
+        <OverviewCard
+          icon={HiOutlineClipboardDocumentList}
+          title="Tiến độ nhập điểm"
+          value={`${completionRate}%`}
+          helper={`Đã nhập: ${daChamCount} | Chưa nhập: ${chuaChamCount}`}
+          tone="teal"
+        />
+        <OverviewCard
+          icon={HiOutlineCheckBadge}
+          title="Đề nghị bảo vệ"
+          value={readyCount}
+          helper="Số đề tài hiện có ít nhất một sinh viên được đề nghị bảo vệ."
+          tone="amber"
         />
       </div>
-      <div className="bg-white rounded-lg border border-slate-200 overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-50">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Tên đề tài</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Sinh viên</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Điểm Hướng dẫn</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              [...Array(5)].map((_, i) => (
-                <tr key={i}>
-                  {[...Array(4)].map((_, ci) => (
-                    <td key={ci} className="px-4 py-3 border-t border-slate-100">
-                      <div className="bg-slate-100 animate-pulse rounded h-4 w-3/4"></div>
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : tableData.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-4 py-16 text-center">
-                  <p className="text-slate-500 font-semibold">Chưa có đề tài</p>
-                  <p className="text-sm text-slate-400 mt-1">Không có dữ liệu phù hợp.</p>
-                </td>
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_1fr]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-base font-semibold text-slate-900">Nhịp chấm hiện tại</h3>
+              <p className="mt-1 text-sm text-slate-500">Mức độ hoàn thành nhập điểm và nhận xét hướng dẫn trong đợt này.</p>
+            </div>
+            <div className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
+              Hướng dẫn
+            </div>
+          </div>
+          <div className="mt-5">
+            <div className="flex items-center justify-between text-sm font-medium text-slate-500">
+              <span>Hoàn thành</span>
+              <span>{completionRate}%</span>
+            </div>
+            <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500"
+                style={{ width: `${completionRate}%` }}
+              />
+            </div>
+          </div>
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl bg-emerald-50 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Đã nhập</p>
+              <p className="mt-2 text-3xl font-bold text-emerald-700">{daChamCount}</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Chưa nhập</p>
+              <p className="mt-2 text-3xl font-bold text-slate-700">{chuaChamCount}</p>
+            </div>
+            <div className="rounded-2xl bg-amber-50 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">Cao nhất</p>
+              <p className="mt-2 text-3xl font-bold text-amber-700">{daChamCount > 0 ? highestScore.toFixed(1) : '0.0'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-2">
+            <HiOutlineArrowTrendingUp className="text-emerald-600" size={20} />
+            <h3 className="text-base font-semibold text-slate-900">Tín hiệu hướng dẫn</h3>
+          </div>
+          <p className="mt-2 text-sm text-slate-500">Tóm tắt nhanh khối lượng sinh viên và các đề tài đã sẵn sàng bước tiếp theo sau đánh giá.</p>
+          <div className="mt-5 space-y-3">
+            <GuidanceRow label="Tổng sinh viên đang theo dõi" value={studentCount} tone="emerald" />
+            <GuidanceRow label="Đề tài đã có điểm hướng dẫn" value={daChamCount} tone="teal" />
+            <GuidanceRow label="Có đề nghị được bảo vệ" value={readyCount} tone="amber" />
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 bg-gradient-to-r from-slate-50 via-white to-emerald-50 px-5 py-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900">Danh sách đề tài hướng dẫn</h2>
+            </div>
+            <div className="text-xs font-medium uppercase tracking-wider text-slate-400">
+              {tableData.length} bản ghi
+            </div>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full border-separate border-spacing-0">
+            <thead>
+              <tr className="bg-slate-50">
+                <th className="border-b border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Mã</th>
+                <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Tên đề tài</th>
+                <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Sinh viên</th>
+                <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Điểm hướng dẫn</th>
+                <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Trạng thái</th>
+                <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Thao tác</th>
               </tr>
-            ) : (
-              tableData.map(deTai => {
-                return (
-                  <tr key={deTai.maDeTai} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100 font-semibold whitespace-nowrap align-middle">{deTai.tenDeTai}</td>
-                    <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100 align-middle">
-                      {Array.isArray(deTai.sinh_viens) && deTai.sinh_viens.length > 0 ? (
-                        <div className="flex flex-col gap-1">
-                          {deTai.sinh_viens.map(sv => (
-                            <span key={sv.mssv} className="block text-slate-700">
-                              {sv.hoTen} (<span className="font-medium text-slate-800">{sv.mssv}</span>)
-                            </span>
-                          ))}
-                        </div>
-                      ) : <span className="text-slate-400 italic">Chưa có</span>}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100 text-left align-middle">
-                      {deTai.diemHuongDan !== undefined && deTai.diemHuongDan !== null
-                        ? <span className="font-semibold text-blue-600">{deTai.diemHuongDan}</span>
-                        : <span className="text-slate-400 italic">Chưa có</span>}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100 align-middle">
-                      <button
-                        className="text-sm text-blue-600 hover:text-blue-800 font-semibold"
-                        onClick={() => openEdit(deTai)}
-                      >Nhập điểm/Nhận xét</button>
-                    </td>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    {[...Array(6)].map((_, ci) => (
+                      <td key={ci} className={`border-t border-slate-100 px-4 py-3 ${ci > 0 ? 'border-l border-slate-100' : ''}`}>
+                        <div className="h-4 w-3/4 animate-pulse rounded bg-slate-100" />
+                      </td>
+                    ))}
                   </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                ))
+              ) : tableData.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-16 text-center">
+                    <p className="font-semibold text-slate-500">Chưa có đề tài</p>
+                    <p className="mt-1 text-sm text-slate-400">Không có dữ liệu phù hợp.</p>
+                  </td>
+                </tr>
+              ) : (
+                tableData.map((deTai) => {
+                  const hasScore = deTai.diemHuongDan !== undefined && deTai.diemHuongDan !== null;
+
+                  return (
+                    <tr key={deTai.maDeTai} className="transition hover:bg-emerald-50/35">
+                      <td className="border-t border-slate-100 px-4 py-4 text-center text-sm font-semibold text-slate-700">
+                        {deTai.maDeTai}
+                      </td>
+                      <td className="border-t border-l border-slate-100 px-4 py-4 text-center text-sm font-semibold text-slate-800">
+                        {deTai.tenDeTai}
+                      </td>
+                      <td className="border-t border-l border-slate-100 px-4 py-4 text-center text-sm text-slate-700">
+                        {Array.isArray(deTai.sinh_viens) && deTai.sinh_viens.length > 0 ? (
+                          <div className="space-y-1">
+                            {deTai.sinh_viens.map((sv) => (
+                              <div key={sv.mssv}>
+                                {sv.hoTen} <span className="font-medium text-slate-500">({sv.mssv})</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="italic text-slate-400">Chưa có</span>
+                        )}
+                      </td>
+                      <td className="border-t border-l border-slate-100 px-4 py-4 text-center text-sm">
+                        {hasScore ? (
+                          <span className="font-semibold text-emerald-700">{deTai.diemHuongDan}</span>
+                        ) : (
+                          <span className="italic text-slate-400">Chưa có</span>
+                        )}
+                      </td>
+                      <td className="border-t border-l border-slate-100 px-4 py-4 text-center">
+                        <StatusBadge scored={hasScore} />
+                      </td>
+                      <td className="border-t border-l border-slate-100 px-4 py-4 text-center">
+                        <button
+                          className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+                          onClick={() => openEdit(deTai)}
+                        >
+                          <HiOutlinePencilSquare size={16} />
+                          Nhập điểm/Nhận xét
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
       
       {showEditModal && editDeTai && (
@@ -286,10 +529,12 @@ export default function GVHDHuongDanPage() {
               disabled={updateMut.isPending || saveSuccess}
               onClick={() => {
                 if (!updateMut.isPending && !saveSuccess) {
+                  const tongDiemHuongDan = tinhDiemHuongDanTuChiTiet();
+
                   updateMut.mutate({
                     deTaiId: editDeTai?.maDeTai,
                     data: {
-                      diemHuongDan: editForm.tong_diem,
+                      diemHuongDan: tongDiemHuongDan,
                       nhanXetHuongDan: editForm.nhanXet,
                       uuDiem: editForm.uuDiem,
                       thieuSot: editForm.thieuSot,
@@ -305,7 +550,7 @@ export default function GVHDHuongDanPage() {
                       deNghi: editForm.deNghi,
                       data_json: {
                         gvhd: {
-                          tong_diem: editForm.tong_diem,
+                          tong_diem: tongDiemHuongDan,
                           nhanXet: editForm.nhanXet,
                           uuDiem: editForm.uuDiem,
                           thieuSot: editForm.thieuSot,
