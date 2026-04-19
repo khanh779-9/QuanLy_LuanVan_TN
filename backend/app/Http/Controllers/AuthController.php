@@ -13,39 +13,37 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function login(Request $request)
-    {
-        $request->validate([
-            'maGV' => 'required|string',
-            'password' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'maGV' => 'required|string',
+        'password' => 'required|string',
+    ]);
 
-        $user = GiangVien::where('maGV', $request->maGV)->first();
+    // 1. Tìm người dùng trong bảng giangvien
+    $user = \App\Models\GiangVien::where('maGV', $request->maGV)->first();
 
-        if (!$user || !($request->password === $user->matKhau)) {
-            return response()->json(['message' => 'Mã GV hoặc mật khẩu không đúng'], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        // Lấy vai trò duy nhất ưu tiên theo bảng thanhvien_hoidong
-        $role = null;
-        $tvhd = ThanhVienHoiDong::where('maGV', $user->maGV)->first();
-        $role = $tvhd->vaiTro;
-
-        if ($role == null)
-            $role = 'gv';
-
-        return response()->json([
-            'token' => $token,
-            'user' => [
-                'id' => $user->maGV,
-                'name' => $user->tenGV,
-                'email' => $user->email,
-                'type' => 'giangvien',
-                'role' => $role,
-            ],
-        ]);
+    // 2. Xác thực (Sử dụng so sánh trực tiếp theo dữ liệu hiện tại của bạn)
+    if (!$user || !($request->password === $user->matKhau)) {
+        return response()->json(['message' => 'Mã số hoặc mật khẩu không đúng'], 401);
     }
+
+    // 3. Tạo Token xác thực 
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    // 4. Phân loại Role dựa trên mã hiệu (TK = Thư ký, còn lại = Giảng viên)
+    $role = str_starts_with(strtoupper($user->maGV), 'TK') ? 'thuky' : 'gv';
+
+    return response()->json([
+        'token' => $token,
+        'user' => [
+            'id' => $user->maGV,
+            'name' => $user->tenGV,
+            'email' => $user->email,
+            'type' => 'giangvien', // Vẫn thuộc bảng giangvien để tạo token
+            'role' => $role,       // Trả về 'thuky' hoặc 'gv'
+        ],
+    ]);
+}
 
     // Đăng nhập cho sinh viên
     public function loginSinhVien(Request $request)

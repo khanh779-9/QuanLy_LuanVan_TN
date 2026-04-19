@@ -20,7 +20,7 @@ export async function createLecturer(data) {
     email: data.email,
     soDienThoai: data.soDienThoai,
     hocVi: data.hocVi,
-    matKhau: data.matKhau,
+    password: data.password,
   })).data;
 }
 export async function updateLecturer(maGV, data) {
@@ -29,7 +29,7 @@ export async function updateLecturer(maGV, data) {
     email: data.email,
     soDienThoai: data.soDienThoai,
     hocVi: data.hocVi,
-    matKhau: data.matKhau,
+    password: data.password,
   })).data;
 }
 export async function deleteLecturer(maGV) {

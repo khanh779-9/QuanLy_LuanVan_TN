@@ -13,7 +13,7 @@ class GiangVienController extends Controller
 {
     public function index()
     {
-        $list = GiangVien::all();
+        $list = GiangVien::where('maGV', 'NOT LIKE', 'TK%')->get();
         foreach ($list as $gv) {
             $gv->so_sv_hd = \App\Models\SinhVien::whereHas('deTai', function ($q) use ($gv) {
                 $q->where('maGV_HD', $gv->maGV);
@@ -30,7 +30,7 @@ class GiangVienController extends Controller
             'maGV' => 'required|unique:giangvien,maGV',
             'tenGV' => 'required',
             'email' => 'required|email|unique:giangvien,email',
-            'password' => 'required|min:6',
+            'password' => 'required|min:1',
             'hocVi' => 'nullable|in:ThS,TS,PGS.TS,GS.TS',
             'soDienThoai' => 'nullable',
         ]);
@@ -40,7 +40,7 @@ class GiangVienController extends Controller
             'email' => $request->email,
             'soDienThoai' => $request->soDienThoai,
             'hocVi' => $request->hocVi,
-            'matKhau' => Hash::make($request->password),
+            'matKhau' => $request->password,
         ]);
 
         return response()->json(['data' => $gv], 201);
@@ -56,7 +56,7 @@ class GiangVienController extends Controller
         $request->validate([
             'tenGV' => 'required',
             'email' => 'required|email|unique:giangvien,email,' . $maGV . ',maGV',
-            'password' => 'nullable|min:6',
+            'password' => 'nullable|min:1',
             'hocVi' => 'nullable|in:ThS,TS,PGS.TS,GS.TS',
             'soDienThoai' => 'nullable',
         ]);
