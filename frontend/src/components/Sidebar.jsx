@@ -33,7 +33,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const menuConfig = {
     thuky: [
       { label: "Tổng quan", path: "/admin/tong-quan", icon: HiOutlineHome },
-      { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers },
+      { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers,hidden: true },
       { label: "Giảng viên", path: "/admin/giangvien", icon: HiOutlineAcademicCap },
       { label: "Nhập liệu", path: "/admin/nhaplieu", icon: HiOutlineDocumentText, featureKey: "con_dangky" },
       { label: "Phân công GVHD", path: "/admin/phanconggvhd", icon: HiOutlineUserGroup, featureKey: "con_phancong_hd" },
@@ -55,6 +55,7 @@ export default function Sidebar({ isOpen, onClose }) {
   };
   const rawMenuItems = role && menuConfig[role] ? menuConfig[role] : [];
   const menuItems = rawMenuItems.filter((item) => {
+    if (item.hidden) return false;
     if (!item.featureKey) return true; // Mục mặc định luôn hiện
     return config[item.featureKey] === true || config[item.featureKey] === "true";
   });
