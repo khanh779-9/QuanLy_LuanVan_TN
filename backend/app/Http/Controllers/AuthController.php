@@ -9,41 +9,43 @@ use App\Models\SinhVien;
 use App\Models\ThanhVienHoiDong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
+
 class AuthController extends Controller
 {
-    // AuthController.php
+    public function login(Request $request)
+    {
+        $request->validate([
+            'maGV' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-public function login(Request $request)
-{
-    $request->validate([
-        'maGV' => 'required|string',
-        'password' => 'required|string',
-    ]);
+        $user = GiangVien::where('maGV', $request->maGV)->first();
 
-    // 1. Kiểm tra tài khoản và mật khẩu ở bảng user_role (bảng giữ chìa khóa)
-    $account = DB::table('user_role')->where('username', $request->maGV)->first();
+        if (!$user || !($request->password === $user->matKhau)) {
+            return response()->json(['message' => 'Mã GV hoặc mật khẩu không đúng'], 401);
+        }
 
-    if (!$account || !($request->password === $account->password)) {
-        return response()->json(['message' => 'Mã số hoặc mật khẩu không đúng'], 401);
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Lấy vai trò duy nhất ưu tiên theo bảng thanhvien_hoidong
+        $role = null;
+        $tvhd = ThanhVienHoiDong::where('maGV', $user->maGV)->first();
+        $role = $tvhd->vaiTro;
+
+        if ($role == null)
+            $role = 'gv';
+
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id' => $user->maGV,
+                'name' => $user->tenGV,
+                'email' => $user->email,
+                'type' => 'giangvien',
+                'role' => $role,
+            ],
+        ]);
     }
-
-    // 2. Lấy thông tin giảng viên (Thư ký giờ cũng là 1 record trong đây)
-    $user = GiangVien::where('maGV', $account->username)->first();
-
-    // 3. Tạo token thật từ Model GiangVien
-    $token = $user->createToken('auth_token')->plainTextToken;
-
-    return response()->json([
-        'token' => $token,
-        'user' => [
-            'id' => $user->maGV,
-            'name' => $user->tenGV,
-            'type' => $account->role_name, // 'thuky' hoặc 'giangvien'
-            'role' => $account->role_name === 'thuky' ? 'thuky' : 'gv',
-        ],
-    ]);
-}
 
     // Đăng nhập cho sinh viên
     public function loginSinhVien(Request $request)

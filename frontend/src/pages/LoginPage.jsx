@@ -4,12 +4,8 @@ import { login } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
 function getDefaultRoute(user) {
-  if (user.type === "thuky") {
-    return "/admin/tong-quan";
-  }
-  // Giảng viên vào gv
   if (user.type === "giangvien") {
-    return "/gv/tong-quan";
+    return "/admin/tong-quan";
   }
   return "/login";
 }
