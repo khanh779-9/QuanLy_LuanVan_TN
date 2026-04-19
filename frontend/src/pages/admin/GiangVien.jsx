@@ -80,7 +80,7 @@ export default function GiangVien() {
             {isLoading ? (
               [...Array(5)].map((_, i) => (
                 <tr key={i}>
-                  {[...Array(9)].map((_, ci) => (
+                  {[...Array(6)].map((_, ci) => (
                     <td key={ci} className="px-4 py-3 border-t border-slate-100">
                       <div className="bg-slate-100 animate-pulse rounded h-4 w-3/4"></div>
                     </td>
@@ -89,7 +89,7 @@ export default function GiangVien() {
               ))
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-16 text-center">
+                <td colSpan={6} className="px-4 py-16 text-center">
                   <p className="text-slate-500 font-semibold">Chưa có giảng viên</p>
                   <p className="text-sm text-slate-400 mt-1">Thêm giảng viên đầu tiên để bắt đầu sử dụng hệ thống.</p>
                 </td>
