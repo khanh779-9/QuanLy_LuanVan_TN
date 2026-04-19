@@ -14,8 +14,10 @@ import {
 } from "react-icons/hi2";
 import { useAuth } from "../context/AuthContext";
 import { logout } from "../services/authService";
-
+import { useCurrentStage } from "../hooks/useCurrentStage";
 export default function Sidebar({ isOpen, onClose }) {
+  const { stage, isLoading } = useCurrentStage();
+  const config = stage?.data || {};
   const navigate = useNavigate();
   const location = useLocation();
   const { user: contextUser, clearAuth } = useAuth();
@@ -33,8 +35,8 @@ export default function Sidebar({ isOpen, onClose }) {
       { label: "Tổng quan", path: "/admin/tong-quan", icon: HiOutlineHome },
       { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers },
       { label: "Giảng viên", path: "/admin/giangvien", icon: HiOutlineAcademicCap },
-      { label: "Nhập liệu", path: "/admin/nhaplieu", icon: HiOutlineDocumentText },
-      { label: "Phân công GVHD", path: "/admin/phanconggvhd", icon: HiOutlineUserGroup },
+      { label: "Nhập liệu", path: "/admin/nhaplieu", icon: HiOutlineDocumentText, featureKey: "con_dangky" },
+      { label: "Phân công GVHD", path: "/admin/phanconggvhd", icon: HiOutlineUserGroup, featureKey: "con_phancong_hd" },
       { label: "Giai đoạn", path: "/admin/giaidoan", icon: HiOutlineCog6Tooth },
     ],
     gv: [
@@ -51,16 +53,25 @@ export default function Sidebar({ isOpen, onClose }) {
       { label: "Kết quả đề tài", path: "/sv/ket-qua-detai", icon: HiOutlineChartBar },
     ]
   };
-  const roleLabels = { thuky: "Thư ký khoa", gv: "Giảng viên" };
-  const menuItems = role && menuConfig[role] ? menuConfig[role] : [{ label: "Tổng quan", path: "/", icon: HiOutlineHome }];
+  const rawMenuItems = role && menuConfig[role] ? menuConfig[role] : [];
+  const menuItems = rawMenuItems.filter((item) => {
+    if (!item.featureKey) return true; // Mục mặc định luôn hiện
+    return config[item.featureKey] === true || config[item.featureKey] === "true";
+  });
+  const roleLabels = { thuky: "Thư ký khoa", gv: "Giảng viên",sv: "Sinh viên" };
   const getRoleLabel = () => (role ? roleLabels[role] || "Người dùng" : "");
 
   const handleLogout = async () => {
+    const isSv = role === "sv";
     try {
       await logout();
     } catch {}
     clearAuth();
+    if (isSv) {
+    navigate("/sv/login");
+  } else {
     navigate("/login");
+  }
   };
 
   return (
@@ -79,35 +90,29 @@ export default function Sidebar({ isOpen, onClose }) {
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4">
-        {menuItems.length === 0 ? (
-          <div className="px-6 text-sm text-slate-400">
-            Không có chức năng phù hợp
-          </div>
-        ) : (
-          menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            return (
-              <div
-                key={item.path}
-                onClick={() => {
-                  navigate(item.path);
-                  if (onClose) onClose();
-                }}
-                className={`flex items-center gap-3 px-6 py-3 text-sm cursor-pointer transition-colors ${
-                  isActive
-                    ? "bg-blue-50 text-blue-600 border-l-4 border-l-blue-600 font-medium"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent"
-                }`}
-              >
-                <Icon size={18} />
-                <span>{item.label}</span>
-              </div>
-            );
-          })
-        )}
-      </nav>
+      <nav className="flex-1 mt-4">
+  {isLoading ? (
+    <div className="px-6 py-3 text-xs text-slate-400">Đang tải menu...</div>
+  ) : (
+    menuItems.map((item) => {
+      const Icon = item.icon;
+      const isActive = location.pathname === item.path;
+      return (
+        <div
+          key={item.path}
+          onClick={() => {
+            navigate(item.path);
+            if (onClose) onClose();
+          }}
+          className={`flex items-center gap-3 px-6 py-3 text-sm cursor-pointer ...`}
+        >
+          <Icon size={18} />
+          <span>{item.label}</span>
+        </div>
+      );
+    })
+  )}
+</nav>
 
       <div className="border-t border-slate-200 px-6 py-4 bg-slate-50">
         <p
