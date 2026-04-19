@@ -40,7 +40,7 @@ class GiangVienController extends Controller
             'email' => $request->email,
             'soDienThoai' => $request->soDienThoai,
             'hocVi' => $request->hocVi,
-            'matKhau' => Hash::make($request->password),
+            'matKhau' => $request->password,
         ]);
 
         return response()->json(['data' => $gv], 201);
