@@ -10,6 +10,7 @@ import AdminPhanCongGVHD from './pages/admin/PhanCongGVHD';
 import AdminNhapLieu from './pages/admin/NhapLieu';
 import AdminGiaiDoanPage from './pages/admin/GiaiDoan';
 import GVTongQuan from './pages/gv/TongQuan';
+import GVDeTai from './pages/gv/DeTai';
 import GVHDGiuaKy from './pages/gv/GiuaKy';
 import GVHDHuongDan from './pages/gv/HuongDan';
 import GVPBPhanBien from './pages/gv/PhanBien';
@@ -47,6 +48,7 @@ function App() {
             </Route>
             <Route element={<RoleRoute allowed="gv" />}>
               <Route path="/gv/tong-quan" element={<GVTongQuan />} />
+              <Route path="/gv/de-tai" element={<GVDeTai />} />
               <Route path="/gv/giua-ky" element={<GVHDGiuaKy />} />
               <Route path="/gv/huongdan" element={<GVHDHuongDan />} />
               <Route path="/gv/phanbien" element={<GVPBPhanBien />} />

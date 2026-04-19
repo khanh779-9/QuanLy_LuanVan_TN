@@ -95,7 +95,12 @@ alter table detai
 add column data_json TEXT NULL DEFAULT '{ "gvhd": { "tong_diem": "", "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": "", "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": "", "deNghi": "" } ] }, "gvpb": { "tong_diem": "", "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": "", "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": "", "deNghi": "" } ] } }';
 
 
-INSERT INTO detai VALUES
+INSERT INTO detai (
+  `maDeTai`, `tenDeTai`, `moTa`, `maGV_HD`, `maGV_PB`, `maHoiDong`,
+  `diemGiuaKy`, `diemHuongDan`, `diemPhanBien`, `diemHoiDong`, `diemTongKet`, `diemChu`,
+  `trangThaiGiuaKy`, `trangThai`, `nhanXetGiuaKy`, `nhanXetHuongDan`, `nhanXetPhanBien`,
+  `thuTuTrongHD`, `ghiChu`, `created_at`, `updated_at`
+) VALUES
 (1,'Hệ thống quản lý sinh viên','Xây dựng hệ thống quản lý','GV001','GV002',1,8.5,9,8,8.5,8.5,NULL,'duoc_lam_tiep','dat','Tốt','Tốt','OK',NULL,NULL,NOW(),NOW()),
 (2,'Website bán hàng','Website thương mại','GV003','GV004',1,7,7.5,7,7.2,7.2,NULL,'canh_cao','can_chinh_sua','Cần sửa','UI yếu','Chi tiết',NULL,NULL,NOW(),NOW()),
 (3,'App quản lý thư viện','App mượn trả sách','GV002','GV005',1,9,9.5,9,9.2,9.2,NULL,'duoc_lam_tiep','dat','Rất tốt','Tốt','Tốt',NULL,NULL,NOW(),NOW());
@@ -118,12 +123,12 @@ CREATE TABLE sinhvien (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `sinhvien` (`mssv`, `hoTen`, `lop`, `email`, `soDienThoai`, `maDeTai`, `created_at`, `updated_at`) VALUES
-('DH51801379', 'Ngô Minh Đạt', 'D18_TH01', 'DH51801379@student.stu.edu.vn', '792170819', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
-('DH52000682', 'Lê Tuấn', 'D20_TH03', 'DH52000682@student.stu.edu.vn', '777789336', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
-('DH52001024', 'Nguyễn Duy Sơn', 'D20_TH02', 'DH52001024@student.stu.edu.vn', '783887570', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
-('DH52001243', 'Lưu Văn Hiếu', 'D20_TH05', 'DH52001243@student.stu.edu.vn', '977833079', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
-('DH52001330', 'Phạm Ngọc Đông', 'D20_TH03', 'DH52001330@student.stu.edu.vn', '366468307', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
-('DH52001367', 'Lâm Chí Minh', 'D20_TH01', 'DH52001367@student.stu.edu.vn', '924405798', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
+('DH51801379', 'Ngô Minh Đạt', 'D18_TH01', 'DH51801379@student.stu.edu.vn', '792170819', 1, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
+('DH52000682', 'Lê Tuấn', 'D20_TH03', 'DH52000682@student.stu.edu.vn', '777789336', 2, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
+('DH52001024', 'Nguyễn Duy Sơn', 'D20_TH02', 'DH52001024@student.stu.edu.vn', '783887570', 1, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
+('DH52001243', 'Lưu Văn Hiếu', 'D20_TH05', 'DH52001243@student.stu.edu.vn', '977833079', 2, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
+('DH52001330', 'Phạm Ngọc Đông', 'D20_TH03', 'DH52001330@student.stu.edu.vn', '366468307', 3, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
+('DH52001367', 'Lâm Chí Minh', 'D20_TH01', 'DH52001367@student.stu.edu.vn', '924405798', 3, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
 ('DH52001688', 'Phạm Nhựt Linh', 'D20_TH02', 'DH52001688@student.stu.edu.vn', '794985963', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
 ('DH52001900', 'Nguyễn Minh Triều', 'D20_TH01', 'DH52001900@student.stu.edu.vn', '899052420', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
 ('DH52001904', 'Nguyễn Hữu Trường', 'D20_TH01', 'DH52001904@student.stu.edu.vn', '855021202', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
@@ -290,8 +295,8 @@ CREATE TABLE thanhvien_hoidong (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `thanhvien_hoidong` (`id`, `maHoiDong`, `maGV`, `vaiTro`, `created_at`, `updated_at`) VALUES
-(13, 1, 'GV001', 'ThuKy', NULL, NULL),
-(14, 1, 'GV002', 'ThuKy', NULL, NULL),
+(13, 1, 'GV001', 'UyVien', NULL, NULL),
+(14, 1, 'GV002', 'UyVien', NULL, NULL),
 (15, 1, 'GV003', 'UyVien', NULL, NULL),
 (16, 1, 'GV004', 'ChuTich', NULL, NULL);
 

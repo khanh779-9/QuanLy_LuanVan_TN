@@ -47,6 +47,9 @@ class DeTaiController extends Controller
                 $sinhVienMap[$sv->maDeTai][] = [
                     'mssv' => $sv->mssv,
                     'hoTen' => $sv->hoTen,
+                    'lop' => $sv->lop,
+                    'email' => $sv->email,
+                    'soDienThoai' => $sv->soDienThoai,
                 ];
             }
         }
