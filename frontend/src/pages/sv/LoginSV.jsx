@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { loginSinhVien } from "../../services/sinhVienAuthService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
 
 export default function LoginSV({ onLogin }) {
   const [mssv, setMssv] = useState("");
@@ -8,6 +9,7 @@ export default function LoginSV({ onLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { saveAuth } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,8 +17,7 @@ export default function LoginSV({ onLogin }) {
     setLoading(true);
     try {
       const res = await loginSinhVien({ mssv, password });
-      if (onLogin) onLogin(res);
-      // Nếu dùng AuthContext thì gọi saveAuth ở component cha hoặc truyền prop
+      saveAuth(res.user, res.token);
       navigate("/sv/dashboard");
     } catch (err) {
       setError(err?.response?.data?.message || "Đăng nhập thất bại");
