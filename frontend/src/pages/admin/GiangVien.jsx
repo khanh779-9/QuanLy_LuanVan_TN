@@ -73,9 +73,6 @@ export default function GiangVien() {
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Học vị</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">SĐT</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">SV HD</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">ĐT PB</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">HĐ</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -105,13 +102,7 @@ export default function GiangVien() {
                   <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">{gv.email}</td>
                   <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">{gv.hocVi || '-'}</td>
                   <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">{gv.soDienThoai || '-'}</td>
-                  <td className="px-4 py-3 border-t border-slate-100">
-                    <span className={`text-sm ${gv.so_sv_hd >= 10 ? 'text-amber-600 font-semibold' : 'text-slate-700'}`}>
-                      {gv.so_sv_hd || 0}/10
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">{gv.so_dt_pb || 0}</td>
-                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">{gv.so_hd || 0}</td>
+                  
                   <td className="px-4 py-3 border-t border-slate-100">
                     <div className="flex gap-3">
                       <button onClick={() => { setEditItem(gv); setShowFormModal(true); }} className="text-sm text-blue-600 hover:text-blue-800">Sửa</button>
