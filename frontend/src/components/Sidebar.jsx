@@ -33,7 +33,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const menuConfig = {
     thuky: [
       { label: "Tổng quan", path: "/admin/tong-quan", icon: HiOutlineHome },
-      { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers,hidden: true },
+      { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers},
       { label: "Giảng viên", path: "/admin/giangvien", icon: HiOutlineAcademicCap },
       { label: "Nhập liệu", path: "/admin/nhaplieu", icon: HiOutlineDocumentText, featureKey: "con_dangky" },
       { label: "Phân công GVHD", path: "/admin/phanconggvhd", icon: HiOutlineUserGroup, featureKey: "con_phancong_hd" },
@@ -54,10 +54,13 @@ export default function Sidebar({ isOpen, onClose }) {
     ]
   };
   const rawMenuItems = role && menuConfig[role] ? menuConfig[role] : [];
-  const menuItems = rawMenuItems.filter((item) => {
-    if (item.hidden) return false;
-    if (!item.featureKey) return true; // Mục mặc định luôn hiện
-    return config[item.featureKey] === true || config[item.featureKey] === "true";
+  const menuItems = rawMenuItems.map((item) => {
+    const isFeatureLocked = item.featureKey && 
+                         !(config[item.featureKey] === true || config[item.featureKey] === "true");
+    return {
+    ...item,
+    isDisabled: item.disable || isFeatureLocked 
+  };
   });
   const roleLabels = { thuky: "Thư ký khoa", gv: "Giảng viên",sv: "Sinh viên" };
   const getRoleLabel = () => (role ? roleLabels[role] || "Người dùng" : "");
@@ -102,12 +105,19 @@ export default function Sidebar({ isOpen, onClose }) {
         <div
           key={item.path}
           onClick={() => {
+            if (item.isDisabled) return;
             navigate(item.path);
             if (onClose) onClose();
           }}
-          className={`flex items-center gap-3 px-6 py-3 text-sm cursor-pointer ...`}
+          className={`flex items-center gap-3 px-6 py-3 text-sm
+        ${isActive 
+          ? "bg-blue-600 text-white shadow-md mx-2 rounded-lg" // Màu xanh khi đang ở trang này
+          : item.isDisabled 
+            ? "opacity-40 cursor-not-allowed grayscale"       // Màu khi bị disable
+            : "text-slate-600 hover:bg-blue-50 hover:text-blue-600 cursor-pointer" // Màu bình thường
+        }`}
         >
-          <Icon size={18} />
+          <Icon size={18}  />
           <span>{item.label}</span>
         </div>
       );
