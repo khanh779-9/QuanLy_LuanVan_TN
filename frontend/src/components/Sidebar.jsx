@@ -81,7 +81,7 @@ export default function Sidebar({ isOpen, onClose }) {
         path: "/sv/dang-ky-detai",
         icon: HiOutlinePencilSquare,
       },
-      // { label: "Nhiệm vụ đề tài", path: "/sv/ket-qua-detai", icon: HiOutlineChartBar },
+     { label: "Nhiệm vụ đề tài", path: "/sv/ket-qua-detai", icon: HiOutlineChartBar },
     ],
   };
   const rawMenuItems = role && menuConfig[role] ? menuConfig[role] : [];

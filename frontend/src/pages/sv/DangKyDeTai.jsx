@@ -22,7 +22,7 @@ export default function DangKyDeTaiSV() {
     setEditData(edit);
     setShowModal(true);
   };
-
+  console.log("Đề tài của tôi:", data);
   return (
     <div className="mx-auto px-2 sm:px-0">
       <h1 className="text-2xl font-bold text-slate-900 mb-7 tracking-tight">Đăng ký đề tài</h1>
@@ -30,11 +30,11 @@ export default function DangKyDeTaiSV() {
         <h2 className="text-lg font-semibold text-blue-800 mb-5">Đề tài của tôi</h2>
         {isLoading ? (
           <div className="text-slate-400 text-base">Đang tải...</div>
-        ) : data ? (
-          <>
-            <div className="space-y-3 text-[15px]">
-              <div>
-                <span className="font-medium text-slate-700">Tên đề tài:</span>{" "}
+          ) : data.tenDeTai ? (
+            <>
+              <div className="space-y-3 text-[15px]">
+                <div>
+                  <span className="font-medium text-slate-700">Tên đề tài:</span>{" "}
                 <span className="text-slate-900">{data.tenDeTai}</span>
               </div>
               <div>
@@ -77,11 +77,16 @@ export default function DangKyDeTaiSV() {
         ) : (
           <div className="flex flex-col items-center gap-4 py-8">
             <div className="text-slate-400 text-base">Bạn chưa có đề tài nào.</div>
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 text-[15px] font-medium rounded-lg shadow-sm transition-colors"
+              onClick={() => handleOpenModal(null)}
+            >
+              Đăng ký đề tài mới
+            </button>
           </div>
         )}
       </div>
-      {/* Nếu muốn cho phép đăng ký/chỉnh sửa đề tài, mở modal ở đây */}
-      {/* <DangKyDeTaiModal
+       <DangKyDeTaiModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onSuccess={() => {
@@ -89,7 +94,7 @@ export default function DangKyDeTaiSV() {
           refetch();
         }}
         editData={editData}
-      /> */}
+      /> 
     </div>
   );
 }
