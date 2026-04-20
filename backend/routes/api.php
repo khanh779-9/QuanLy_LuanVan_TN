@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/phan-cong/phan-cong-gvhd', [\App\Http\Controllers\PhanCongController::class, 'phancongGVHD']);
     // CRUD Đề tài
     Route::get('/de-tai', [\App\Http\Controllers\DeTaiController::class, 'index']);
+    Route::get('/de-tai/my', [\App\Http\Controllers\DeTaiController::class, 'my']);
     Route::get('/de-tai/{id}', [\App\Http\Controllers\DeTaiController::class, 'show']);
     Route::post('/de-tai', [\App\Http\Controllers\DeTaiController::class, 'store']);
     Route::put('/de-tai/{id}', [\App\Http\Controllers\DeTaiController::class, 'update']);
@@ -72,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/de-tai/{id}', [\App\Http\Controllers\DeTaiController::class, 'destroy']);
     Route::get('/de-tai/{id}/export/gvhd', [\App\Http\Controllers\DeTaiController::class, 'exportGVHD']);
     Route::get('/de-tai/{id}/export/gvpb', [\App\Http\Controllers\DeTaiController::class, 'exportGVPB']);
+    Route::get('/de-tai/{id}/export/nhiem-vu', [\App\Http\Controllers\DeTaiController::class, 'exportNhiemVu']);
 
     // API thống kê tổng quan (Dashboard)
     Route::get('/stats', [\App\Http\Controllers\StatsController::class, 'adminStats']);

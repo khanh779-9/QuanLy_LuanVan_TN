@@ -55,3 +55,15 @@ export async function exportWordGVPB(id) {
   link.click();
   link.remove();
 }
+
+// Xuất Word Nhiệm vụ
+export async function exportWordNhiemVu(id) {
+  const res = await api.get(`/de-tai/${id}/export/nhiem-vu`, { responseType: 'blob' });
+  const url = window.URL.createObjectURL(new Blob([res.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `Phieu_giao_de_tai_${id}.docx`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}

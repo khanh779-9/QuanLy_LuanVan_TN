@@ -1,19 +1,20 @@
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
+import { exportWordNhiemVu } from '../../services/deTaiService';
 import DangKyDeTaiModal from "./DangKyDeTaiModal";
 
 export default function DangKyDeTaiSV() {
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState(null);
+  // Lấy thông tin đề tài của sinh viên hiện tại
   const {
     data,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["my-topic-registration-form"],
-    queryFn: () => api.get("/topic-registration-form/my").then((r) => r.data.data),
+    queryKey: ["my-detai"],
+    queryFn: () => api.get("/de-tai/my").then((r) => r.data),
     refetchOnWindowFocus: false,
   });
 
@@ -26,7 +27,7 @@ export default function DangKyDeTaiSV() {
     <div className="mx-auto px-2 sm:px-0">
       <h1 className="text-2xl font-bold text-slate-900 mb-7 tracking-tight">Đăng ký đề tài</h1>
       <div className="bg-white rounded-2xl shadow border border-slate-100 p-7">
-        <h2 className="text-lg font-semibold text-blue-800 mb-5">Thông tin đăng ký</h2>
+        <h2 className="text-lg font-semibold text-blue-800 mb-5">Đề tài của tôi</h2>
         {isLoading ? (
           <div className="text-slate-400 text-base">Đang tải...</div>
         ) : data ? (
@@ -34,64 +35,53 @@ export default function DangKyDeTaiSV() {
             <div className="space-y-3 text-[15px]">
               <div>
                 <span className="font-medium text-slate-700">Tên đề tài:</span>{" "}
-                <span className="text-slate-900">{data.topic_title}</span>
+                <span className="text-slate-900">{data.tenDeTai}</span>
               </div>
               <div>
                 <span className="font-medium text-slate-700">Mô tả:</span>{" "}
-                <span className="text-slate-800">{data.topic_description || "—"}</span>
-              </div>
-              <div>
-                <span className="font-medium text-slate-700">Loại đề tài:</span>{" "}
-                <span className="text-slate-800">{data.topic_type === "mot_sinh_vien" ? "Một sinh viên" : "Hai sinh viên"}</span>
+                <span className="text-slate-800">{data.moTa || "—"}</span>
               </div>
               <div>
                 <span className="font-medium text-slate-700">Trạng thái:</span>{" "}
-                {data.status === "cho_duyet" ? (
-                  <span className="text-orange-500 font-semibold">Chờ duyệt</span>
-                ) : data.status === "da_duyet" ? (
-                  <span className="text-green-600 font-semibold">Được duyệt</span>
-                ) : (
-                  <span className="text-red-500 font-semibold">Từ chối</span>
-                )}
+                <span className="text-slate-800">{data.trangThai || "—"}</span>
               </div>
               <div>
                 <span className="font-medium text-slate-700">GVHD:</span>{" "}
-                <span className="text-slate-800">{data.gvhd_code || "—"}</span>
+                <span className="text-slate-800">{data.maGV_HD || "—"}</span>
               </div>
               <div>
                 <span className="font-medium text-slate-700">GVPB:</span>{" "}
-                <span className="text-slate-800">{data.gvpb_code || "—"}</span>
+                <span className="text-slate-800">{data.maGV_PB || "—"}</span>
               </div>
               <div>
-                <span className="font-medium text-slate-700">Ghi chú:</span> <span className="text-slate-800">{data.note || "—"}</span>
+                <span className="font-medium text-slate-700">Ghi chú:</span> <span className="text-slate-800">{data.ghiChu || "—"}</span>
               </div>
               <div>
-                <span className="font-medium text-slate-700">Ngày đăng ký:</span>{" "}
-                <span className="text-slate-800">{data.registered_at ? new Date(data.registered_at).toLocaleString() : "—"}</span>
+                <span className="font-medium text-slate-700">Ngày tạo:</span>{" "}
+                <span className="text-slate-800">{data.created_at ? new Date(data.created_at).toLocaleString() : "—"}</span>
               </div>
             </div>
-            <div className="flex justify-end mt-7">
+            {/* Nút xuất phiếu nhiệm vụ */}
+            <div className="flex justify-end mt-3">
               <button
-                className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-5 py-2 text-[15px] font-medium rounded-lg shadow-sm transition-colors"
-                onClick={() => handleOpenModal(data)}
+                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 text-[15px] font-medium rounded-lg shadow-sm transition-colors"
+                onClick={() => {
+                  if (!data?.maDeTai) return;
+                  exportWordNhiemVu(data.maDeTai);
+                }}
               >
-                Chỉnh sửa thông tin
+                Xuất phiếu nhiệm vụ
               </button>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center gap-4 py-8">
-            <div className="text-slate-400 text-base">Bạn chưa đăng ký đề tài nào.</div>
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 text-[15px] font-medium rounded-lg shadow-sm transition-colors"
-              onClick={() => handleOpenModal(null)}
-            >
-              Đăng ký đề tài mới
-            </button>
+            <div className="text-slate-400 text-base">Bạn chưa có đề tài nào.</div>
           </div>
         )}
       </div>
-      <DangKyDeTaiModal
+      {/* Nếu muốn cho phép đăng ký/chỉnh sửa đề tài, mở modal ở đây */}
+      {/* <DangKyDeTaiModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onSuccess={() => {
@@ -99,7 +89,7 @@ export default function DangKyDeTaiSV() {
           refetch();
         }}
         editData={editData}
-      />
+      /> */}
     </div>
   );
 }

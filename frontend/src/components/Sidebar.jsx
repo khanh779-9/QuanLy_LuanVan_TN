@@ -22,7 +22,6 @@ export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
   const { user: contextUser, clearAuth } = useAuth();
 
-
   // Lấy user chỉ từ context
   const user = contextUser;
   let role = user?.role?.toLowerCase();
@@ -33,36 +32,73 @@ export default function Sidebar({ isOpen, onClose }) {
   const menuConfig = {
     thuky: [
       { label: "Tổng quan", path: "/admin/tong-quan", icon: HiOutlineHome },
-      { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers},
-      { label: "Giảng viên", path: "/admin/giangvien", icon: HiOutlineAcademicCap },
-      { label: "Nhập liệu", path: "/admin/nhaplieu", icon: HiOutlineDocumentText, featureKey: "con_dangky" },
-      { label: "Phân công GVHD", path: "/admin/phanconggvhd", icon: HiOutlineUserGroup, featureKey: "con_phancong_hd" },
+      { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers },
+      {
+        label: "Giảng viên",
+        path: "/admin/giangvien",
+        icon: HiOutlineAcademicCap,
+      },
+      {
+        label: "Nhập liệu",
+        path: "/admin/nhaplieu",
+        icon: HiOutlineDocumentText,
+        featureKey: "con_dangky",
+      },
+      {
+        label: "Phân công GVHD",
+        path: "/admin/phanconggvhd",
+        icon: HiOutlineUserGroup,
+        featureKey: "con_phancong_hd",
+      },
       { label: "Giai đoạn", path: "/admin/giaidoan", icon: HiOutlineCog6Tooth },
     ],
     gv: [
       { label: "Tổng quan", path: "/gv/tong-quan", icon: HiOutlineHome },
       { label: "Đề tài", path: "/gv/de-tai", icon: HiOutlineDocumentText },
+      {
+        label: "Nhiệm vụ",
+        path: "/gv/nhiem-vu",
+        icon: HiOutlineChartBar,
+        featureKey: "con_phancong_hd",
+      },
       { label: "Chấm giữa kỳ", path: "/gv/giua-ky", icon: HiOutlineChartBar },
-      { label: "Chấm hướng dẫn", path: "/gv/huongdan", icon: HiOutlinePencilSquare },
-      { label: "Chấm phản biện", path: "/gv/phanbien", icon: HiOutlineClipboardDocumentCheck },
+      {
+        label: "Chấm hướng dẫn",
+        path: "/gv/huongdan",
+        icon: HiOutlinePencilSquare,
+      },
+      {
+        label: "Chấm phản biện",
+        path: "/gv/phanbien",
+        icon: HiOutlineClipboardDocumentCheck,
+      },
       { label: "Chấm hội đồng", path: "/gv/hoidong", icon: HiOutlineUserGroup },
     ],
-    sv:[
+    sv: [
       { label: "Tổng quan", path: "/sv/dashboard", icon: HiOutlineHome },
-      { label: "Đăng ký đề tài", path: "/sv/dang-ky-detai", icon: HiOutlinePencilSquare },
-      { label: "Kết quả đề tài", path: "/sv/ket-qua-detai", icon: HiOutlineChartBar },
-    ]
+      {
+        label: "Đề tài của tôi",
+        path: "/sv/dang-ky-detai",
+        icon: HiOutlinePencilSquare,
+      },
+      // { label: "Nhiệm vụ đề tài", path: "/sv/ket-qua-detai", icon: HiOutlineChartBar },
+    ],
   };
   const rawMenuItems = role && menuConfig[role] ? menuConfig[role] : [];
   const menuItems = rawMenuItems.map((item) => {
-    const isFeatureLocked = item.featureKey && 
-                         !(config[item.featureKey] === true || config[item.featureKey] === "true");
+    const isFeatureLocked =
+      item.featureKey &&
+      !(config[item.featureKey] === true || config[item.featureKey] === "true");
     return {
-    ...item,
-    isDisabled: item.disable || isFeatureLocked 
-  };
+      ...item,
+      isDisabled: item.disable || isFeatureLocked,
+    };
   });
-  const roleLabels = { thuky: "Thư ký khoa", gv: "Giảng viên",sv: "Sinh viên" };
+  const roleLabels = {
+    thuky: "Thư ký khoa",
+    gv: "Giảng viên",
+    sv: "Sinh viên",
+  };
   const getRoleLabel = () => (role ? roleLabels[role] || "Người dùng" : "");
 
   const handleLogout = async () => {
@@ -72,10 +108,10 @@ export default function Sidebar({ isOpen, onClose }) {
     } catch {}
     clearAuth();
     if (isSv) {
-    navigate("/sv/login");
-  } else {
-    navigate("/login");
-  }
+      navigate("/sv/login");
+    } else {
+      navigate("/login");
+    }
   };
 
   return (
@@ -95,35 +131,38 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       <nav className="flex-1 mt-4">
-  {isLoading ? (
-    <div className="px-6 py-3 text-xs text-slate-400">Đang tải menu...</div>
-  ) : (
-    menuItems.map((item) => {
-      const Icon = item.icon;
-      const isActive = location.pathname === item.path;
-      return (
-        <div
-          key={item.path}
-          onClick={() => {
-            if (item.isDisabled) return;
-            navigate(item.path);
-            if (onClose) onClose();
-          }}
-          className={`flex items-center gap-3 px-6 py-3 text-sm
-        ${isActive 
-          ? "bg-blue-600 text-white shadow-md mx-2 rounded-lg" // Màu xanh khi đang ở trang này
-          : item.isDisabled 
-            ? "opacity-40 cursor-not-allowed grayscale"       // Màu khi bị disable
-            : "text-slate-600 hover:bg-blue-50 hover:text-blue-600 cursor-pointer" // Màu bình thường
+        {isLoading ? (
+          <div className="px-6 py-3 text-xs text-slate-400">
+            Đang tải menu...
+          </div>
+        ) : (
+          menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <div
+                key={item.path}
+                onClick={() => {
+                  if (item.isDisabled) return;
+                  navigate(item.path);
+                  if (onClose) onClose();
+                }}
+                className={`flex items-center gap-3 px-6 py-3 text-sm
+        ${
+          isActive
+            ? "bg-blue-600 text-white shadow-md mx-2 rounded-lg" // Màu xanh khi đang ở trang này
+            : item.isDisabled
+              ? "opacity-40 cursor-not-allowed grayscale" // Màu khi bị disable
+              : "text-slate-600 hover:bg-blue-50 hover:text-blue-600 cursor-pointer" // Màu bình thường
         }`}
-        >
-          <Icon size={18}  />
-          <span>{item.label}</span>
-        </div>
-      );
-    })
-  )}
-</nav>
+              >
+                <Icon size={18} />
+                <span>{item.label}</span>
+              </div>
+            );
+          })
+        )}
+      </nav>
 
       <div className="border-t border-slate-200 px-6 py-4 bg-slate-50">
         <p

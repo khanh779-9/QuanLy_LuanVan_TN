@@ -26,7 +26,7 @@ function StageStatusBanner({ children }) {
         // Khai báo map ánh xạ: Một đường dẫn có thể dính tới nhiều cờ trạng thái (mảng Array)
         const routeKeyMap = {
           "/admin/phancong": ["con_phancong_hd", "con_phancong_pb"],
-          "/sv/dang-ky-detai": ["con_dangky"],
+          // "/sv/dang-ky-detai": ["con_dangky"],
           "/gv/giua-ky": ["con_chamGK"],
           "/gv/phanbien": ["con_chamPB"],
           "/gv/huongdan": ["con_chamHD"],

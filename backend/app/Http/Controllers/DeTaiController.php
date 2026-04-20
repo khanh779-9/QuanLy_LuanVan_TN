@@ -104,6 +104,30 @@ class DeTaiController extends Controller
         return response()->json($detai);
     }
 
+      /**
+     * Lấy đề tài của sinh viên hiện tại (dựa vào auth)
+     */
+    public function my(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        // Tìm sinh viên theo user hiện tại
+        $sv = \App\Models\SinhVien::find($user->mssv);
+        if (!$sv) {
+            return response()->json(['message' => 'Sinh viên không tồn tại'], 404);
+        }
+        if (!$sv->maDeTai) {
+            return response()->json(null);
+        }
+        $deTai = \App\Models\DeTai::find($sv->maDeTai);
+        if (!$deTai) {
+            return response()->json(null);
+        }
+        return response()->json($deTai);
+    }
+
     public function chamDiemHD(Request $request, $id)
     {
         $detai = DeTai::find($id);
@@ -352,6 +376,7 @@ class DeTaiController extends Controller
         $filename = 'Phieu_cham_PB_' . $detai->maDeTai . '.docx';
         return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
+    
 
     private function diemSangChu($diem)
     {
@@ -385,5 +410,65 @@ class DeTaiController extends Controller
             return ($map[$floor] ?? $floor) . ' điểm';
         }
         return ($map[$floor] ?? $floor) . ' phẩy ' . ($decMap[$decDigit] ?? $decDigit) . ' điểm';
+    }
+
+     /**
+     * Xuất phiếu nhiệm vụ tốt nghiệp cho đề tài
+     */
+    public function exportNhiemVu($id)
+    {
+        $detai = DeTai::find($id);
+        if (!$detai) return response()->json(['message' => 'Not found'], 404);
+
+        // Lấy danh sách sinh viên (ưu tiên data_json nếu có, fallback bảng sinhvien)
+        $dataNhiemVu = $detai->data_json['nhiemVu'] ?? [];
+        $svArr = [];
+        if (!empty($dataNhiemVu['sinhViens']) && is_array($dataNhiemVu['sinhViens'])) {
+            $svArr = $dataNhiemVu['sinhViens'];
+        } else {
+            $svArr = SinhVien::where('maDeTai', $id)->get(['hoTen','mssv','lop'])->toArray();
+        }
+        // Đảm bảo luôn có 2 slot SV (SV2 có thể rỗng)
+        if (count($svArr) < 2) {
+            $svArr[1] = ["hoTen"=>"", "mssv"=>"", "lop"=>""];
+        }
+
+        // Lấy thông tin GVHD
+        $gvhd = GiangVien::find($detai->maGV_HD);
+
+        // Chuẩn bị dữ liệu cho template
+        $templateDir = base_path('/template_docs');
+        $templateFile = $templateDir . '/phieu_giao_de_tai.docx';
+        if (!file_exists($templateFile)) {
+            return response()->json(['message' => 'Template không tồn tại, hãy thêm file phieu_giao_de_tai.docx'], 500);
+        }
+        Settings::setTempDir(storage_path('app'));
+        $tp = new TemplateProcessor($templateFile);
+        // Thông tin sinh viên
+        for ($i = 0; $i < 2; $i++) {
+            $sv = $svArr[$i] ?? ["hoTen"=>"", "mssv"=>"", "lop"=>""];
+            $idx = $i + 1;
+            $tp->setValue('hoTenSV' . $idx, $sv['hoTen'] ?? '');
+            $tp->setValue('mssv' . $idx, $sv['mssv'] ?? '');
+            $tp->setValue('lop' . $idx, $sv['lop'] ?? '');
+        }
+        // Thông tin đề tài
+        $tp->setValue('tieuDe', $dataNhiemVu['tieuDe'] ?? $detai->tenDeTai ?? '');
+        $tp->setValue('nhiemVu', $dataNhiemVu['nhiemVu'] ?? '');
+        $tp->setValue('taiLieu', $dataNhiemVu['taiLieu'] ?? '');
+        // Thời gian
+        $tp->setValue('ngayGiao', $dataNhiemVu['ngayGiao'] ?? '');
+        $tp->setValue('ngayHoanThanh', $dataNhiemVu['ngayHoanThanh'] ?? '');
+        // Giảng viên hướng dẫn (xuất hiện 2 lần trong template)
+        $tenGVHD = $dataNhiemVu['tenGVHD'] ?? ($gvhd ? $gvhd->tenGV : '');
+        $tp->setValue('tenGVHD', $tenGVHD);
+        // Ngày ký (Tp.HCM, ngày ...)
+        $now = now();
+        $tp->setValue('ngayKy', $now->format('d/m/Y'));
+
+        $tempFile = storage_path('app/temp_NHIEMVU_' . $detai->maDeTai . '_' . time() . '.docx');
+        $tp->saveAs($tempFile);
+        $filename = 'NhiemVu_TotNghiep_' . $detai->maDeTai . '.docx';
+        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
 }

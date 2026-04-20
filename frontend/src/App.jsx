@@ -21,6 +21,7 @@ import LoginSV from './pages/sv/LoginSV';
 import DashboardSV from './pages/sv/DashboardSV';
 import DangKyDeTaiSV from './pages/sv/DangKyDeTai';
 import KetQuaDeTaiSV from './pages/sv/KetQuaDeTai';
+import NhiemVuGV from './pages/gv/NhiemVu';
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ function App() {
               <Route path="/gv/tong-quan" element={<GVTongQuan />} />
               <Route path="/gv/de-tai" element={<GVDeTai />} />
               <Route path="/gv/giua-ky" element={<GVHDGiuaKy />} />
+              <Route path="/gv/nhiem-vu" element={<NhiemVuGV />} />
               <Route path="/gv/huongdan" element={<GVHDHuongDan />} />
               <Route path="/gv/phanbien" element={<GVPBPhanBien />} />
               <Route path="/gv/hoidong" element={<GVHoiDong />} />
