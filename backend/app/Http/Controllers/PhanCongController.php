@@ -53,7 +53,28 @@ class PhanCongController extends Controller
 
         return response()->json(['message' => 'Phân công thành công!']);
     }
-    
+    // 1. Lấy danh sách đề tài ĐÃ có GVHD nhưng CHƯA có GVPB
+public function getDanhSachChuaCoGVPB()
+{
+    return DeTai::with(['sinhVien', 'giangVienHD'])
+        ->whereNotNull('maGV_HD') 
+        ->whereNull('maGV_PB')
+        ->get();
+}
+
+// 2. Gán GVPB hàng loạt
+public function phancongGVPB(Request $request)
+{
+    $request->validate([
+        'ids' => 'required|array',
+        'maGV_PB' => 'required|exists:giangvien,maGV'
+    ]);
+
+    DeTai::whereIn('maDeTai', $request->ids)
+        ->update(['maGV_PB' => $request->maGV_PB]);
+
+    return response()->json(['message' => 'Phân công giảng viên phản biện thành công!']);
+}
     public function update(Request $request, $id)
     {
         $detai = DeTai::find($id);

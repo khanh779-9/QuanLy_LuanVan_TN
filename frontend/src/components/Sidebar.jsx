@@ -50,6 +50,17 @@ export default function Sidebar({ isOpen, onClose }) {
         icon: HiOutlineUserGroup,
         featureKey: "con_phancong_hd",
       },
+      {
+        label: "Phân công GVPB",
+        path: "/admin/phanconggvpb",
+        icon: HiOutlineUserGroup,
+        featureKey: "con_phancong_pb",
+      },
+      {
+        label: "Đề tài",
+        path: "/admin/detai",
+        icon: HiOutlineDocumentText,
+      },
       { label: "Giai đoạn", path: "/admin/giaidoan", icon: HiOutlineCog6Tooth },
     ],
     gv: [

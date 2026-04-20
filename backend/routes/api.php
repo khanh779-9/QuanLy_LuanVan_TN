@@ -61,6 +61,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/phan-cong/{id}', [\App\Http\Controllers\PhanCongController::class, 'destroy']);
     Route::get('/phan-cong/danh-sach-chua-co-gvhd', [\App\Http\Controllers\PhanCongController::class, 'getDanhSachChuaCoGVHD']);
     Route::post('/phan-cong/phan-cong-gvhd', [\App\Http\Controllers\PhanCongController::class, 'phancongGVHD']);
+    Route::get('/phan-cong/danh-sach-chua-co-gvpb', [\App\Http\Controllers\PhanCongController::class, 'getDanhSachChuaCoGVPB']);
+    Route::post('/phan-cong/phan-cong-gvpb', [\App\Http\Controllers\PhanCongController::class, 'phancongGVPB']);
     // API phân công giảng viên vào hội đồng
     Route::post('/hoi-dong/phan-cong-giang-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'phanCongGiangVien']);
     // API quản lý thành viên hội đồng

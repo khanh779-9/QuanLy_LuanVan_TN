@@ -7,6 +7,8 @@ import LoginPage from './pages/LoginPage';
 import AdminSinhVien from './pages/admin/SinhVien';
 import AdminGiangVien from './pages/admin/GiangVien';
 import AdminPhanCongGVHD from './pages/admin/PhanCongGVHD';
+import AdminPhanCongGVPB from './pages/admin/PhanCongGVPB';
+import AdminDeTai from './pages/admin/DeTai';
 import AdminNhapLieu from './pages/admin/NhapLieu';
 import AdminGiaiDoanPage from './pages/admin/GiaiDoan';
 import GVTongQuan from './pages/gv/TongQuan';
@@ -44,6 +46,8 @@ function App() {
               <Route path="/admin/sinhvien" element={<AdminSinhVien />} />
               <Route path="/admin/giangvien" element={<AdminGiangVien />} />
               <Route path="/admin/phanconggvhd" element={<AdminPhanCongGVHD />} />
+              <Route path="/admin/phanconggvpb" element={<AdminPhanCongGVPB />} />
+              <Route path="/admin/detai" element={<AdminDeTai />} />
               <Route path="/admin/giaidoan" element={<AdminGiaiDoanPage />} />
               <Route path="/admin/nhaplieu" element={<AdminNhapLieu />} />
             </Route>
