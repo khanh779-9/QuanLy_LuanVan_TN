@@ -13,52 +13,49 @@ class DeTaiController extends Controller
 {
 
     public function index(Request $request)
-    {
-        $query = DeTai::query();
-        // Lọc theo mã GV hướng dẫn
-        if ($request->filled('maGV_HD')) {
-            $query->where('maGV_HD', $request->maGV_HD);
-        }
-        if ($request->filled('maGV_PB')) {
-            $query->where('maGV_PB', $request->maGV_PB);
-        }
-        if ($request->filled('maHoiDong')) {
-            $query->where('maHoiDong', $request->maHoiDong);
-        }
-        if ($request->filled('trangThai')) {
-            $query->where('trangThai', $request->trangThai);
-        }
-        if ($request->filled('q')) {
-            $query->where('tenDeTai', 'like', '%' . $request->q . '%');
-        }
-        $query->orderByDesc('maDeTai');
-        $pageSize = $request->input('per_page', 15);
+{
+    // SỬA TẠI ĐÂY: Nạp luôn quan hệ Giảng viên (HD/PB) và Hội đồng
+    // Chú ý: Tên 'giangVienHD', 'giangVienPB', 'sinhVien' phải khớp với function trong Model DeTai
+    $query = DeTai::with(['giangVienHD', 'giangVienPB', 'hoiDong', 'sinhVien']);
 
-
-
-        $result = $query->paginate($pageSize);
-
-        // Lấy danh sách mã đề tài trên trang này
-        $maDeTaiArr = collect($result->items())->pluck('maDeTai')->all();
-        $sinhVienMap = [];
-        if (!empty($maDeTaiArr)) {
-            $sinhViens = \App\Models\SinhVien::whereIn('maDeTai', $maDeTaiArr)->get();
-            foreach ($sinhViens as $sv) {
-                $sinhVienMap[$sv->maDeTai][] = [
-                    'mssv' => $sv->mssv,
-                    'hoTen' => $sv->hoTen,
-                    'lop' => $sv->lop,
-                    'email' => $sv->email,
-                    'soDienThoai' => $sv->soDienThoai,
-                ];
-            }
-        }
-        $result->getCollection()->transform(function ($deTai) use ($sinhVienMap) {
-            $deTai->sinh_viens = $sinhVienMap[$deTai->maDeTai] ?? [];
-            return $deTai;
-        });
-        return response()->json($result);
+    // Lọc theo mã GV hướng dẫn
+    if ($request->filled('maGV_HD')) {
+        $query->where('maGV_HD', $request->maGV_HD);
     }
+    if ($request->filled('maGV_PB')) {
+        $query->where('maGV_PB', $request->maGV_PB);
+    }
+    if ($request->filled('maHoiDong')) {
+        $query->where('maHoiDong', $request->maHoiDong);
+    }
+    if ($request->filled('trangThai')) {
+        $query->where('trangThai', $request->trangThai);
+    }
+    if ($request->filled('q')) {
+    $search = $request->q;
+    $query->where(function($q) use ($search) {
+        // 1. Tìm theo tên đề tài
+        $q->where('tenDeTai', 'like', '%' . $search . '%')
+          // 2. Tìm theo mã đề tài (nếu cần)
+          ->orWhere('maDeTai', 'like', '%' . $search . '%')
+          // 3. Tìm xuyên qua bảng sinh viên (mssv hoặc hoTen)
+          ->orWhereHas('sinhVien', function($sq) use ($search) {
+              $sq->where('mssv', 'like', '%' . $search . '%')
+                 ->orWhere('hoTen', 'like', '%' . $search . '%');
+          });
+    });
+}
+
+    $query->orderByDesc('maDeTai');
+    $pageSize = $request->input('per_page', 15);
+
+    $result = $query->paginate($pageSize);
+
+    // KHÔNG CẦN đoạn code map sinh viên thủ công nữa vì đã có with('sinhVien') ở trên
+    // Laravel sẽ tự động tạo mảng 'sinh_vien' (hoặc 'sinh_viens') trong mỗi bản ghi đề tài
+
+    return response()->json($result);
+}
 
 
     public function show($id)
