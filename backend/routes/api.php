@@ -1,10 +1,3 @@
-    // API quản lý thành viên hội đồng
-    Route::post('/hoi-dong/phan-cong-giang-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'phanCongGiangVien']);
-    Route::get('/hoi-dong/{maHoiDong}/thanh-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'index']);
-    Route::delete('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'destroy']);
-    Route::put('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'update']);
-    Route::get('/hoi-dong/{maHoiDong}/giang-vien-chua-co', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'getDanhSachGiangVienChuaCoTrongHoiDong']);
-    Route::get('/hoi-dong', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'getDanhSachHoiDong']);
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -70,6 +63,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/phan-cong/phan-cong-gvhd', [\App\Http\Controllers\PhanCongController::class, 'phancongGVHD']);
     // API phân công giảng viên vào hội đồng
     Route::post('/hoi-dong/phan-cong-giang-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'phanCongGiangVien']);
+    // API quản lý thành viên hội đồng
+    Route::post('/hoi-dong/phan-cong-giang-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'phanCongGiangVien']);
+    Route::get('/hoi-dong/{maHoiDong}/thanh-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'index']);
+    Route::delete('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'destroy']);
+    Route::put('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'update']);
+    Route::get('/hoi-dong/{maHoiDong}/giang-vien-chua-co', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'getDanhSachGiangVienChuaCoTrongHoiDong']);
+    Route::get('/hoi-dong', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'getDanhSachHoiDong']);
     // CRUD Đề tài
     Route::get('/de-tai', [\App\Http\Controllers\DeTaiController::class, 'index']);
     Route::get('/de-tai/my', [\App\Http\Controllers\DeTaiController::class, 'my']);
