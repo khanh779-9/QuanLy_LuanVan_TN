@@ -83,19 +83,7 @@ export default function AdminGiaiDoanPage() {
     setEditItem(gd);
     setFormMoTa(gd.mo_ta || "");
     setFormLoai(gd.loai || "");
-    // setFormData(JSON.parse(gd.data || "{}"));
-    // let parsedData = {};
-    // if (typeof gd.data === "string") {
-    //   try {
-    //     parsedData = JSON.parse(gd.data || "{}");
-    //   } catch (e) {
-    //     parsedData = {};
-    //   }
-    // } else {
-    //   parsedData = gd.data || {};
-    // }
-    // setFormData(parsedData);
-
+   
     setFormData(gd.data || {});
     setFormNgayBatDau(gd.ngay_bat_dau || "");
     setFormNgayKetThuc(gd.ngay_ket_thuc || "");
@@ -131,7 +119,7 @@ export default function AdminGiaiDoanPage() {
     }
     const payload = {
     mo_ta: formMoTa,
-    loai: formLoai,
+    loai: "process",
     data: formData,
     ngay_bat_dau: formNgayBatDau,
     ngay_ket_thuc: formNgayKetThuc,
@@ -189,7 +177,6 @@ export default function AdminGiaiDoanPage() {
           onClick={() => {
             setEditItem(null);
             setFormMoTa("");
-            setFormLoai("");
             setFormNgayBatDau("");
             setFormNgayKetThuc("");
             setFormError("");
@@ -275,7 +262,7 @@ export default function AdminGiaiDoanPage() {
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Mô tả
               </th>
-              {/* <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Loại</th> */}
+              
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Ngày bắt đầu
               </th>
@@ -376,21 +363,7 @@ export default function AdminGiaiDoanPage() {
                 placeholder="Nhập mô tả giai đoạn"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Loại
-              </label>
-              <select
-                value={formLoai}
-                onChange={(e) => setFormLoai(e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option value="">-- Chọn loại --</option>
-                <option value="deadline">Deadline</option>
-                <option value="process">Process</option>
-                <option value="milestone">Milestone</option>
-              </select>
-            </div>
+            
             <div className="flex gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
