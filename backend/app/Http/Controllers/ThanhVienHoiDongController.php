@@ -32,7 +32,32 @@ class ThanhVienHoiDongController extends Controller
         if ($exists) {
             return response()->json(['message' => 'Giảng viên đã có trong hội đồng này!'], 400);
         }
+        // 3. RÀNG BUỘC VAI TRÒ (1 CT, 1 TK, 2 UV)
+        $countVaiTro = ThanhVienHoiDong::where('maHoiDong', $maHoiDong)->where('vaiTro', $vaiTro)->count();
+        if ($vaiTro === 'ChuTich' && $countVaiTro >= 1) {
+            return response()->json(['message' => 'Hội đồng này đã có Chủ tịch!'], 400);
+        }
+        if ($vaiTro === 'ThuKy' && $countVaiTro >= 1) {
+            return response()->json(['message' => 'Hội đồng này đã có Thư ký!'], 400);
+        }
+        if ($vaiTro === 'UyVien' && $countVaiTro >= 2) {
+            return response()->json(['message' => 'Hội đồng này đã đủ 2 Ủy viên!'], 400);
+        }
 
+        // 4. KIỂM TRA TRÙNG LỊCH (TRÙNG NGÀY GIỜ BẢO VỆ)
+        $targetHoiDong = HoiDong::find($maHoiDong);
+        if ($targetHoiDong && $targetHoiDong->ngayBaoVe) {
+            $isOverlapping = HoiDong::whereHas('thanhVien', function ($q) use ($maGV) {
+                $q->where('maGV', $maGV);
+            })
+            ->where('maHoiDong', '!=', $maHoiDong)
+            ->where('ngayBaoVe', $targetHoiDong->ngayBaoVe) // Check trùng khớp thời gian
+            ->exists();
+
+            if ($isOverlapping) {
+                return response()->json(['message' => "Giảng viên này bị trùng lịch với hội đồng khác vào lúc {$targetHoiDong->ngayBaoVe}!"], 400);
+            }
+        }
         $thanhVien = ThanhVienHoiDong::create([
             'maHoiDong' => $maHoiDong,
             'maGV' => $maGV,
@@ -82,7 +107,7 @@ class ThanhVienHoiDongController extends Controller
     public function getDanhSachGiangVienChuaCoTrongHoiDong($maHoiDong)
     {
         $giangVienTrongHoiDong = ThanhVienHoiDong::where('maHoiDong', $maHoiDong)->pluck('maGV');
-        $giangVienChuaCoTrongHoiDong = GiangVien::whereNotIn('maGV', $giangVienTrongHoiDong)->get();
+        $giangVienChuaCoTrongHoiDong = GiangVien::whereNotIn('maGV', $giangVienTrongHoiDong)->where('maGV', 'not like', 'TK%')->get();
 
         return response()->json($giangVienChuaCoTrongHoiDong);
     }

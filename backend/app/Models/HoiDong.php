@@ -11,8 +11,11 @@ class HoiDong extends Model
 
     protected $fillable = [
         'tenHoiDong', 'diaDiem',
+        'ngayBaoVe', 
     ];
-
+    protected $casts = [
+        'ngayBaoVe' => 'datetime', // Tự động format ngày giờ
+    ];
     public function thanhVien()
     {
         return $this->hasMany(ThanhVienHoiDong::class, 'maHoiDong', 'maHoiDong');

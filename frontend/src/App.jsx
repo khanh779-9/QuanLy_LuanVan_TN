@@ -24,6 +24,7 @@ import DashboardSV from './pages/sv/DashboardSV';
 import DangKyDeTaiSV from './pages/sv/DangKyDeTai';
 import KetQuaDeTaiSV from './pages/sv/KetQuaDeTai';
 import NhiemVuGV from './pages/gv/NhiemVu';
+import AdminHoiDong from './pages/admin/HoiDong';
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ function App() {
               <Route path="/admin/detai" element={<AdminDeTai />} />
               <Route path="/admin/giaidoan" element={<AdminGiaiDoanPage />} />
               <Route path="/admin/nhaplieu" element={<AdminNhapLieu />} />
+              <Route path="/admin/hoidong" element={<AdminHoiDong />} />
             </Route>
             <Route element={<RoleRoute allowed="gv" />}>
               <Route path="/gv/tong-quan" element={<GVTongQuan />} />
