@@ -40,7 +40,7 @@ class TopicRegistrationFormController extends Controller
             $deTai = DeTai::create([
                 'tenDeTai' => ($form->topic_title === 'Chưa có tên đề tài') ? null : $form->topic_title,
                 'moTa' => $form->topic_description, // Hướng đề tài
-                'trangThai' => 'dat'
+                'trangThai' => null
             ]);
 
             $maDeTaiMoi = $deTai->maDeTai;
@@ -83,7 +83,7 @@ class TopicRegistrationFormController extends Controller
                 $deTai = DeTai::create([
                     'tenDeTai' => ($form->topic_title === 'Chưa có tên đề tài') ? null : $form->topic_title,
                     'moTa' => $form->topic_description,
-                    'trangThai' => 'dat'
+                    'trangThai' => null
                 ]);
 
                 $maDeTaiMoi = $deTai->maDeTai;

@@ -14,13 +14,17 @@ class GiaiDoanController extends Controller
 
   
     public function index()
-    {
-        $giaiDoans = GiaiDoan::all();
-        foreach ($giaiDoans as $giaiDoan) {
-            $giaiDoan->data = json_decode($giaiDoan->data);
-        }
-        return response()->json($giaiDoans, 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+{
+    // Sắp xếp theo ngày bắt đầu tăng dần 
+    $giaiDoans = GiaiDoan::orderBy('ngay_bat_dau', 'asc')->get();
+    
+    foreach ($giaiDoans as $giaiDoan) {
+        // Đảm bảo dữ liệu JSON được giải mã chính xác
+        $giaiDoan->data = is_string($giaiDoan->data) ? json_decode($giaiDoan->data) : $giaiDoan->data;
     }
+
+    return response()->json($giaiDoans, 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+}
  
     public function update(Request $request, $id)
     {
