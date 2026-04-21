@@ -48,7 +48,7 @@ CREATE TABLE hoidong (
   `maHoiDong` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `tenHoiDong` VARCHAR(255) NOT NULL,
   `diaDiem` VARCHAR(255),
-  `ngayBaoVe` DATE,
+  `ngayBaoVe` DATETime,
   created_at TIMESTAMP NULL,
   updated_at TIMESTAMP NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -353,7 +353,7 @@ CREATE TABLE giai_doan (
   id INT AUTO_INCREMENT PRIMARY KEY,
   mo_ta VARCHAR(255),
   loai ENUM('deadline','process','milestone'),
-  `data` TEXT NULL DEFAULT ('{"con_phancong_hd": false,"con_phancong_pb": false,"con_dangky": false,"con_chamGK": false,"con_chamPB": false,"con_chamHD": false,"con_chamHDG": false,"con_hdnhapdetai": false,"con_phanconghoidong": false}'),
+  `data` TEXT NULL DEFAULT ('{"con_phancong_hd": false,"con_phancong_pb": false,"con_dangky": false,"con_chamGK": false,"con_chamPB": false,"con_chamHD": false,"con_chamHDG": false,"con_hdnhapdetai": false,"con_phancong_hoidong": false, "con_xuat_kq50": false, "con_xuat_dsbvlvtn": false}'),
   ngay_bat_dau DATE,
   ngay_ket_thuc DATE
 );
