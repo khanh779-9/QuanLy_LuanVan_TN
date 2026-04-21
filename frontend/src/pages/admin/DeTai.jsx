@@ -18,9 +18,9 @@ export default function AdminDeTai() {
   const listDeTai = data?.data || [];
 
   // Hàm tính điểm tổng kết dựa trên công thức 20-20-60
-  const calculateFinalGrade = (hd, pb, hđ) => {
-    if (hd == null || pb == null || hđ == null) return "---";
-    return (hd * 0.2 + pb * 0.2 + hđ * 0.6).toFixed(2);
+  const calculateFinalGrade = (hd, pb, hdScore) => {
+    if (hd == null || pb == null || hdScore == null) return "---";
+    return (hd * 0.2 + pb * 0.2 + hdScore * 0.6).toFixed(2);
   };
 
   return (
@@ -49,7 +49,13 @@ export default function AdminDeTai() {
           </thead>
           <tbody className="divide-y divide-slate-100">
   {listDeTai.map((dt) => {
-    const finalGrade = calculateFinalGrade(dt.diemHuongDan, dt.diemPhanBien, dt.diemHoiDong);
+    // Lấy data_json chuẩn hóa
+    const data = typeof dt.data_json === 'string' ? JSON.parse(dt.data_json) : dt.data_json || {};
+    // Điểm
+    const diemHD = data?.gvhd?.tong_diem;
+    const diemPB = data?.gvpb?.tong_diem;
+    const diemHoiDong = data?.hd?.tong_diem;
+    const finalGrade = calculateFinalGrade(diemHD, diemPB, diemHoiDong);
     return (
       <tr key={dt.maDeTai} className="hover:bg-slate-50/50 transition-colors">
         <td className="px-6 py-4">
@@ -57,53 +63,48 @@ export default function AdminDeTai() {
           {/* Hiển thị Nhóm SV */}
           <div className="flex flex-wrap gap-2 mb-2">
             {dt.sinh_vien?.map(sv => (
-              <span key={sv.mssv} className="bg-yellow-100  text-xs py-0.5 rounded  ">
-                {sv.hoTen}_{sv.mssv}
-              </span>
+              <span key={sv.mssv} className="bg-yellow-100  text-xs py-0.5 rounded  ">{sv.hoTen}_{sv.mssv}</span>
             ))}
           </div>
-          
           {/* Dòng thông tin Giảng viên & Hội đồng */}
           <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1">
-              <span className="text-slate-400 font-medium">GVHD:</span> 
+              <span className="text-slate-400 font-medium">GVHD:</span>
               <span className="text-blue-700 font-semibold">{dt.giang_vien_h_d?.tenGV || "—"}</span>
             </span>
             <span className="text-slate-300">|</span>
             <span className="flex items-center gap-1">
-              <span className="text-slate-400 font-medium">GVPB:</span> 
+              <span className="text-slate-400 font-medium">GVPB:</span>
               <span className="text-orange-700 font-semibold">{dt.giang_vien_p_b?.tenGV || "—"}</span>
             </span>
             {dt.maHoiDong && (
               <>
                 <span className="text-slate-300">|</span>
                 <span className="flex items-center gap-1">
-                  <span className="text-slate-400 font-medium">HĐ:</span> 
-                  <span className="bg-emerald-100 text-emerald-700 px-1.5 rounded font-bold uppercase">
-                    {dt.maHoiDong}
-                  </span>
+                  <span className="text-slate-400 font-medium">HĐ:</span>
+                  <span className="bg-emerald-100 text-emerald-700 px-1.5 rounded font-bold uppercase">{dt.maHoiDong}</span>
                 </span>
               </>
             )}
           </div>
         </td>
 
-        {/* Các cột điểm giữ nguyên như cũ */}
+        {/* Các cột điểm lấy từ data_json */}
         <td className="px-6 py-4 text-center font-mono">
           <div className="flex justify-center items-center gap-2">
             <div className="flex flex-col items-center">
               <span className="text-[9px] text-slate-400 uppercase">HD</span>
-              <span className="text-blue-600">{dt.diemHuongDan ?? "-"}</span>
+              <span className="text-blue-600">{diemHD ?? "-"}</span>
             </div>
             <span className="text-slate-200">/</span>
             <div className="flex flex-col items-center">
               <span className="text-[9px] text-slate-400 uppercase">PB</span>
-              <span className="text-orange-600">{dt.diemPhanBien ?? "-"}</span>
+              <span className="text-orange-600">{diemPB ?? "-"}</span>
             </div>
             <span className="text-slate-200">/</span>
             <div className="flex flex-col items-center">
               <span className="text-[9px] text-slate-400 uppercase">HĐ</span>
-              <span className="text-emerald-600 font-bold">{dt.diemHoiDong ?? "-"}</span>
+              <span className="text-emerald-600 font-bold">{diemHoiDong ?? "-"}</span>
             </div>
           </div>
         </td>
@@ -111,7 +112,7 @@ export default function AdminDeTai() {
         <td className="px-6 py-4 text-center font-bold text-slate-900 text-lg">
           {finalGrade}
         </td>
-        
+
         <td className="px-4 py-4 text-right">
           <button onClick={() => setSelectedDeTai(dt)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
             <HiOutlineEye size={20} />

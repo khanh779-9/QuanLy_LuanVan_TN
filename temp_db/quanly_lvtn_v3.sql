@@ -67,10 +67,6 @@ CREATE TABLE detai (
   `maGV_PB` VARCHAR(20),
   `maHoiDong` BIGINT UNSIGNED,
 
-  `diemGiuaKy` DECIMAL(4,2),
-  `diemHuongDan` DECIMAL(4,2),
-  `diemPhanBien` DECIMAL(4,2),
-  `diemHoiDong` DECIMAL(4,2),
   `diemTongKet` DECIMAL(4,2),
   `diemChu` VARCHAR(5),
 
@@ -93,19 +89,16 @@ CREATE TABLE detai (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 alter table detai 
-add column data_json TEXT NULL DEFAULT '{ "gvhd": { "tong_diem": "", "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": "", "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": "", "deNghi": "" } ] }, "gvpb": { "tong_diem": "", "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": "", "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": "", "deNghi": "" } ] }, "nhiemVu": { "sinhViens": [ { "hoTen": "", "mssv": "", "lop": "" }, { "hoTen": "", "mssv": "", "lop": "" } ], "tieuDe": "", "nhiemVu": "", "taiLieu": "", "ngayGiao": "", "ngayHoanThanh": "", "tenGVHD": "" } }';
+add column data_json TEXT NULL DEFAULT '{ "gk": { "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": null, "dongGop": "", "deNghi": "" }, { "mssv": "", "hoTen": "", "lop": null, "dongGop": "", "deNghi": "" } ] }, "gvhd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": null, "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": null, "deNghi": "" }, { "mssv": "", "hoTen": "", "lop": null, "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": null, "deNghi": "" } ] }, "gvpb": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": null, "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": null, "deNghi": "" } ] }, "nhiemVu": { "sinhViens": [ { "hoTen": "", "mssv": "", "lop": "" }, { "hoTen": "", "mssv": "", "lop": "" } ], "tieuDe": "", "nhiemVu": "", "taiLieu": "", "ngayGiao": "", "ngayHoanThanh": "", "tenGVHD": "" }, "hd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [ { "mssv": "", "hoTen": "", "lop": null, "diemPhanTich": "", "diemThietKe": "", "diemHienThuc": "", "diemBaoCao": "", "diemTongCong": "", "diemFinal": null, "deNghi": "" } ] } }';
 
 
 INSERT INTO detai (
   `maDeTai`, `tenDeTai`, `moTa`, `maGV_HD`, `maGV_PB`, `maHoiDong`,
-  `diemGiuaKy`, `diemHuongDan`, `diemPhanBien`, `diemHoiDong`, `diemTongKet`, `diemChu`,
-  `trangThaiGiuaKy`, `trangThai`, `nhanXetGiuaKy`, `nhanXetHuongDan`, `nhanXetPhanBien`,
   `thuTuTrongHD`, `ghiChu`, `created_at`, `updated_at`
 ) VALUES
-(1,'Hệ thống quản lý sinh viên','Xây dựng hệ thống quản lý','GV001','GV002',1,8.5,9,8,8.5,8.5,NULL,'duoc_lam_tiep','dat','Tốt','Tốt','OK',NULL,NULL,NOW(),NOW()),
-(2,'Website bán hàng','Website thương mại','GV003','GV004',1,7,7.5,7,7.2,7.2,NULL,'canh_cao','can_chinh_sua','Cần sửa','UI yếu','Chi tiết',NULL,NULL,NOW(),NOW()),
-(3,'App quản lý thư viện','App mượn trả sách','GV002','GV005',1,9,9.5,9,9.2,9.2,NULL,'duoc_lam_tiep','dat','Rất tốt','Tốt','Tốt',NULL,NULL,NOW(),NOW());
-
+(1,'Hệ thống quản lý sinh viên','Xây dựng hệ thống quản lý','GV001','GV002',1,NULL,NULL,NOW(),NOW()),
+(2,'Website bán hàng','Website thương mại','GV003','GV004',1,NULL,NULL,NOW(),NOW()),
+(3,'App quản lý thư viện','App mượn trả sách','GV002','GV005',1,NULL,NULL,NOW(),NOW());
 -- =========================
 -- 5. SINH VIÊN
 -- =========================
