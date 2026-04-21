@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 function getDefaultRoute(user) {
   if (user.role === "thuky") {
-    return "/admin/tong-quan";
+    return "/admin/giaidoan";
   }
   // Các trường hợp giảng viên còn lại (mã GV...)
   if (user.type === "giangvien") {

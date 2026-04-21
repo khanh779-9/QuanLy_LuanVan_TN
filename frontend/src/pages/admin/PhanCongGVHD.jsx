@@ -75,7 +75,7 @@ export default function AdminPhanCongGVHD() {
           disabled={selectedIds.length === 0 || phanCongMut.isPending}
           className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-bold disabled:opacity-50 hover:bg-blue-700 transition-colors"
         >
-          {phanCongMut.isPending ? "Đang xử lý..." : "Xác nhận gán"}
+          {phanCongMut.isPending ? "Đang xử lý..." : "Xác nhận phân công GVHD"}
         </button>
       </div>
 

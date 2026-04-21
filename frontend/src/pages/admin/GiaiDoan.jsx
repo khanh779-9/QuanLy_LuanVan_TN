@@ -8,7 +8,7 @@ import {
   updateStage,
   deleteStage,
 } from "../../services/giaiDoanService";
-
+import api from "../../services/api";
 import {
   getThoiGianTuyChinh,
   setThoiGianTuyChinh,
@@ -35,7 +35,8 @@ export default function AdminGiaiDoanPage() {
   const [dateError, setDateError] = useState("");
   const [customDate, setCustomDate] = useState("");
   const [useCustom, setUseCustom] = useState(false);
-
+  const [isBatLoading, setIsBatLoading] = useState(false);
+  const [isTatLoading, setIsTatLoading] = useState(false);
   useEffect(() => {
     const fetchThoiGianTuyChinh = async () => {
       const data = await getThoiGianTuyChinh();
@@ -57,7 +58,10 @@ export default function AdminGiaiDoanPage() {
     queryKey: ["giaidoan"],
     queryFn: getStages,
   });
-
+  const { data: currentStage, isLoading: isCurrentLoading } = useQuery({
+  queryKey: ['current-stage'],
+  queryFn: () => api.get('/giai-doan/current').then(res => res.data)
+  });
   const deleteMut = useMutation({
     mutationFn: (id) => deleteStage(id),
     onSuccess: () => {
@@ -138,7 +142,7 @@ export default function AdminGiaiDoanPage() {
 
   const handleKichHoatGiaLapTime = async () => {
   if (!customDate) return setStatusMsg("Hãy chọn ngày!");
-  setIsTimeLoading(true);
+  setIsBatLoading(true);
   try {
     const [y, m, d] = customDate.split("-");
     await setThoiGianTuyChinh({
@@ -149,17 +153,17 @@ export default function AdminGiaiDoanPage() {
     setStatusMsg("Đã bật giả lập thời gian");
     queryClient.invalidateQueries(["thoiGianTuyChinh"]);
   } catch (e) { setStatusMsg("Lỗi kết nối"); }
-  setIsTimeLoading(false);
+  setIsBatLoading(false);
 };
   const handleTraLaiRealTime = async () => {
-  setIsTimeLoading(true);
+  setIsTatLoading(true);
   try {
     await setThoiGianTuyChinh({ thoiGianTuyChinh: false, tg_TuyChinh: { day: 20, month: 4, year: 2026 } });
     setUseCustom(false);
     setStatusMsg("Đã tắt giả lập thời gian");
     queryClient.invalidateQueries(["thoiGianTuyChinh"]);
   } catch (e) { setStatusMsg("Lỗi kết nối"); }
-  setIsTimeLoading(false);
+  setIsTatLoading(false);
 };
   return (
     <div>
@@ -215,7 +219,7 @@ export default function AdminGiaiDoanPage() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center  gap-4 mb-4">
               <p className="text-sm">
                 Thời gian hiện tại tuỳ chỉnh:{" "}
               </p>
@@ -230,19 +234,20 @@ export default function AdminGiaiDoanPage() {
               />
               <button 
       onClick={handleKichHoatGiaLapTime} 
-      disabled={isTimeLoading}
+      disabled={isBatLoading||isTatLoading}
       className="bg-blue-500 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-blue-600 "
     >
-      {isTimeLoading && !useCustom ? "Đang xử lý..." : "Bật giả lập thời gian"}
+      {isBatLoading ? "Đang xử lý..." : "Bật giả lập thời gian"}
     </button>
   <button 
       onClick={handleTraLaiRealTime} 
-      disabled={isTimeLoading || !useCustom}
+      disabled={isTatLoading ||isBatLoading|| !useCustom}
       className="bg-gray-500 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-gray-600 "
     >
-      {isTimeLoading && useCustom ? "Đang xử lý..." : "Tắt giả lập thời gian"}
+      {isTatLoading && useCustom ? "Đang xử lý..." : "Tắt giả lập thời gian"}
     </button>
             </div>
+            
             {statusMsg && (
     <span className={`text-xs font-semibold ml-[125px] ${statusMsg.includes("✓") ? "text-green-600" : "text-red-500"}`}>
       {statusMsg}
@@ -251,8 +256,16 @@ export default function AdminGiaiDoanPage() {
           </>
         )}
       </div>
-
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+        <div className="flex items-center gap-2">
+    <div className="inline-block bg-green-500 text-white text-sm font-bold px-4 py-2 rounded-lg tracking-wide">
+      {isCurrentLoading ? (
+        "Đang kiểm tra..."
+      ) : (
+        `Giai đoạn hiện tại: ${currentStage?.mo_ta || "Ngoài thời gian cấu hình"}`
+      )}
+    </div>
+  </div>
+      <div className="bg-white rounded-lg border border-slate-200 mt-4 overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-slate-50">
@@ -407,7 +420,20 @@ export default function AdminGiaiDoanPage() {
                 />
                 Còn phân công gvhd
               </label>
-
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_hd_nhapdetai}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      con_hd_nhapdetai: e.target.checked,
+                    })
+                  }
+                />
+                Còn gvhd giao đề tài cho sinh viên
+              </label>
               <label className="flex block text-sm font-medium text-slate-700">
                 <input
                   type="checkbox"
@@ -422,7 +448,20 @@ export default function AdminGiaiDoanPage() {
                 />
                 Còn phân công gvpb
               </label>
-
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_phancong_hoidong}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      con_phancong_hoidong: e.target.checked,
+                    })
+                  }
+                />
+                Còn tạo và phân công vào hội đồng
+              </label>
               <label className="flex block text-sm font-medium text-slate-700">
                 <input
                   type="checkbox"
@@ -432,7 +471,7 @@ export default function AdminGiaiDoanPage() {
                     setFormData({ ...formData, con_dangky: e.target.checked })
                   }
                 />
-                Còn đăng ký
+                Còn đăng ký sinh viên làm lvtn
               </label>
 
               <label className="flex block text-sm font-medium text-slate-700">
@@ -481,6 +520,28 @@ export default function AdminGiaiDoanPage() {
                   }
                 />
                 Còn chấm điểm hội đồng
+              </label>
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_xuat_kq50}
+                  onChange={(e) =>
+                    setFormData({ ...formData, con_xuat_kq50: e.target.checked })
+                  }
+                />
+                Còn xuất kết quả 50%
+              </label>
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_xuat_dsbvlvtn}
+                  onChange={(e) =>
+                    setFormData({ ...formData, con_xuat_dsbvlvtn: e.target.checked })
+                  }
+                />
+                Còn xuất danh sách bảo vệ lvtn
               </label>
             </div>
 
