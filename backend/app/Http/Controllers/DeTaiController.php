@@ -224,8 +224,16 @@ class DeTaiController extends Controller
             'data_json.gvhd.sinh_viens.*.deNghi' => 'nullable|string',
         ]);
 
+        $detai->data_json = array_replace_recursive(
+            $detai->data_json ?? [],
+            [
+                'gvhd' => $validated['data_json']['gvhd'] ?? []
+            ]
+        );
+        $detai->save();
+
         // 
-        $detai->update($validated);
+        // $detai->update($validated);
         return response()->json($detai);
     }
 
@@ -244,54 +252,60 @@ class DeTaiController extends Controller
         }
 
         // Cho phép cập nhật data_json khi chấm điểm
-        // $validated = $request->validate([
-        //     'diemHuongDan' => 'nullable|numeric|min:0|max:10',
-        //     'nhanXetHuongDan' => 'nullable|string',
-        //     'uuDiem' => 'nullable|string',
-        //     'thieuSot' => 'nullable|string',
-        //     'ndDieuChinh' => 'nullable|string',
-        //     'cauHoi' => 'nullable|string',
-        //     'thuyetMinh' => 'nullable|string',
-        //     'diemPhanTich' => 'nullable|array',
-        //     'diemThietKe' => 'nullable|array',
-        //     'diemHienThuc' => 'nullable|array',
-        //     'diemBaoCao' => 'nullable|array',
-        //     'diemTongCong' => 'nullable|array',
-        //     'diemFinal' => 'nullable|array',
-        //     'deNghi' => 'nullable|array',
-        //     'data_json' => 'nullable|array',
-        // ]);
-
         $validated = $request->validate([
-            'data_json' => 'required|array',
-
-            // TEXT
-            'data_json.gvpb.nhanXet' => 'nullable|string',
-            'data_json.gvpb.uuDiem' => 'nullable|string',
-            'data_json.gvpb.thieuSot' => 'nullable|string',
-            'data_json.gvpb.ndDieuChinh' => 'nullable|string',
-            'data_json.gvpb.cauHoi' => 'nullable|string',
-            'data_json.gvpb.thuyetMinh' => 'nullable|string',
-
-            // ARRAY
-            'data_json.gvpb.sinh_viens' => 'nullable|array',
-
-            // STUDENTS
-            'data_json.gvpb.sinh_viens.*.mssv' => 'required|string',
-
-            // SCORE
-            'data_json.gvpb.sinh_viens.*.diemPhanTich' => 'nullable|numeric|min:0|max:10',
-            'data_json.gvpb.sinh_viens.*.diemThietKe' => 'nullable|numeric|min:0|max:10',
-            'data_json.gvpb.sinh_viens.*.diemHienThuc' => 'nullable|numeric|min:0|max:10',
-            'data_json.gvpb.sinh_viens.*.diemBaoCao' => 'nullable|numeric|min:0|max:10',
-            'data_json.gvpb.sinh_viens.*.diemTongCong' => 'nullable|numeric|min:0|max:10',
-            'data_json.gvpb.sinh_viens.*.diemFinal' => 'nullable|numeric|min:0|max:10',
-
-            // SELECT
-            'data_json.gvpb.sinh_viens.*.deNghi' => 'nullable|string',
+            'diemHuongDan' => 'nullable|numeric|min:0|max:10',
+            'nhanXetHuongDan' => 'nullable|string',
+            'uuDiem' => 'nullable|string',
+            'thieuSot' => 'nullable|string',
+            'ndDieuChinh' => 'nullable|string',
+            'cauHoi' => 'nullable|string',
+            'thuyetMinh' => 'nullable|string',
+            'diemPhanTich' => 'nullable|array',
+            'diemThietKe' => 'nullable|array',
+            'diemHienThuc' => 'nullable|array',
+            'diemBaoCao' => 'nullable|array',
+            'diemTongCong' => 'nullable|array',
+            'diemFinal' => 'nullable|array',
+            'deNghi' => 'nullable|array',
+            'data_json' => 'nullable|array',
         ]);
 
-        $detai->update($validated);
+        // $validated = $request->validate([
+        //     'data_json' => 'required|array',
+
+        //     // TEXT
+        //     'data_json.gvpb.nhanXet' => 'nullable|string',
+        //     'data_json.gvpb.uuDiem' => 'nullable|string',
+        //     'data_json.gvpb.thieuSot' => 'nullable|string',
+        //     'data_json.gvpb.ndDieuChinh' => 'nullable|string',
+        //     'data_json.gvpb.cauHoi' => 'nullable|string',
+        //     'data_json.gvpb.thuyetMinh' => 'nullable|string',
+
+        //     // ARRAY
+        //     'data_json.gvpb.sinh_viens' => 'nullable|array',
+
+        //     // STUDENTS
+        //     'data_json.gvpb.sinh_viens.*.mssv' => 'required|string',
+
+        //     // SCORE
+        //     'data_json.gvpb.sinh_viens.*.diemPhanTich' => 'nullable|numeric|min:0|max:10',
+        //     'data_json.gvpb.sinh_viens.*.diemThietKe' => 'nullable|numeric|min:0|max:10',
+        //     'data_json.gvpb.sinh_viens.*.diemHienThuc' => 'nullable|numeric|min:0|max:10',
+        //     'data_json.gvpb.sinh_viens.*.diemBaoCao' => 'nullable|numeric|min:0|max:10',
+        //     'data_json.gvpb.sinh_viens.*.diemTongCong' => 'nullable|numeric|min:0|max:10',
+        //     'data_json.gvpb.sinh_viens.*.diemFinal' => 'nullable|numeric|min:0|max:10',
+
+        //     // SELECT
+        //     'data_json.gvpb.sinh_viens.*.deNghi' => 'nullable|string',
+        // ]);
+
+        $detai->data_json = array_replace_recursive(
+            $detai->data_json ?? [],
+            [
+                'gvpb' => $validated['data_json']['gvpb'] ?? []
+            ]
+        );
+        $detai->save();
         return response()->json($detai);
     }
 
@@ -328,7 +342,14 @@ class DeTaiController extends Controller
             'data_json.gk.sinh_viens.*.deNghi' => 'nullable|string',
             'data_json.gk.nhanXet' => 'required|string',
         ]);
-        $detai->update($validated);
+
+        $detai->data_json = array_replace_recursive(
+            $detai->data_json ?? [],
+            [
+                'gk' => $validated['data_json']['gk'] ?? []
+            ]
+        );
+        $detai->save();
         return response()->json($detai);
     }
 
