@@ -41,7 +41,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route element={<RoleRoute allowed="thuky" />}>
-              <Route path="/admin/tong-quan" element={<TongQuan />} />
+              {/* <Route path="/admin/tong-quan" element={<TongQuan />} /> */}
               <Route path="/admin/sinhvien" element={<AdminSinhVien />} />
               <Route path="/admin/giangvien" element={<AdminGiangVien />} />
               <Route
