@@ -72,7 +72,7 @@ export default function AdminPhanCongGVPB() {
           disabled={selectedIds.length === 0 || phanCongMut.isPending}
           className="bg-orange-600 text-white px-4 py-1.5 rounded font-bold disabled:opacity-50 hover:bg-orange-700 transition-colors"
         >
-          {phanCongMut.isPending ? "Đang xử lý..." : "Xác nhận gán PB"}
+          {phanCongMut.isPending ? "Đang xử lý..." : "Xác nhận phân công PGVB"}
         </button>
       </div>
 

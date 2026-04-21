@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SinhVienController;
@@ -63,19 +62,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/phan-cong/phan-cong-gvhd', [\App\Http\Controllers\PhanCongController::class, 'phancongGVHD']);
     Route::get('/phan-cong/danh-sach-chua-co-gvpb', [\App\Http\Controllers\PhanCongController::class, 'getDanhSachChuaCoGVPB']);
     Route::post('/phan-cong/phan-cong-gvpb', [\App\Http\Controllers\PhanCongController::class, 'phancongGVPB']);
+    //API quản lý hội đồng
+    Route::get('/hoi-dong', [\App\Http\Controllers\HoiDongController::class, 'index']);
+    Route::post('/hoi-dong', [\App\Http\Controllers\HoiDongController::class, 'store']);
+    Route::put('/hoi-dong/{id}', [\App\Http\Controllers\HoiDongController::class, 'update']);
+    Route::delete('/hoi-dong/{id}', [\App\Http\Controllers\HoiDongController::class, 'destroy']);
+
+    // API Gán/Gỡ đề tài cho Hội đồng
+    Route::post('/hoi-dong/{maHoiDong}/gan-de-tai', [\App\Http\Controllers\HoiDongController::class, 'ganDeTai']);
+    Route::post('/hoi-dong/go-de-tai/{maDeTai}', [\App\Http\Controllers\HoiDongController::class, 'goDeTai']);
+
+    // API Xuất danh sách
+    Route::get('/hoi-dong/export/{maHoiDong}', [\App\Http\Controllers\HoiDongController::class, 'exportDanhSach']);
+    Route::get('/hoi-dong/export-all', [\App\Http\Controllers\HoiDongController::class, 'exportTatCaHoiDong']);
     // API phân công giảng viên vào hội đồng
     Route::post('/hoi-dong/phan-cong-giang-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'phanCongGiangVien']);
-    // Thành viên hội đồng
+    // API quản lý thành viên hội đồng
+
     Route::get('/hoi-dong/{maHoiDong}/thanh-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'index']);
     Route::delete('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'destroy']);
     Route::put('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'update']);
     Route::get('/hoi-dong/{maHoiDong}/giang-vien-chua-co', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'getDanhSachGiangVienChuaCoTrongHoiDong']);
-    // CRUD Hội đồng (chỉ dùng HoiDongController)
-    Route::get('/hoi-dong', [\App\Http\Controllers\HoiDongController::class, 'index']);
-    Route::get('/hoi-dong/{id}', [\App\Http\Controllers\HoiDongController::class, 'show']);
-    Route::post('/hoi-dong', [\App\Http\Controllers\HoiDongController::class, 'store']);
-    Route::put('/hoi-dong/{id}', [\App\Http\Controllers\HoiDongController::class, 'update']);
-    Route::delete('/hoi-dong/{id}', [\App\Http\Controllers\HoiDongController::class, 'destroy']);
+
     // CRUD Đề tài
     Route::get('/de-tai', [\App\Http\Controllers\DeTaiController::class, 'index']);
     Route::get('/de-tai/my', [\App\Http\Controllers\DeTaiController::class, 'my']);
