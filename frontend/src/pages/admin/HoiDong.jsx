@@ -74,7 +74,7 @@ export default function AdminHoiDong() {
     className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2"
   >
     <HiOutlineDocumentArrowDown size={20} />
-    Xuất danh sách bảo vệ LVTN (Tổng hợp)
+    Xuất danh sách bảo vệ LVTN
   </button>
       </div>
 
