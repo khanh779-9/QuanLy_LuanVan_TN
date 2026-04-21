@@ -152,8 +152,11 @@ export default function GVPBPhanBienPage() {
 
   function openEdit(deTai) {
     setEditDeTai(deTai);
-    // Nếu có data_json.gvpb thì fill vào form, không thì lấy từ các trường cũ
+    // Ưu tiên lấy sinh viên từ data_json.gvpb.sinh_viens nếu có, fallback sang deTai.sinh_viens
     const gvpb = deTai.data_json && deTai.data_json.gvpb ? deTai.data_json.gvpb : {};
+    const sinhViens = Array.isArray(gvpb.sinh_viens)
+      ? gvpb.sinh_viens
+      : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens : []);
     setEditForm(f => ({
       ...f,
       tong_diem: gvpb.tong_diem ?? deTai.diemPhanBien ?? '',
@@ -163,13 +166,13 @@ export default function GVPBPhanBienPage() {
       ndDieuChinh: gvpb.ndDieuChinh ?? deTai.ndDieuChinh ?? '',
       cauHoi: gvpb.cauHoi ?? deTai.cauHoi ?? '',
       thuyetMinh: gvpb.thuyetMinh ?? deTai.thuyetMinh ?? '',
-      diemPhanTich: Array.isArray(gvpb.sinh_viens) ? gvpb.sinh_viens.map(sv => sv.diemPhanTich ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemPhanTich ?? '') : ['']),
-      diemThietKe: Array.isArray(gvpb.sinh_viens) ? gvpb.sinh_viens.map(sv => sv.diemThietKe ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemThietKe ?? '') : ['']),
-      diemHienThuc: Array.isArray(gvpb.sinh_viens) ? gvpb.sinh_viens.map(sv => sv.diemHienThuc ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemHienThuc ?? '') : ['']),
-      diemBaoCao: Array.isArray(gvpb.sinh_viens) ? gvpb.sinh_viens.map(sv => sv.diemBaoCao ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemBaoCao ?? '') : ['']),
-      diemTongCong: Array.isArray(gvpb.sinh_viens) ? gvpb.sinh_viens.map(sv => sv.diemTongCong ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemTongCong ?? '') : ['']),
-      diemFinal: Array.isArray(gvpb.sinh_viens) ? gvpb.sinh_viens.map(sv => sv.diemFinal ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemFinal ?? '') : ['']),
-      deNghi: Array.isArray(gvpb.sinh_viens) ? gvpb.sinh_viens.map(sv => sv.deNghi ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.deNghi ?? '') : ['']),
+      diemPhanTich: sinhViens.map(sv => sv.diemPhanTich ?? ''),
+      diemThietKe: sinhViens.map(sv => sv.diemThietKe ?? ''),
+      diemHienThuc: sinhViens.map(sv => sv.diemHienThuc ?? ''),
+      diemBaoCao: sinhViens.map(sv => sv.diemBaoCao ?? ''),
+      diemTongCong: sinhViens.map(sv => sv.diemTongCong ?? ''),
+      diemFinal: sinhViens.map(sv => sv.diemFinal ?? ''),
+      deNghi: sinhViens.map(sv => sv.deNghi ?? ''),
     }));
     setSaveSuccess(false);
     setShowEditModal(true);
@@ -387,11 +390,16 @@ export default function GVPBPhanBienPage() {
               <p className="text-sm font-semibold text-slate-800 mt-1">{editDeTai.tenDeTai}</p>
             </div>
 
-            {Array.isArray(editDeTai.sinh_viens) && editDeTai.sinh_viens.length > 0 ? (
-              <div className="mb-4">
-                <h3 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">1. Đánh giá sinh viên</h3>
-                <div className="space-y-2">
-                  {editDeTai.sinh_viens.map((sv, idx) => (
+            {(() => {
+              // Ưu tiên lấy sinh viên từ data_json.gvpb.sinh_viens nếu có, fallback sang editDeTai.sinh_viens
+              const sinhViens = Array.isArray(editDeTai.data_json?.gvpb?.sinh_viens)
+                ? editDeTai.data_json.gvpb.sinh_viens
+                : (Array.isArray(editDeTai.sinh_viens) ? editDeTai.sinh_viens : []);
+              return sinhViens.length > 0 ? (
+                <div className="mb-4">
+                  <h3 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">1. Đánh giá sinh viên</h3>
+                  <div className="space-y-2">
+                    {sinhViens.map((sv, idx) => (
                     <div key={sv.mssv || idx} className="bg-white border border-slate-200 rounded p-2">
                       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
                         <div className="w-6 h-6 rounded bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
@@ -453,7 +461,8 @@ export default function GVPBPhanBienPage() {
                   ))}
                 </div>
               </div>
-            ) : null}
+              ) : null;
+            })()}
 
             <div className="mb-2">
               <h3 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">2. Đánh giá chung của GVPB</h3>
@@ -510,6 +519,18 @@ export default function GVPBPhanBienPage() {
               className="px-3 py-1.5 rounded border border-slate-200 text-slate-700 font-medium text-xs hover:bg-slate-50 transition-colors"
               onClick={() => setShowEditModal(false)}
             >Hủy</button>
+            <button
+              className="px-3 py-1.5 rounded bg-slate-200 text-slate-700 font-medium text-xs transition-colors flex items-center gap-1"
+              onClick={async () => {
+                if (editDeTai?.maDeTai) {
+                  const { exportWordGVPB } = await import('../../services/deTaiService');
+                  exportWordGVPB(editDeTai.maDeTai);
+                }
+              }}
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              Xuất Word
+            </button>
             <button
               className="px-4 py-1.5 rounded bg-blue-600 text-white font-medium text-xs disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm"
               disabled={updateMut.isPending || saveSuccess}

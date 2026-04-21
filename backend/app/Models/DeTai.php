@@ -11,19 +11,13 @@ class DeTai extends Model
 
     protected $fillable = [
         'tenDeTai', 'moTa', 'maGV_HD', 'maGV_PB', 'maHoiDong',
-        'diemGiuaKy', 'trangThaiGiuaKy', 'nhanXetGiuaKy',
-        'diemHuongDan', 'nhanXetHuongDan',
-        'diemPhanBien', 'nhanXetPhanBien',
-        'diemHoiDong', 'diemTongKet', 'diemChu', 'trangThai',
+        'trangThaiGiuaKy', 
+        'diemTongKet', 'diemChu', 'trangThai',
         'thuTuTrongHD', 'ghiChu', 'created_at', 'updated_at',
         'data_json',
     ];
 
     protected $casts = [
-        'diemGiuaKy' => 'float',
-        'diemHuongDan' => 'float',
-        'diemPhanBien' => 'float',
-        'diemHoiDong' => 'float',
         'diemTongKet' => 'float',
         'data_json' => 'array',
     ];

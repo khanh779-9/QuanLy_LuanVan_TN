@@ -150,8 +150,11 @@ export default function GVHDHuongDanPage() {
 
   function openEdit(deTai) {
     setEditDeTai(deTai);
-    // Nếu có data_json.gvhd thì fill vào form, không thì lấy từ các trường cũ
+    // Ưu tiên lấy sinh viên từ data_json.gvhd.sinh_viens nếu có, fallback sang deTai.sinh_viens
     const gvhd = deTai.data_json && deTai.data_json.gvhd ? deTai.data_json.gvhd : {};
+    const sinhViens = Array.isArray(gvhd.sinh_viens)
+      ? gvhd.sinh_viens
+      : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens : []);
     setEditForm(f => ({
       ...f,
       tong_diem: gvhd.tong_diem ?? deTai.diemHuongDan ?? '',
@@ -161,13 +164,13 @@ export default function GVHDHuongDanPage() {
       ndDieuChinh: gvhd.ndDieuChinh ?? deTai.ndDieuChinh ?? '',
       cauHoi: gvhd.cauHoi ?? deTai.cauHoi ?? '',
       thuyetMinh: gvhd.thuyetMinh ?? deTai.thuyetMinh ?? '',
-      diemPhanTich: Array.isArray(gvhd.sinh_viens) ? gvhd.sinh_viens.map(sv => sv.diemPhanTich ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemPhanTich ?? '') : ['']),
-      diemThietKe: Array.isArray(gvhd.sinh_viens) ? gvhd.sinh_viens.map(sv => sv.diemThietKe ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemThietKe ?? '') : ['']),
-      diemHienThuc: Array.isArray(gvhd.sinh_viens) ? gvhd.sinh_viens.map(sv => sv.diemHienThuc ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemHienThuc ?? '') : ['']),
-      diemBaoCao: Array.isArray(gvhd.sinh_viens) ? gvhd.sinh_viens.map(sv => sv.diemBaoCao ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemBaoCao ?? '') : ['']),
-      diemTongCong: Array.isArray(gvhd.sinh_viens) ? gvhd.sinh_viens.map(sv => sv.diemTongCong ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemTongCong ?? '') : ['']),
-      diemFinal: Array.isArray(gvhd.sinh_viens) ? gvhd.sinh_viens.map(sv => sv.diemFinal ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.diemFinal ?? '') : ['']),
-      deNghi: Array.isArray(gvhd.sinh_viens) ? gvhd.sinh_viens.map(sv => sv.deNghi ?? '') : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens.map(sv => sv.deNghi ?? '') : ['']),
+      diemPhanTich: sinhViens.map(sv => sv.diemPhanTich ?? ''),
+      diemThietKe: sinhViens.map(sv => sv.diemThietKe ?? ''),
+      diemHienThuc: sinhViens.map(sv => sv.diemHienThuc ?? ''),
+      diemBaoCao: sinhViens.map(sv => sv.diemBaoCao ?? ''),
+      diemTongCong: sinhViens.map(sv => sv.diemTongCong ?? ''),
+      diemFinal: sinhViens.map(sv => sv.diemFinal ?? ''),
+      deNghi: sinhViens.map(sv => sv.deNghi ?? ''),
     }));
     setSaveSuccess(false);
     setShowEditModal(true);
@@ -319,7 +322,6 @@ export default function GVHDHuongDanPage() {
                 <th className="border-b border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Mã</th>
                 <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Tên đề tài</th>
                 <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Sinh viên</th>
-                <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Điểm hướng dẫn</th>
                 <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Trạng thái</th>
                 <th className="border-b border-l border-slate-200 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Thao tác</th>
               </tr>
@@ -367,13 +369,7 @@ export default function GVHDHuongDanPage() {
                           <span className="italic text-slate-400">Chưa có</span>
                         )}
                       </td>
-                      <td className="border-t border-l border-slate-100 px-4 py-4 text-center text-sm">
-                        {hasScore ? (
-                          <span className="font-semibold text-emerald-700">{deTai.diemHuongDan}</span>
-                        ) : (
-                          <span className="italic text-slate-400">Chưa có</span>
-                        )}
-                      </td>
+                    
                       <td className="border-t border-l border-slate-100 px-4 py-4 text-center">
                         <StatusBadge scored={hasScore} />
                       </td>
@@ -403,11 +399,16 @@ export default function GVHDHuongDanPage() {
               <p className="text-sm font-semibold text-slate-800 mt-1">{editDeTai.tenDeTai}</p>
             </div>
 
-            {Array.isArray(editDeTai.sinh_viens) && editDeTai.sinh_viens.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">1. Đánh giá sinh viên</h3>
-                <div className="space-y-2">
-                  {editDeTai.sinh_viens.map((sv, idx) => (
+            {(() => {
+              // Ưu tiên lấy sinh viên từ data_json.gvhd.sinh_viens nếu có, fallback sang editDeTai.sinh_viens
+              const sinhViens = Array.isArray(editDeTai.data_json?.gvhd?.sinh_viens)
+                ? editDeTai.data_json.gvhd.sinh_viens
+                : (Array.isArray(editDeTai.sinh_viens) ? editDeTai.sinh_viens : []);
+              return sinhViens.length > 0 ? (
+                <div className="mb-4">
+                  <h3 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">1. Đánh giá sinh viên</h3>
+                  <div className="space-y-2">
+                    {sinhViens.map((sv, idx) => (
                     <div key={sv.mssv} className="bg-white border border-slate-200 rounded p-2">
                       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
                         <div className="w-6 h-6 rounded bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
@@ -470,7 +471,8 @@ export default function GVHDHuongDanPage() {
                   ))}
                 </div>
               </div>
-            )}
+              ) : null;
+            })()}
 
             <div className="mb-2">
               <h3 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">2. Đánh giá chung của GVHD</h3>

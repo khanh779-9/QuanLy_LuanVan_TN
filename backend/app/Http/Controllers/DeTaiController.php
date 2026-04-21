@@ -141,22 +141,23 @@ class DeTaiController extends Controller
 
         // Cho phép cập nhật data_json khi chấm điểm
         $validated = $request->validate([
-            'diemHuongDan' => 'nullable|numeric|min:0|max:10',
-            'nhanXetHuongDan' => 'nullable|string',
+
             'uuDiem' => 'nullable|string',
+            'nhanXet' => 'nullable|string',
             'thieuSot' => 'nullable|string',
             'ndDieuChinh' => 'nullable|string',
             'cauHoi' => 'nullable|string',
             'thuyetMinh' => 'nullable|string',
-            'diemPhanTich' => 'nullable|array',
-            'diemThietKe' => 'nullable|array',
-            'diemHienThuc' => 'nullable|array',
-            'diemBaoCao' => 'nullable|array',
-            'diemTongCong' => 'nullable|array',
-            'diemFinal' => 'nullable|array',
+            'diemPhanTich' => 'nullable|numeric|min:0|max:10',
+            'diemThietKe' => 'nullable|numeric|min:0|max:10',
+            'diemHienThuc' => 'nullable|numeric|min:0|max:10',
+            'diemBaoCao' => 'nullable|numeric|min:0|max:10',
+            'diemTongCong' => 'nullable|numeric|min:0|max:10',
+            'diemFinal' => 'nullable|numeric|min:0|max:10',
             'deNghi' => 'nullable|array',
             'data_json' => 'nullable|array',
         ]);
+        // 
         $detai->update($validated);
         return response()->json($detai);
     }
