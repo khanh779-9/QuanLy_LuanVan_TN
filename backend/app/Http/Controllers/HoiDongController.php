@@ -114,7 +114,7 @@ class HoiDongController extends Controller
             $i = $index + 1;
             $tp->setValue('tenHD#' . $i, $hd->tenHoiDong);
             $tp->setValue('phong#' . $i, $hd->diaDiem ?? '...');
-            $tp->setValue('ngay#' . $i, $hd->ngayBaoVe ? $hd->ngayBaoVe->format('d/m/Y H:i') : '...');
+            $tp->setValue('ngay#' . $i, $hd->ngayBaoVe ? \Carbon\Carbon::parse($hd->ngayBaoVe)->format('d/m/Y H:i') : '...');
 
             // Thành viên
             $tv = $hd->thanhVien;
