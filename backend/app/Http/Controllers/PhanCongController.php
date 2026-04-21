@@ -75,6 +75,68 @@ public function phancongGVPB(Request $request)
 
     return response()->json(['message' => 'Phân công giảng viên phản biện thành công!']);
 }
+    public function exportGVHD()
+{
+    // Lấy toàn bộ đề tài đã có GVHD
+    $detais = DeTai::with(['sinhVien', 'giangVienHD'])
+        ->whereNotNull('maGV_HD')
+        ->get();
+
+    $templateFile = base_path('template_docs' . DIRECTORY_SEPARATOR . 'template_ds_gvhd.docx');
+    if (!file_exists($templateFile)) return response()->json(['message' => 'Thiếu template'], 500);
+
+    $tp = new \PhpOffice\PhpWord\TemplateProcessor($templateFile);
+    $tp->cloneRow('stt', $detais->count());
+
+    foreach ($detais as $index => $dt) {
+        $i = $index + 1;
+        $svs = $dt->sinhVien->values();
+        $tp->setValue('stt#' . $i, $i);
+        $tp->setValue('tensv1#' . $i, $svs[0]->hoTen ?? '...');
+        $tp->setValue('mssv1#' . $i, $svs[0]->mssv ?? '...');
+        $tp->setValue('tensv2#' . $i, $svs[1]->hoTen ?? '—');
+        $tp->setValue('mssv2#' . $i, $svs[1]->mssv ?? '—');
+        $tp->setValue('tengvhd#' . $i, $dt->giangVienHD->tenGV ?? '...');
+        $tp->setValue('huongDT#' . $i, $dt->moTa ?? '...');
+    }
+
+    $fileName = "DS_Phan_Cong_GVHD.docx";
+    $tempPath = public_path('exports' . DIRECTORY_SEPARATOR . $fileName);
+    $tp->saveAs($tempPath);
+    return response()->download($tempPath)->deleteFileAfterSend(true);
+}
+
+public function exportGVPB()
+{
+    // Lấy toàn bộ đề tài đã có GVPB
+    $detais = DeTai::with(['sinhVien', 'giangVienHD', 'giangVienPB'])
+        ->whereNotNull('maGV_PB')
+        ->get();
+
+    $templateFile = base_path('template_docs' . DIRECTORY_SEPARATOR . 'template_ds_gvpb.docx');
+    if (!file_exists($templateFile)) return response()->json(['message' => 'Thiếu template'], 500);
+
+    $tp = new \PhpOffice\PhpWord\TemplateProcessor($templateFile);
+    $tp->cloneRow('stt', $detais->count());
+
+    foreach ($detais as $index => $dt) {
+        $i = $index + 1;
+        $svs = $dt->sinhVien->values();
+        $tp->setValue('stt#' . $i, $i);
+        $tp->setValue('tensv1#' . $i, $svs[0]->hoTen ?? '...');
+        $tp->setValue('mssv1#' . $i, $svs[0]->mssv ?? '...');
+        $tp->setValue('tensv2#' . $i, $svs[1]->hoTen ?? '—');
+        $tp->setValue('mssv2#' . $i, $svs[1]->mssv ?? '—');
+        $tp->setValue('tengvhd#' . $i, $dt->giangVienHD->tenGV ?? '...');
+        $tp->setValue('tenDT#' . $i, $dt->tenDeTai ?? $dt->moTa);
+        $tp->setValue('tengvpb#' . $i, $dt->giangVienPB->tenGV ?? '...');
+    }
+
+    $fileName = "DS_Phan_Cong_GVPB.docx";
+    $tempPath = public_path('exports' . DIRECTORY_SEPARATOR . $fileName);
+    $tp->saveAs($tempPath);
+    return response()->download($tempPath)->deleteFileAfterSend(true);
+}
     public function update(Request $request, $id)
     {
         $detai = DeTai::find($id);

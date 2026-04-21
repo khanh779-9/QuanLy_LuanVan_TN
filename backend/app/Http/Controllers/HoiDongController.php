@@ -51,18 +51,28 @@ class HoiDongController extends Controller
     public function ganDeTai(Request $request, $maHoiDong)
     {
         $request->validate([
-            'maDeTai' => 'required|exists:detai,maDeTai',
-        ]);
+        'maDeTai' => 'required|exists:detai,maDeTai',
+    ]);
 
-        // Lấy STT lớn nhất hiện tại của hội đồng đó
-        $maxOrder = DeTai::where('maHoiDong', $maHoiDong)->max('thuTuTrongHD') ?? 0;
+    $deTai = DeTai::find($request->maDeTai);
 
-        $deTai = DeTai::find($request->maDeTai);
-        $deTai->maHoiDong = $maHoiDong;
-        $deTai->thuTuTrongHD = $maxOrder + 1; // Luôn là số tiếp theo
-        $deTai->save();
+    // KIỂM TRA TRẠNG THÁI:
+    // Nếu đề tài bị đình chỉ hoặc không đạt thì không cho phép gán vào hội đồng
+    $invalidStatuses = ['dinh_chi', 'khong_dat'];
+    if (in_array($deTai->trangThai, $invalidStatuses)) {
+        return response()->json([
+            'message' => 'Đề tài này đã bị đình chỉ hoặc không đạt, không thể phân công vào hội đồng bảo vệ!'
+        ], 422);
+    }
 
-        return response()->json(['message' => 'Đã gán đề tài thành công']);
+    // Lấy STT lớn nhất hiện tại của hội đồng đó
+    $maxOrder = DeTai::where('maHoiDong', $maHoiDong)->max('thuTuTrongHD') ?? 0;
+
+    $deTai->maHoiDong = $maHoiDong;
+    $deTai->thuTuTrongHD = $maxOrder + 1; 
+    $deTai->save();
+
+    return response()->json(['message' => 'Đã gán đề tài vào hội đồng thành công']);
     }
 
     // 2. Hàm gỡ đề tài: Phải đánh số lại cho các đề tài còn lại
@@ -90,6 +100,46 @@ class HoiDongController extends Controller
         }
         return response()->json(['message' => 'Đã gỡ và cập nhật lại STT']);
     }
+    // backend/app/Http/Controllers/HoiDongController.php
+
+public function exportKhongDuocBaoVe()
+{
+    // Lấy đề tài bị loại dựa trên trangThai hoặc trangThaiGiuaKy
+    $detais = \App\Models\DeTai::with(['sinhVien', 'giangVienHD'])
+        ->where('trangThai', 'khong_dat')
+        ->orWhere('trangThaiGiuaKy', 'dinh_chi')
+        ->get();
+
+    $templateFile = base_path('template_docs' . DIRECTORY_SEPARATOR . 'template_dssv_khongduocbaovelvtn.docx');
+    if (!file_exists($templateFile)) {
+        return response()->json(['message' => 'Thiếu file template_dssv_khongduocbaovelvtn.docx'], 500);
+    }
+
+    $tp = new \PhpOffice\PhpWord\TemplateProcessor($templateFile);
+    
+    // Đếm tổng số sinh viên bị loại để clone dòng
+    $totalSV = 0;
+    foreach($detais as $dt) $totalSV += $dt->sinhVien->count();
+    
+    $tp->cloneRow('stt', $totalSV);
+
+    $rowIndex = 1;
+    foreach ($detais as $dt) {
+        foreach ($dt->sinhVien as $sv) {
+            $tp->setValue('stt#' . $rowIndex, $rowIndex);
+            $tp->setValue('mssv#' . $rowIndex, $sv->mssv);
+            $tp->setValue('tensv#' . $rowIndex, $sv->hoTen);
+            $tp->setValue('tendetai#' . $rowIndex, $dt->tenDeTai ?? $dt->moTa);
+            $tp->setValue('gvhd#' . $rowIndex, $dt->giangVienHD->tenGV ?? '—');
+            $rowIndex++;
+        }
+    }
+
+    $fileName = "DS_SinhVien_Khong_Duoc_Bao_Ve.docx";
+    $tempPath = public_path('exports' . DIRECTORY_SEPARATOR . $fileName);
+    $tp->saveAs($tempPath);
+    return response()->download($tempPath)->deleteFileAfterSend(true);
+}
     public function exportTatCaHoiDong(Request $request)
     {
         // Mẹo kẹp token từ URL cho trình duyệt
@@ -112,6 +162,7 @@ class HoiDongController extends Controller
 
         foreach ($hoiDongs as $index => $hd) {
             $i = $index + 1;
+            $tp->setValue('maHD#' . $i, $hd->maHoiDong);
             $tp->setValue('tenHD#' . $i, $hd->tenHoiDong);
             $tp->setValue('phong#' . $i, $hd->diaDiem ?? '...');
             $tp->setValue('ngay#' . $i, $hd->ngayBaoVe ? \Carbon\Carbon::parse($hd->ngayBaoVe)->format('d/m/Y H:i') : '...');

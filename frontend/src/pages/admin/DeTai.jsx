@@ -49,20 +49,29 @@ export default function AdminDeTai() {
           </thead>
           <tbody className="divide-y divide-slate-100">
   {listDeTai.map((dt) => {
-    // Lấy data_json chuẩn hóa
     const data = typeof dt.data_json === 'string' ? JSON.parse(dt.data_json) : dt.data_json || {};
-    // Điểm
-    const diemHD = data?.gvhd?.tong_diem;
-    const diemPB = data?.gvpb?.tong_diem;
-    const diemHoiDong = data?.hd?.tong_diem;
-    const finalGrade = calculateFinalGrade(diemHD, diemPB, diemHoiDong);
+
+  // Lấy điểm trung bình của cả nhóm (hoặc sv đầu tiên) từ data_json mới
+  const getAverageScore = (roleData) => {
+    const svList = roleData?.sinh_viens;
+    if (!svList || svList.length === 0) return null;
+    // Tính trung bình điểm Final của các SV trong nhóm
+    const total = svList.reduce((sum, sv) => sum + (Number(sv.diemFinal) || 0), 0);
+    return (total / svList.length).toFixed(1);
+  };
+
+  const diemHD = getAverageScore(data?.gvhd);
+  const diemPB = getAverageScore(data?.gvpb);
+  const diemHoiDong = getAverageScore(data?.hd);
+  
+  const finalGrade = calculateFinalGrade(diemHD, diemPB, diemHoiDong);
     return (
       <tr key={dt.maDeTai} className="hover:bg-slate-50/50 transition-colors">
         <td className="px-6 py-4">
           <div className="font-bold text-slate-800 mb-1">{dt.tenDeTai}</div>
           {/* Hiển thị Nhóm SV */}
           <div className="flex flex-wrap gap-2 mb-2">
-            {dt.sinh_vien?.map(sv => (
+            {dt.sinh_viens?.map(sv => (
               <span key={sv.mssv} className="bg-yellow-100  text-xs py-0.5 rounded  ">{sv.hoTen}_{sv.mssv}</span>
             ))}
           </div>
@@ -137,60 +146,69 @@ export default function AdminDeTai() {
 }
 
 function DetailScoreView({ dt }) {
-  const data = typeof dt.data_json === 'string' ? JSON.parse(dt.data_json) : dt.data_json;
+  // Chuẩn hóa dữ liệu JSON
+  const data = typeof dt.data_json === 'string' ? JSON.parse(dt.data_json) : dt.data_json || {};
   
   return (
     <div className="space-y-6">
+      {/* Thông tin Giảng viên nhận xét chung */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <h4 className="text-xs font-bold uppercase text-slate-400 mb-3 tracking-widest">Giảng viên hướng dẫn</h4>
-          <p className="text-sm text-slate-600 italic">"{dt.nhanXetHuongDan || "Không có nhận xét"}"</p>
+        <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <h4 className="text-xs font-bold uppercase text-blue-500 mb-2 tracking-widest">Nhận xét của GVHD</h4>
+          <p className="text-sm text-slate-700 italic">"{data?.gvhd?.nhanXet || "Chưa có nhận xét"}"</p>
         </div>
-        <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <h4 className="text-xs font-bold uppercase text-slate-400 mb-3 tracking-widest">Giảng viên phản biện</h4>
-          <p className="text-sm text-slate-600 italic">"{dt.nhanXetPhanBien || "Không có nhận xét"}"</p>
+        <div className="p-4 bg-orange-50 rounded-lg border border-orange-100">
+          <h4 className="text-xs font-bold uppercase text-orange-500 mb-2 tracking-widest">Nhận xét của GVPB</h4>
+          <p className="text-sm text-slate-700 italic">"{data?.gvpb?.nhanXet || "Chưa có nhận xét"}"</p>
         </div>
       </div>
 
+      {/* Bảng điểm chi tiết từng sinh viên */}
       <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-slate-800 text-white">
             <tr>
-              <th className="px-4 py-3 text-left">Sinh viên</th>
-              <th className="px-4 py-3 text-center">Đóng góp (%)</th>
-              <th className="px-4 py-3 text-center">Đề nghị (HD)</th>
-              <th className="px-4 py-3 text-center">Đề nghị (PB)</th>
+              <th className="px-4 py-3 text-left">Họ tên & MSSV</th>
+              <th className="px-4 py-3 text-center">Điểm HD</th>
+              <th className="px-4 py-3 text-center">Điểm PB</th>
+              <th className="px-4 py-3 text-center">Điểm HĐ</th>
               <th className="px-4 py-3 text-center">Trạng thái</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
-            {dt.sinh_vien?.map(sv => {
-              const svHD = data?.gvhd?.sinh_vien?.find(s => s.mssv === sv.mssv);
-              const svPB = data?.gvpb?.sinh_vien?.find(s => s.mssv === sv.mssv);
+          <tbody className="divide-y divide-slate-100 bg-white">
+            {dt.sinh_viens?.map(sv => {
+              // Truy xuất dữ liệu riêng của từng SV trong data_json
+              const svHD = data?.gvhd?.sinh_viens?.find(s => s.mssv === sv.mssv);
+              const svPB = data?.gvpb?.sinh_viens?.find(s => s.mssv === sv.mssv);
+              const svHDG = data?.hd?.sinh_viens?.find(s => s.mssv === sv.mssv);
               
-              // Kiểm tra xem sinh viên có bị GV từ chối không
-              const isRejected = svHD?.deNghi === "ko_duoc_pb" || svPB?.deNghi === "ko_duoc_hd";
+              // Điều kiện không được ra hội đồng
+              const isRejected = dt.trangThai === 'khong_dat' || dt.trangThaiGiuaKy === 'dinh_chi';
               
               return (
-                <tr key={sv.mssv}>
-                  <td className="px-4 py-4 font-semibold text-slate-700">{sv.hoTen}_{sv.mssv}</td>
-                  <td className="px-4 py-4 text-center font-mono">
-                    {/* diemTongCong của GVHD giờ là Phần trăm đóng góp */}
-                    {svHD?.diemTongCong || "---"}%
+                <tr key={sv.mssv} className="hover:bg-slate-50">
+                  <td className="px-4 py-4">
+                    <div className="font-bold text-slate-700">{sv.hoTen}</div>
+                    <div className="text-xs text-slate-400">{sv.mssv} - {sv.lop}</div>
                   </td>
-                  <td className="px-4 py-4 text-center text-xs">
-                    {svHD?.deNghi === "ko_duoc_pb" ? <span className="text-red-500 font-bold uppercase">Từ chối PB</span> : "Cho phép"}
+                  <td className="px-4 py-4 text-center font-mono font-bold text-blue-600">
+                    {svHD?.diemFinal || "---"}
                   </td>
-                  <td className="px-4 py-4 text-center text-xs">
-                    {svPB?.deNghi === "ko_duoc_hd" ? <span className="text-red-500 font-bold uppercase">Từ chối HĐ</span> : "Cho phép"}
+                  <td className="px-4 py-4 text-center font-mono font-bold text-orange-600">
+                    {svPB?.diemFinal || "---"}
+                  </td>
+                  <td className="px-4 py-4 text-center font-mono font-bold text-emerald-600">
+                    {svHDG?.diemFinal || "---"}
                   </td>
                   <td className="px-4 py-4 text-center">
                     {isRejected ? (
-                      <span className="flex items-center justify-center gap-1 text-red-600 font-bold text-xs uppercase animate-pulse">
-                        <HiOutlineExclamationTriangle /> Không được ra hội đồng
+                      <span className="inline-flex items-center gap-1 text-red-600 font-bold text-[10px] uppercase bg-red-50 px-2 py-1 rounded border border-red-100">
+                        <HiOutlineExclamationTriangle /> Loại
                       </span>
                     ) : (
-                      <span className="text-green-600 font-bold text-xs uppercase tracking-tighter">Được ra hội đồng</span>
+                      <span className="text-green-600 font-bold text-[10px] uppercase bg-green-50 px-2 py-1 rounded border border-green-100">
+                        Đủ điều kiện
+                      </span>
                     )}
                   </td>
                 </tr>
