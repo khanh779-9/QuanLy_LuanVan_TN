@@ -8,6 +8,7 @@ use App\Models\SinhVien;
 use App\Models\GiangVien;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpWord\Settings;
+use Illuminate\Support\Facades\Schema;
 
 class DeTaiController extends Controller
 {
@@ -51,8 +52,46 @@ class DeTaiController extends Controller
 
     $result = $query->paginate($pageSize);
 
-    // KHÔNG CẦN đoạn code map sinh viên thủ công nữa vì đã có with('sinhVien') ở trên
-    // Laravel sẽ tự động tạo mảng 'sinh_vien' (hoặc 'sinh_viens') trong mỗi bản ghi đề tài
+        $result->getCollection()->transform(function ($deTai) {
+            $deTai->sinh_viens = collect($deTai->sinhVien ?? [])->map(function ($sv) {
+                return [
+                    'mssv' => $sv->mssv,
+                'hoTen' => $sv->hoTen,
+                'lop' => $sv->lop,
+                'email' => $sv->email,
+                'soDienThoai' => $sv->soDienThoai,
+            ];
+        })->values()->all();
+
+        $gk = $deTai->data_json['gk'] ?? [];
+        if ((!isset($deTai->diemGiuaKy) || $deTai->diemGiuaKy === null) && array_key_exists('tong_diem', $gk)) {
+            $deTai->diemGiuaKy = $gk['tong_diem'];
+        }
+        if ((!isset($deTai->nhanXetGiuaKy) || $deTai->nhanXetGiuaKy === null) && array_key_exists('nhanXet', $gk)) {
+            $deTai->nhanXetGiuaKy = $gk['nhanXet'];
+        }
+            if ((!isset($deTai->trangThaiGiuaKy) || $deTai->trangThaiGiuaKy === null) && isset($gk['tong_diem']) && is_numeric($gk['tong_diem'])) {
+                $deTai->trangThaiGiuaKy = $gk['tong_diem'] >= 5 ? 'dat' : 'khong_dat';
+            }
+
+            $gvhd = $deTai->data_json['gvhd'] ?? [];
+            if ((!isset($deTai->diemHuongDan) || $deTai->diemHuongDan === null) && array_key_exists('tong_diem', $gvhd)) {
+                $deTai->diemHuongDan = $gvhd['tong_diem'];
+            }
+            if ((!isset($deTai->nhanXetHuongDan) || $deTai->nhanXetHuongDan === null) && array_key_exists('nhanXet', $gvhd)) {
+                $deTai->nhanXetHuongDan = $gvhd['nhanXet'];
+            }
+
+            $gvpb = $deTai->data_json['gvpb'] ?? [];
+            if ((!isset($deTai->diemPhanBien) || $deTai->diemPhanBien === null) && array_key_exists('tong_diem', $gvpb)) {
+                $deTai->diemPhanBien = $gvpb['tong_diem'];
+            }
+            if ((!isset($deTai->nhanXetPhanBien) || $deTai->nhanXetPhanBien === null) && array_key_exists('nhanXet', $gvpb)) {
+                $deTai->nhanXetPhanBien = $gvpb['nhanXet'];
+            }
+
+            return $deTai;
+        });
 
     return response()->json($result);
 }
@@ -157,7 +196,36 @@ class DeTaiController extends Controller
             'deNghi' => 'nullable|array',
             'data_json' => 'nullable|array',
         ]);
-        $detai->update($validated);
+
+        $dataJson = $detai->data_json ?? [];
+        if (isset($validated['data_json']['gvhd'])) {
+            $dataJson['gvhd'] = $validated['data_json']['gvhd'];
+        }
+
+        if (Schema::hasColumn('detai', 'diemHuongDan') && array_key_exists('diemHuongDan', $validated)) {
+            $detai->diemHuongDan = $validated['diemHuongDan'];
+        }
+        if (Schema::hasColumn('detai', 'nhanXetHuongDan') && array_key_exists('nhanXetHuongDan', $validated)) {
+            $detai->nhanXetHuongDan = $validated['nhanXetHuongDan'];
+        }
+        if (Schema::hasColumn('detai', 'uuDiem') && array_key_exists('uuDiem', $validated)) {
+            $detai->uuDiem = $validated['uuDiem'];
+        }
+        if (Schema::hasColumn('detai', 'thieuSot') && array_key_exists('thieuSot', $validated)) {
+            $detai->thieuSot = $validated['thieuSot'];
+        }
+        if (Schema::hasColumn('detai', 'ndDieuChinh') && array_key_exists('ndDieuChinh', $validated)) {
+            $detai->ndDieuChinh = $validated['ndDieuChinh'];
+        }
+        if (Schema::hasColumn('detai', 'cauHoi') && array_key_exists('cauHoi', $validated)) {
+            $detai->cauHoi = $validated['cauHoi'];
+        }
+        if (Schema::hasColumn('detai', 'thuyetMinh') && array_key_exists('thuyetMinh', $validated)) {
+            $detai->thuyetMinh = $validated['thuyetMinh'];
+        }
+
+        $detai->data_json = $dataJson;
+        $detai->save();
         return response()->json($detai);
     }
 
@@ -177,8 +245,8 @@ class DeTaiController extends Controller
 
         // Cho phép cập nhật data_json khi chấm điểm
         $validated = $request->validate([
-            'diemHuongDan' => 'nullable|numeric|min:0|max:10',
-            'nhanXetHuongDan' => 'nullable|string',
+            'diemPhanBien' => 'nullable|numeric|min:0|max:10',
+            'nhanXetPhanBien' => 'nullable|string',
             'uuDiem' => 'nullable|string',
             'thieuSot' => 'nullable|string',
             'ndDieuChinh' => 'nullable|string',
@@ -193,7 +261,36 @@ class DeTaiController extends Controller
             'deNghi' => 'nullable|array',
             'data_json' => 'nullable|array',
         ]);
-        $detai->update($validated);
+
+        $dataJson = $detai->data_json ?? [];
+        if (isset($validated['data_json']['gvpb'])) {
+            $dataJson['gvpb'] = $validated['data_json']['gvpb'];
+        }
+
+        if (Schema::hasColumn('detai', 'diemPhanBien') && array_key_exists('diemPhanBien', $validated)) {
+            $detai->diemPhanBien = $validated['diemPhanBien'];
+        }
+        if (Schema::hasColumn('detai', 'nhanXetPhanBien') && array_key_exists('nhanXetPhanBien', $validated)) {
+            $detai->nhanXetPhanBien = $validated['nhanXetPhanBien'];
+        }
+        if (Schema::hasColumn('detai', 'uuDiem') && array_key_exists('uuDiem', $validated)) {
+            $detai->uuDiem = $validated['uuDiem'];
+        }
+        if (Schema::hasColumn('detai', 'thieuSot') && array_key_exists('thieuSot', $validated)) {
+            $detai->thieuSot = $validated['thieuSot'];
+        }
+        if (Schema::hasColumn('detai', 'ndDieuChinh') && array_key_exists('ndDieuChinh', $validated)) {
+            $detai->ndDieuChinh = $validated['ndDieuChinh'];
+        }
+        if (Schema::hasColumn('detai', 'cauHoi') && array_key_exists('cauHoi', $validated)) {
+            $detai->cauHoi = $validated['cauHoi'];
+        }
+        if (Schema::hasColumn('detai', 'thuyetMinh') && array_key_exists('thuyetMinh', $validated)) {
+            $detai->thuyetMinh = $validated['thuyetMinh'];
+        }
+
+        $detai->data_json = $dataJson;
+        $detai->save();
         return response()->json($detai);
     }
 
@@ -211,22 +308,31 @@ class DeTaiController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        $request->validate([
-            'tieu_chi' => 'required|array',
-            'tieu_chi.*' => 'numeric|min:0|max:10',
+        $validated = $request->validate([
             'tong_diem' => 'required|numeric|min:0|max:10',
             'nhan_xet' => 'nullable|string',
             'trang_thai' => 'nullable|string',
+            'data_json' => 'nullable|array',
         ]);
 
-        $trangThai = $request->trang_thai;
+        $trangThai = $validated['trang_thai'] ?? null;
         if (!$trangThai) {
-            $trangThai = $request->tong_diem >= 5 ? 'dat' : 'khong_dat';
+            $trangThai = $validated['tong_diem'] >= 5 ? 'dat' : 'khong_dat';
         }
 
-        $detai->diemGiuaKy = $request->tong_diem;
-        $detai->nhanXetGiuaKy = $request->nhan_xet;
-        $detai->trangThaiGiuaKy = $trangThai;
+        $dataJson = $detai->data_json ?? [];
+        $dataJson['gk'] = array_merge($dataJson['gk'] ?? [], $validated['data_json']['gk'] ?? [], [
+            'tong_diem' => $validated['tong_diem'],
+            'nhanXet' => $validated['nhan_xet'] ?? null,
+        ]);
+
+        if (Schema::hasColumn('detai', 'diemGiuaKy')) {
+            $detai->diemGiuaKy = $validated['tong_diem'];
+        }
+        if (Schema::hasColumn('detai', 'nhanXetGiuaKy')) {
+            $detai->nhanXetGiuaKy = $validated['nhan_xet'] ?? null;
+        }
+        $detai->data_json = $dataJson;
         $detai->save();
 
         return response()->json($detai);

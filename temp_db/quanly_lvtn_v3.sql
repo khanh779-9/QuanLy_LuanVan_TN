@@ -272,6 +272,11 @@ INSERT INTO `sinhvien` (`mssv`, `hoTen`, `lop`, `email`, `soDienThoai`, `maDeTai
 ('DH52113777', 'Huỳnh Xuân Thọ', 'D21_TH12', 'DH52113777@student.stu.edu.vn', NULL, NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
 ('LT52200006', 'Trần Minh Nghĩa', 'L22_TH01', 'LT52200006@student.stu.edu.vn', '908655034', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29');
 
+-- Gán sinh viên mẫu vào các đề tài demo để giao diện có dữ liệu hiển thị ngay
+UPDATE `sinhvien` SET `maDeTai` = 1 WHERE `mssv` IN ('DH51801379', 'DH52001024');
+UPDATE `sinhvien` SET `maDeTai` = 2 WHERE `mssv` IN ('DH52000682', 'DH52001243');
+UPDATE `sinhvien` SET `maDeTai` = 3 WHERE `mssv` IN ('DH52001330', 'DH52001367');
+
 
 -- =========================
 -- 6. THÀNH VIÊN HỘI ĐỒNG
