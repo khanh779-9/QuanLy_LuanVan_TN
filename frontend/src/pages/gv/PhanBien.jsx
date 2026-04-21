@@ -88,6 +88,27 @@ function FeedbackRow({ label, value, tone }) {
   );
 }
 
+function tinhTongCongSinhVien(editForm, idx) {
+  const componentValues = [
+    editForm.diemPhanTich?.[idx],
+    editForm.diemThietKe?.[idx],
+    editForm.diemHienThuc?.[idx],
+    editForm.diemBaoCao?.[idx],
+  ];
+
+  const hasAnyComponent = componentValues.some((value) => value !== '' && value !== null && value !== undefined);
+  if (!hasAnyComponent) {
+    return editForm.diemTongCong?.[idx] ?? '';
+  }
+
+  const total = componentValues.reduce((sum, value) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? sum + numeric : sum;
+  }, 0);
+
+  return Number((total / componentValues.length).toFixed(1));
+}
+
 export default function GVPBPhanBienPage() {
   const queryClient = useQueryClient();
   const [editDeTai, setEditDeTai] = useState(null);
@@ -806,6 +827,9 @@ export default function GVPBPhanBienPage() {
               disabled={updateMut.isPending || saveSuccess}
               onClick={() => {
                 if (!updateMut.isPending && !saveSuccess) {
+                  const diemTongCongTuDong = Array.isArray(editDeTai?.sinh_viens)
+                    ? editDeTai.sinh_viens.map((_, idx) => tinhTongCongSinhVien(editForm, idx))
+                    : [];
                   updateMut.mutate({
                     deTaiId: editDeTai?.maDeTai,
                     data: {
@@ -820,7 +844,7 @@ export default function GVPBPhanBienPage() {
                       diemThietKe: editForm.diemThietKe,
                       diemHienThuc: editForm.diemHienThuc,
                       diemBaoCao: editForm.diemBaoCao,
-                      diemTongCong: editForm.diemTongCong,
+                      diemTongCong: diemTongCongTuDong,
                       diemFinal: editForm.diemFinal,
                       deNghi: editForm.deNghi,
                       data_json: {

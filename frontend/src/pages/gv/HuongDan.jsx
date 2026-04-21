@@ -85,6 +85,27 @@ function GuidanceRow({ label, value, tone }) {
   );
 }
 
+function tinhTongCongSinhVien(editForm, idx) {
+  const componentValues = [
+    editForm.diemPhanTich?.[idx],
+    editForm.diemThietKe?.[idx],
+    editForm.diemHienThuc?.[idx],
+    editForm.diemBaoCao?.[idx],
+  ];
+
+  const hasAnyComponent = componentValues.some((value) => value !== '' && value !== null && value !== undefined);
+  if (!hasAnyComponent) {
+    return editForm.diemTongCong?.[idx] ?? '';
+  }
+
+  const total = componentValues.reduce((sum, value) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? sum + numeric : sum;
+  }, 0);
+
+  return Number((total / componentValues.length).toFixed(1));
+}
+
 export default function GVHDHuongDanPage() {
   const queryClient = useQueryClient();
   const [editDeTai, setEditDeTai] = useState(null);
@@ -177,8 +198,8 @@ export default function GVHDHuongDanPage() {
   }
 
   function tinhDiemHuongDanTuChiTiet() {
-    const validScores = (editForm.diemTongCong || [])
-      .map((value) => Number(value))
+    const validScores = (editDeTai?.sinh_viens || [])
+      .map((_, idx) => Number(tinhTongCongSinhVien(editForm, idx)))
       .filter((value) => Number.isFinite(value));
 
     if (validScores.length === 0) {
@@ -410,6 +431,10 @@ export default function GVHDHuongDanPage() {
                   <div className="space-y-2">
                     {sinhViens.map((sv, idx) => (
                     <div key={sv.mssv} className="bg-white border border-slate-200 rounded p-2">
+                      {(() => {
+                        const tongCong = tinhTongCongSinhVien(editForm, idx);
+                        return (
+                          <>
                       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
                         <div className="w-6 h-6 rounded bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
                           {idx + 1}
@@ -449,9 +474,9 @@ export default function GVHDHuongDanPage() {
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-slate-700 mb-1">Tổng cộng</label>
-                          <input type="number" min="0" max="40" step="0.5" className="w-full border border-slate-200 rounded px-2 py-1 text-xs bg-white focus:outline-none focus:border-blue-400 font-medium placeholder:text-slate-300" placeholder="0.0"
-                            value={editForm.diemTongCong[idx] ?? ''}
-                            onChange={e => setEditForm(f => { const arr = [...f.diemTongCong]; arr[idx] = e.target.value; return { ...f, diemTongCong: arr }; })}
+                          <input type="text" readOnly className="w-full border border-slate-200 rounded px-2 py-1 text-xs bg-slate-50 text-slate-700 focus:outline-none font-semibold"
+                            value={tongCong}
+                            placeholder="Tự tính"
                           />
                         </div>
                        
@@ -467,6 +492,9 @@ export default function GVHDHuongDanPage() {
                           <option value="Bổ sung">Bổ sung/hiệu chỉnh để được bảo vệ</option>
                         </select>
                       </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   ))}
                 </div>
@@ -531,6 +559,9 @@ export default function GVHDHuongDanPage() {
               disabled={updateMut.isPending || saveSuccess}
               onClick={() => {
                 if (!updateMut.isPending && !saveSuccess) {
+                  const diemTongCongTuDong = Array.isArray(editDeTai?.sinh_viens)
+                    ? editDeTai.sinh_viens.map((_, idx) => tinhTongCongSinhVien(editForm, idx))
+                    : [];
                   const tongDiemHuongDan = tinhDiemHuongDanTuChiTiet();
 
                   updateMut.mutate({
@@ -547,7 +578,7 @@ export default function GVHDHuongDanPage() {
                       diemThietKe: editForm.diemThietKe,
                       diemHienThuc: editForm.diemHienThuc,
                       diemBaoCao: editForm.diemBaoCao,
-                      diemTongCong: editForm.diemTongCong,
+                      diemTongCong: diemTongCongTuDong,
                       diemFinal: editForm.diemFinal,
                       deNghi: editForm.deNghi,
                       data_json: {
@@ -567,7 +598,7 @@ export default function GVHDHuongDanPage() {
                             diemThietKe: editForm.diemThietKe[idx] ?? '',
                             diemHienThuc: editForm.diemHienThuc[idx] ?? '',
                             diemBaoCao: editForm.diemBaoCao[idx] ?? '',
-                            diemTongCong: editForm.diemTongCong[idx] ?? '',
+                            diemTongCong: diemTongCongTuDong[idx] ?? '',
                             diemFinal: editForm.diemFinal[idx] ?? '',
                             deNghi: editForm.deNghi[idx] ?? '',
                           })) : [],

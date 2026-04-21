@@ -272,6 +272,11 @@ INSERT INTO `sinhvien` (`mssv`, `hoTen`, `lop`, `email`, `soDienThoai`, `maDeTai
 ('DH52113777', 'Huỳnh Xuân Thọ', 'D21_TH12', 'DH52113777@student.stu.edu.vn', NULL, NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29'),
 ('LT52200006', 'Trần Minh Nghĩa', 'L22_TH01', 'LT52200006@student.stu.edu.vn', '908655034', NULL, '2026-04-10 06:32:07', '2026-04-10 06:32:29');
 
+-- Gán sinh viên mẫu vào các đề tài demo để giao diện có dữ liệu hiển thị ngay
+UPDATE `sinhvien` SET `maDeTai` = 1 WHERE `mssv` IN ('DH51801379', 'DH52001024');
+UPDATE `sinhvien` SET `maDeTai` = 2 WHERE `mssv` IN ('DH52000682', 'DH52001243');
+UPDATE `sinhvien` SET `maDeTai` = 3 WHERE `mssv` IN ('DH52001330', 'DH52001367');
+
 
 -- =========================
 -- 6. THÀNH VIÊN HỘI ĐỒNG
@@ -348,7 +353,7 @@ CREATE TABLE giai_doan (
   id INT AUTO_INCREMENT PRIMARY KEY,
   mo_ta VARCHAR(255),
   loai ENUM('deadline','process','milestone'),
-  `data` TEXT NULL DEFAULT ('{ "con_phancong_hd":false,"con_phancong_pb":false, "con_dangky": false, "con_chamGK":false, "con_chamPB":false, "con_chamHD":false, "con_chamHDG":false }'),
+  `data` TEXT NULL DEFAULT ('{"con_phancong_hd": false,"con_phancong_pb": false,"con_dangky": false,"con_chamGK": false,"con_chamPB": false,"con_chamHD": false,"con_chamHDG": false,"con_hdnhapdetai": false,"con_phanconghoidong": false}'),
   ngay_bat_dau DATE,
   ngay_ket_thuc DATE
 );

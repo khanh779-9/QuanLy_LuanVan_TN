@@ -8,6 +8,7 @@ use App\Models\SinhVien;
 use App\Models\GiangVien;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpWord\Settings;
+use Illuminate\Support\Facades\Schema;
 
 class DeTaiController extends Controller
 {
@@ -253,8 +254,8 @@ class DeTaiController extends Controller
 
         // Cho phép cập nhật data_json khi chấm điểm
         $validated = $request->validate([
-            'diemHuongDan' => 'nullable|numeric|min:0|max:10',
-            'nhanXetHuongDan' => 'nullable|string',
+            'diemPhanBien' => 'nullable|numeric|min:0|max:10',
+            'nhanXetPhanBien' => 'nullable|string',
             'uuDiem' => 'nullable|string',
             'thieuSot' => 'nullable|string',
             'ndDieuChinh' => 'nullable|string',
