@@ -31,7 +31,7 @@ export default function Sidebar({ isOpen, onClose }) {
   // Menu cấu hình theo role
   const menuConfig = {
     thuky: [
-      { label: "Tổng quan", path: "/admin/tong-quan", icon: HiOutlineHome },
+      // { label: "Tổng quan", path: "/admin/tong-quan", icon: HiOutlineHome },
       { label: "Sinh viên", path: "/admin/sinhvien", icon: HiOutlineUsers },
       {
         label: "Giảng viên",
