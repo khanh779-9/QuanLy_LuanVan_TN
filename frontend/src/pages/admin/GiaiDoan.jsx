@@ -407,7 +407,20 @@ export default function AdminGiaiDoanPage() {
                 />
                 Còn phân công gvhd
               </label>
-
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_hd_nhapdetai}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      con_hd_nhapdetai: e.target.checked,
+                    })
+                  }
+                />
+                Còn GVHD giao đề tài cho sinh viên
+              </label>
               <label className="flex block text-sm font-medium text-slate-700">
                 <input
                   type="checkbox"
@@ -422,7 +435,20 @@ export default function AdminGiaiDoanPage() {
                 />
                 Còn phân công gvpb
               </label>
-
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_phancong_hoidong}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      con_phancong_hoidong: e.target.checked,
+                    })
+                  }
+                />
+                Còn tạo và phân công vào hội đồng
+              </label>
               <label className="flex block text-sm font-medium text-slate-700">
                 <input
                   type="checkbox"
@@ -432,7 +458,7 @@ export default function AdminGiaiDoanPage() {
                     setFormData({ ...formData, con_dangky: e.target.checked })
                   }
                 />
-                Còn đăng ký
+                Còn đăng ký sinh viên làm lvtn
               </label>
 
               <label className="flex block text-sm font-medium text-slate-700">
@@ -481,6 +507,28 @@ export default function AdminGiaiDoanPage() {
                   }
                 />
                 Còn chấm điểm hội đồng
+              </label>
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_xuat_kq50}
+                  onChange={(e) =>
+                    setFormData({ ...formData, con_xuat_kq50: e.target.checked })
+                  }
+                />
+                Còn xuất kết quả 50%
+              </label>
+              <label className="flex block text-sm font-medium text-slate-700">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 accent-blue-600 border-slate-300 rounded focus:ring-blue-500 mr-2"
+                  checked={formData.con_xuat_dsbvlvtn}
+                  onChange={(e) =>
+                    setFormData({ ...formData, con_xuat_dsbvlvtn: e.target.checked })
+                  }
+                />
+                Còn xuất danh sách bảo vệ lvtn
               </label>
             </div>
 
