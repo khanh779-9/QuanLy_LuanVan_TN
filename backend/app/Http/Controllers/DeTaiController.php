@@ -13,50 +13,87 @@ class DeTaiController extends Controller
 {
 
     public function index(Request $request)
-{
-    // SỬA TẠI ĐÂY: Nạp luôn quan hệ Giảng viên (HD/PB) và Hội đồng
-    // Chú ý: Tên 'giangVienHD', 'giangVienPB', 'sinhVien' phải khớp với function trong Model DeTai
-    $query = DeTai::with(['giangVienHD', 'giangVienPB', 'hoiDong', 'sinhVien']);
+    {
+        // SỬA TẠI ĐÂY: Nạp luôn quan hệ Giảng viên (HD/PB) và Hội đồng
+        // Chú ý: Tên 'giangVienHD', 'giangVienPB', 'sinhVien' phải khớp với function trong Model DeTai
+        $query = DeTai::with(['giangVienHD', 'giangVienPB', 'hoiDong', 'sinhVien']);
 
-    // Lọc theo mã GV hướng dẫn
-    if ($request->filled('maGV_HD')) {
-        $query->where('maGV_HD', $request->maGV_HD);
+        // Lọc theo mã GV hướng dẫn
+        if ($request->filled('maGV_HD')) {
+            $query->where('maGV_HD', $request->maGV_HD);
+        }
+        if ($request->filled('maGV_PB')) {
+            $query->where('maGV_PB', $request->maGV_PB);
+        }
+        if ($request->filled('maHoiDong')) {
+            $query->where('maHoiDong', $request->maHoiDong);
+        }
+        if ($request->filled('trangThai')) {
+            $query->where('trangThai', $request->trangThai);
+        }
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                // 1. Tìm theo tên đề tài
+                $q->where('tenDeTai', 'like', '%' . $search . '%')
+                    // 2. Tìm theo mã đề tài (nếu cần)
+                    ->orWhere('maDeTai', 'like', '%' . $search . '%')
+                    // 3. Tìm xuyên qua bảng sinh viên (mssv hoặc hoTen)
+                    ->orWhereHas('sinhVien', function ($sq) use ($search) {
+                        $sq->where('mssv', 'like', '%' . $search . '%')
+                            ->orWhere('hoTen', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        $query->orderByDesc('maDeTai');
+        $pageSize = $request->input('per_page', 15);
+
+        $result = $query->paginate($pageSize);
+
+        // KHÔNG CẦN đoạn code map sinh viên thủ công nữa vì đã có with('sinhVien') ở trên
+        // Laravel sẽ tự động tạo mảng 'sinh_vien' (hoặc 'sinh_viens') trong mỗi bản ghi đề tài
+
+        $result->getCollection()->transform(function ($item) {
+
+            // convert relation sang array
+            $svs = $item->sinhVien ?? collect();
+
+            $item->sinh_viens = $svs->map(function ($sv) {
+                return [
+                    'mssv' => $sv->mssv,
+                    'hoTen' => $sv->hoTen,
+                    'lop' => $sv->lop,
+                ];
+            })->values();
+
+            // Ẩn field không cần
+            unset($item->sinh_vien); // nếu tồn tại dạng snake_case
+            unset($item->sinhVien);  // xoá luôn relation gốc
+
+            return $item;
+        });
+        return response()->json($result);
     }
-    if ($request->filled('maGV_PB')) {
-        $query->where('maGV_PB', $request->maGV_PB);
+
+    public function getStudentsByDeTai($id)
+    {
+        $detai = DeTai::with('sinhVien')->find($id);
+        if (!$detai) return response()->json(['message' => 'Not found'], 404);
+
+        // Lọc ra những sv trả về các giá trị, mssv, họ tên, lớp, email
+        $students = $detai->sinhVien->map(function ($sv) {
+            return [
+                'mssv' => $sv->mssv,
+                'hoTen' => $sv->hoTen,
+                'lop' => $sv->lop,
+                'email' => $sv->email,
+                // Thêm các trường khác nếu cần
+            ];
+        });
+
+        return response()->json($students);
     }
-    if ($request->filled('maHoiDong')) {
-        $query->where('maHoiDong', $request->maHoiDong);
-    }
-    if ($request->filled('trangThai')) {
-        $query->where('trangThai', $request->trangThai);
-    }
-    if ($request->filled('q')) {
-    $search = $request->q;
-    $query->where(function($q) use ($search) {
-        // 1. Tìm theo tên đề tài
-        $q->where('tenDeTai', 'like', '%' . $search . '%')
-          // 2. Tìm theo mã đề tài (nếu cần)
-          ->orWhere('maDeTai', 'like', '%' . $search . '%')
-          // 3. Tìm xuyên qua bảng sinh viên (mssv hoặc hoTen)
-          ->orWhereHas('sinhVien', function($sq) use ($search) {
-              $sq->where('mssv', 'like', '%' . $search . '%')
-                 ->orWhere('hoTen', 'like', '%' . $search . '%');
-          });
-    });
-}
-
-    $query->orderByDesc('maDeTai');
-    $pageSize = $request->input('per_page', 15);
-
-    $result = $query->paginate($pageSize);
-
-    // KHÔNG CẦN đoạn code map sinh viên thủ công nữa vì đã có with('sinhVien') ở trên
-    // Laravel sẽ tự động tạo mảng 'sinh_vien' (hoặc 'sinh_viens') trong mỗi bản ghi đề tài
-
-    return response()->json($result);
-}
-
 
     public function show($id)
     {
@@ -101,7 +138,7 @@ class DeTaiController extends Controller
         return response()->json($detai);
     }
 
-      /**
+    /**
      * Lấy đề tài của sinh viên hiện tại (dựa vào auth)
      */
     public function my(Request $request)
@@ -140,23 +177,53 @@ class DeTaiController extends Controller
         }
 
         // Cho phép cập nhật data_json khi chấm điểm
-        $validated = $request->validate([
+        // $validated = $request->validate([
 
-            'uuDiem' => 'nullable|string',
-            'nhanXet' => 'nullable|string',
-            'thieuSot' => 'nullable|string',
-            'ndDieuChinh' => 'nullable|string',
-            'cauHoi' => 'nullable|string',
-            'thuyetMinh' => 'nullable|string',
-            'diemPhanTich' => 'nullable|numeric|min:0|max:10',
-            'diemThietKe' => 'nullable|numeric|min:0|max:10',
-            'diemHienThuc' => 'nullable|numeric|min:0|max:10',
-            'diemBaoCao' => 'nullable|numeric|min:0|max:10',
-            'diemTongCong' => 'nullable|numeric|min:0|max:10',
-            'diemFinal' => 'nullable|numeric|min:0|max:10',
-            'deNghi' => 'nullable|array',
-            'data_json' => 'nullable|array',
+        //     'uuDiem' => 'nullable|string',
+        //     'nhanXet' => 'nullable|string',
+        //     'thieuSot' => 'nullable|string',
+        //     'ndDieuChinh' => 'nullable|string',
+        //     'cauHoi' => 'nullable|string',
+        //     'thuyetMinh' => 'nullable|string',
+        //     'diemPhanTich' => 'nullable|numeric|min:0|max:10',
+        //     'diemThietKe' => 'nullable|numeric|min:0|max:10',
+        //     'diemHienThuc' => 'nullable|numeric|min:0|max:10',
+        //     'diemBaoCao' => 'nullable|numeric|min:0|max:10',
+        //     'diemTongCong' => 'nullable|numeric|min:0|max:10',
+        //     'diemFinal' => 'nullable|numeric|min:0|max:10',
+        //     'deNghi' => 'nullable|array',
+        //     'data_json' => 'nullable|array',
+        // ]);
+
+        $validated = $request->validate([
+            'data_json' => 'required|array',
+
+            // TEXT
+            'data_json.gvhd.nhanXet' => 'nullable|string',
+            'data_json.gvhd.uuDiem' => 'nullable|string',
+            'data_json.gvhd.thieuSot' => 'nullable|string',
+            'data_json.gvhd.ndDieuChinh' => 'nullable|string',
+            'data_json.gvhd.cauHoi' => 'nullable|string',
+            'data_json.gvhd.thuyetMinh' => 'nullable|string',
+
+            // ARRAY
+            'data_json.gvhd.sinh_viens' => 'nullable|array',
+
+            // STUDENTS
+            'data_json.gvhd.sinh_viens.*.mssv' => 'required|string',
+
+            // SCORE
+            'data_json.gvhd.sinh_viens.*.diemPhanTich' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvhd.sinh_viens.*.diemThietKe' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvhd.sinh_viens.*.diemHienThuc' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvhd.sinh_viens.*.diemBaoCao' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvhd.sinh_viens.*.diemTongCong' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvhd.sinh_viens.*.diemFinal' => 'nullable|numeric|min:0|max:10',
+
+            // SELECT
+            'data_json.gvhd.sinh_viens.*.deNghi' => 'nullable|string',
         ]);
+
         // 
         $detai->update($validated);
         return response()->json($detai);
@@ -177,23 +244,53 @@ class DeTaiController extends Controller
         }
 
         // Cho phép cập nhật data_json khi chấm điểm
+        // $validated = $request->validate([
+        //     'diemHuongDan' => 'nullable|numeric|min:0|max:10',
+        //     'nhanXetHuongDan' => 'nullable|string',
+        //     'uuDiem' => 'nullable|string',
+        //     'thieuSot' => 'nullable|string',
+        //     'ndDieuChinh' => 'nullable|string',
+        //     'cauHoi' => 'nullable|string',
+        //     'thuyetMinh' => 'nullable|string',
+        //     'diemPhanTich' => 'nullable|array',
+        //     'diemThietKe' => 'nullable|array',
+        //     'diemHienThuc' => 'nullable|array',
+        //     'diemBaoCao' => 'nullable|array',
+        //     'diemTongCong' => 'nullable|array',
+        //     'diemFinal' => 'nullable|array',
+        //     'deNghi' => 'nullable|array',
+        //     'data_json' => 'nullable|array',
+        // ]);
+
         $validated = $request->validate([
-            'diemHuongDan' => 'nullable|numeric|min:0|max:10',
-            'nhanXetHuongDan' => 'nullable|string',
-            'uuDiem' => 'nullable|string',
-            'thieuSot' => 'nullable|string',
-            'ndDieuChinh' => 'nullable|string',
-            'cauHoi' => 'nullable|string',
-            'thuyetMinh' => 'nullable|string',
-            'diemPhanTich' => 'nullable|array',
-            'diemThietKe' => 'nullable|array',
-            'diemHienThuc' => 'nullable|array',
-            'diemBaoCao' => 'nullable|array',
-            'diemTongCong' => 'nullable|array',
-            'diemFinal' => 'nullable|array',
-            'deNghi' => 'nullable|array',
-            'data_json' => 'nullable|array',
+            'data_json' => 'required|array',
+
+            // TEXT
+            'data_json.gvpb.nhanXet' => 'nullable|string',
+            'data_json.gvpb.uuDiem' => 'nullable|string',
+            'data_json.gvpb.thieuSot' => 'nullable|string',
+            'data_json.gvpb.ndDieuChinh' => 'nullable|string',
+            'data_json.gvpb.cauHoi' => 'nullable|string',
+            'data_json.gvpb.thuyetMinh' => 'nullable|string',
+
+            // ARRAY
+            'data_json.gvpb.sinh_viens' => 'nullable|array',
+
+            // STUDENTS
+            'data_json.gvpb.sinh_viens.*.mssv' => 'required|string',
+
+            // SCORE
+            'data_json.gvpb.sinh_viens.*.diemPhanTich' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvpb.sinh_viens.*.diemThietKe' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvpb.sinh_viens.*.diemHienThuc' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvpb.sinh_viens.*.diemBaoCao' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvpb.sinh_viens.*.diemTongCong' => 'nullable|numeric|min:0|max:10',
+            'data_json.gvpb.sinh_viens.*.diemFinal' => 'nullable|numeric|min:0|max:10',
+
+            // SELECT
+            'data_json.gvpb.sinh_viens.*.deNghi' => 'nullable|string',
         ]);
+
         $detai->update($validated);
         return response()->json($detai);
     }
@@ -212,24 +309,26 @@ class DeTaiController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        $request->validate([
-            'tieu_chi' => 'required|array',
-            'tieu_chi.*' => 'numeric|min:0|max:10',
-            'tong_diem' => 'required|numeric|min:0|max:10',
-            'nhan_xet' => 'nullable|string',
-            'trang_thai' => 'nullable|string',
+        // $request->validate([
+        //     'tieu_chi' => 'required|array',
+        //     'tieu_chi.*' => 'numeric|min:0|max:10',
+        //     'tong_diem' => 'required|numeric|min:0|max:10',
+        //     'nhan_xet' => 'nullable|string',
+        //     'trang_thai' => 'nullable|string',
+        // ]);
+
+        $validated = $request->validate([
+            'data_json' => 'required|array',
+
+            // ARRAY
+            'data_json.gk.sinh_viens' => 'nullable|array',
+            'data_json.gk.sinh_viens.*.mssv' => 'required|string',
+            // SCORE
+            'data_json.gk.sinh_viens.*.dongGop' => 'nullable|string',
+            'data_json.gk.sinh_viens.*.deNghi' => 'nullable|string',
+            'data_json.gk.nhanXet' => 'required|string',
         ]);
-
-        $trangThai = $request->trang_thai;
-        if (!$trangThai) {
-            $trangThai = $request->tong_diem >= 5 ? 'dat' : 'khong_dat';
-        }
-
-        $detai->diemGiuaKy = $request->tong_diem;
-        $detai->nhanXetGiuaKy = $request->nhan_xet;
-        $detai->trangThaiGiuaKy = $trangThai;
-        $detai->save();
-
+        $detai->update($validated);
         return response()->json($detai);
     }
 
@@ -374,7 +473,7 @@ class DeTaiController extends Controller
         $filename = 'Phieu_cham_PB_' . $detai->maDeTai . '.docx';
         return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
-    
+
 
     private function diemSangChu($diem)
     {
@@ -410,7 +509,7 @@ class DeTaiController extends Controller
         return ($map[$floor] ?? $floor) . ' phẩy ' . ($decMap[$decDigit] ?? $decDigit) . ' điểm';
     }
 
-     /**
+    /**
      * Xuất phiếu nhiệm vụ tốt nghiệp cho đề tài
      */
     public function exportNhiemVu($id)
@@ -424,11 +523,11 @@ class DeTaiController extends Controller
         if (!empty($dataNhiemVu['sinhViens']) && is_array($dataNhiemVu['sinhViens'])) {
             $svArr = $dataNhiemVu['sinhViens'];
         } else {
-            $svArr = SinhVien::where('maDeTai', $id)->get(['hoTen','mssv','lop'])->toArray();
+            $svArr = SinhVien::where('maDeTai', $id)->get(['hoTen', 'mssv', 'lop'])->toArray();
         }
         // Đảm bảo luôn có 2 slot SV (SV2 có thể rỗng)
         if (count($svArr) < 2) {
-            $svArr[1] = ["hoTen"=>"", "mssv"=>"", "lop"=>""];
+            $svArr[1] = ["hoTen" => "", "mssv" => "", "lop" => ""];
         }
 
         // Lấy thông tin GVHD
@@ -444,7 +543,7 @@ class DeTaiController extends Controller
         $tp = new TemplateProcessor($templateFile);
         // Thông tin sinh viên
         for ($i = 0; $i < 2; $i++) {
-            $sv = $svArr[$i] ?? ["hoTen"=>"", "mssv"=>"", "lop"=>""];
+            $sv = $svArr[$i] ?? ["hoTen" => "", "mssv" => "", "lop" => ""];
             $idx = $i + 1;
             $tp->setValue('hoTenSV' . $idx, $sv['hoTen'] ?? '');
             $tp->setValue('mssv' . $idx, $sv['mssv'] ?? '');

@@ -89,7 +89,7 @@ CREATE TABLE detai (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 alter table detai 
-add column data_json TEXT NULL DEFAULT '{ "gk": { "sinh_viens": [] }, "gvpb": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [] }, "gvhd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [] }, "nhiemVu": { "sinhViens": [], "tieuDe": "", "nhiemVu": "", "taiLieu": "", "ngayGiao": "", "ngayHoanThanh": "", "tenGVHD": "" }, "hd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": [] } }';
+add column data_json TEXT NULL DEFAULT '{ "gk": { "sinh_viens": null }, "gvhd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null }, "gvpb": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null }, "nhiemVu": { "sinhViens": null, "tieuDe": "", "nhiemVu": "", "taiLieu": "", "ngayGiao": "", "ngayHoanThanh": "", "tenGVHD": "" }, "hd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null } }';
 
 
 INSERT INTO detai (

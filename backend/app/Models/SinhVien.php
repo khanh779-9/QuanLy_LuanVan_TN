@@ -17,6 +17,11 @@ class SinhVien extends Authenticatable
         'mssv', 'hoTen', 'lop', 'email', 'soDienThoai', 'maDeTai',
     ];
 
+    // Ẩn trường mật khẩu
+    protected $hidden = [
+        'matKhau',
+    ];
+
     public function deTai()
     {
         return $this->belongsTo(DeTai::class, 'maDeTai', 'maDeTai');

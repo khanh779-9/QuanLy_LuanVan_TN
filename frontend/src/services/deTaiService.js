@@ -17,6 +17,10 @@ export async function deleteDeTai(id) {
   return (await api.delete(`/de-tai/${id}`)).data;
 }
 
+export async function getStudentsByDeTai(id) {
+  return (await api.get(`/de-tai/${id}/sinh-vien`)).data;
+}
+
 // Chấm điểm hướng dẫn
 export async function chamDiemHD(id, data) {
   // Đảm bảo gửi data_json nếu có

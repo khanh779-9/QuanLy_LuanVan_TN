@@ -152,7 +152,7 @@ export default function GVHDHuongDanPage() {
     setEditDeTai(deTai);
     // Ưu tiên lấy sinh viên từ data_json.gvhd.sinh_viens nếu có, fallback sang deTai.sinh_viens
     const gvhd = deTai.data_json && deTai.data_json.gvhd ? deTai.data_json.gvhd : {};
-    const sinhViens = Array.isArray(gvhd.sinh_viens)
+   const sinhViens = Array.isArray(gvhd.sinh_viens)
       ? gvhd.sinh_viens
       : (Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens : []);
     setEditForm(f => ({

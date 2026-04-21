@@ -89,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/de-tai/{id}/export/gvhd', [\App\Http\Controllers\DeTaiController::class, 'exportGVHD']);
     Route::get('/de-tai/{id}/export/gvpb', [\App\Http\Controllers\DeTaiController::class, 'exportGVPB']);
     Route::get('/de-tai/{id}/export/nhiem-vu', [\App\Http\Controllers\DeTaiController::class, 'exportNhiemVu']);
+    Route::get('/de-tai/{id}/sinh-vien', [\App\Http\Controllers\DeTaiController::class, 'getStudentsByDeTai']);
 
     // API thống kê tổng quan (Dashboard)
     Route::get('/stats', [\App\Http\Controllers\StatsController::class, 'adminStats']);
