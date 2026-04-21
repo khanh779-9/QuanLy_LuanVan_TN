@@ -8,14 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('sinhvien', function (Blueprint $table) {
+        Schema::create('sinh_vien', function (Blueprint $table) {
             $table->string('mssv', 20)->primary();
-            $table->string('hoTen', 100);
+            $table->string('ho_ten', 100);
             $table->string('lop', 50)->nullable();
             $table->string('email', 100)->nullable();
-            $table->string('soDienThoai', 15)->nullable();
-            $table->unsignedBigInteger('maDeTai')->nullable();
-            $table->string('matKhau', 255)->default('123');
+            $table->string('so_dien_thoai', 15)->nullable();
+            $table->unsignedBigInteger('ma_detai')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });

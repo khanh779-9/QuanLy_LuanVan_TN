@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('hoidong', function (Blueprint $table) {
-            $table->bigIncrements('maHoiDong');
-            $table->string('tenHoiDong', 255)->nullable(false);
-            $table->string('diaDiem', 255)->nullable();
-            $table->dateTime('ngayBaoVe')->nullable();
+        Schema::create('hoi_dong', function (Blueprint $table) {
+            $table->bigIncrements('ma_hoidong');
+            $table->string('ten_hoidong', 255);
+            $table->string('dia_diem', 255)->nullable();
+            $table->date('ngay_bao_ve')->nullable();
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
         });

@@ -11,8 +11,7 @@ return new class extends Migration
         Schema::create('giai_doan', function (Blueprint $table) {
             $table->id();
             $table->string('mo_ta', 255)->nullable();
-            $table->enum('loai', ['deadline','process','milestone'])->nullable();
-            $table->json('data')->nullable();
+            $table->enum('loai', ['deadline','process','milestone']);
             $table->date('ngay_bat_dau')->nullable();
             $table->date('ngay_ket_thuc')->nullable();
         });
