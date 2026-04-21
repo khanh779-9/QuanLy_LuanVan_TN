@@ -12,36 +12,39 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        GiangVien::create([
-            'maGV' => 'GV001',
+        GiangVien::firstOrCreate(['maGV' => 'TK001'], [
+            'tenGV' => 'Thu Ky Admin',
+            'email' => 'thuky@stu.edu.vn',
+            'hocVi' => 'ThS',
+            'matKhau' => Hash::make('123'),
+        ]);
+
+        GiangVien::firstOrCreate(['maGV' => 'GV001'], [
             'tenGV' => 'Nguyen Van Admin',
             'email' => 'admin@stu.edu.vn',
             'hocVi' => 'ThS',
-            'matKhau' => Hash::make('123456'),
+            'matKhau' => Hash::make('123'),
         ]);
 
-        GiangVien::create([
-            'maGV' => 'GV002',
+        GiangVien::firstOrCreate(['maGV' => 'GV002'], [
             'tenGV' => 'Tran Thi Binh',
             'email' => 'binh@stu.edu.vn',
             'hocVi' => 'TS',
-            'matKhau' => Hash::make('123456'),
+            'matKhau' => Hash::make('123'),
         ]);
 
-        GiangVien::create([
-            'maGV' => 'GV003',
+        GiangVien::firstOrCreate(['maGV' => 'GV003'], [
             'tenGV' => 'Le Van Cuong',
             'email' => 'cuong@stu.edu.vn',
             'hocVi' => 'ThS',
-            'matKhau' => Hash::make('123456'),
+            'matKhau' => Hash::make('123'),
         ]);
 
-        GiangVien::create([
-            'maGV' => 'GV004',
+        GiangVien::firstOrCreate(['maGV' => 'GV004'], [
             'tenGV' => 'Pham Minh Duc',
             'email' => 'duc@stu.edu.vn',
             'hocVi' => 'ThS',
-            'matKhau' => Hash::make('123456'),
+            'matKhau' => Hash::make('123'),
         ]);
 
         $svList = [
@@ -53,8 +56,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($svList as $sv) {
-            SinhVien::create([
-                'mssv' => $sv['mssv'],
+            SinhVien::firstOrCreate(['mssv' => $sv['mssv']], [
                 'hoTen' => $sv['hoTen'],
                 'lop' => $sv['lop'],
                 'email' => $sv['email'],
