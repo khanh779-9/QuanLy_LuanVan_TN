@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SinhVienController;
@@ -79,12 +78,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // API phân công giảng viên vào hội đồng
     Route::post('/hoi-dong/phan-cong-giang-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'phanCongGiangVien']);
     // API quản lý thành viên hội đồng
-    
+
     Route::get('/hoi-dong/{maHoiDong}/thanh-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'index']);
     Route::delete('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'destroy']);
     Route::put('/hoi-dong/thanh-vien/{id}', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'update']);
     Route::get('/hoi-dong/{maHoiDong}/giang-vien-chua-co', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'getDanhSachGiangVienChuaCoTrongHoiDong']);
-    
+
     // CRUD Đề tài
     Route::get('/de-tai', [\App\Http\Controllers\DeTaiController::class, 'index']);
     Route::get('/de-tai/my', [\App\Http\Controllers\DeTaiController::class, 'my']);
