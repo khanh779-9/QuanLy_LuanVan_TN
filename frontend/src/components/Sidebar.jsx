@@ -65,6 +65,7 @@ export default function Sidebar({ isOpen, onClose }) {
         label: "Hội đồng",
         path: "/admin/hoidong",
         icon: HiOutlineUserGroup,
+        featureKey: "con_phancong_hoidong",
       },
       { label: "Giai đoạn", path: "/admin/giaidoan", icon: HiOutlineCog6Tooth },
     ],

@@ -64,11 +64,31 @@ export default function AdminHoiDong() {
     alert("Lỗi xuất file tổng hợp!");
   }
 };
-
+  const handleExportKhongDat = async () => {
+  try {
+    const response = await api.get('/hoi-dong/export-khong-dat', { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'DS_SV_Khong_Duoc_Bao_Ve.docx');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    alert("Lỗi khi xuất danh sách sinh viên bị loại!");
+  }
+};
   return (
     <div className="p-6 h-[calc(100vh-80px)] flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-slate-800">Quản lý Hội đồng Bảo vệ LVTN</h1>
+        <div className="flex gap-3">
+        <button
+  onClick={handleExportKhongDat}
+  className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition-colors flex items-center gap-2 shadow-sm"
+><HiOutlineDocumentArrowDown size={20} />
+  Xuất DSSV Không được bảo vệ
+</button>
   <button 
     onClick={handleExportAll} // Đổi sang hàm xuất tất cả
     className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2"
@@ -77,7 +97,7 @@ export default function AdminHoiDong() {
     Xuất danh sách bảo vệ LVTN
   </button>
       </div>
-
+</div>
       <div className="flex gap-6 flex-1 overflow-hidden">
         {/* PANEL TRÁI: DANH SÁCH HỘI ĐỒNG */}
         <div className="w-1/3 bg-white border border-slate-200 rounded-xl flex flex-col shadow-sm">
@@ -98,7 +118,10 @@ export default function AdminHoiDong() {
                     selectedHD?.maHoiDong === hd.maHoiDong ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300'
                   }`}
                 >
-                  <div className="font-bold text-slate-800">{hd.tenHoiDong}</div>
+                  <span className=" text-slate-800 bg-green-200 px-1 py-1 font-bold mr-2 rounded-sm">
+        #{hd.maHoiDong}
+      </span>
+                  <span className="font-bold text-slate-800">{hd.tenHoiDong}</span>
                   <div className="text-xs text-slate-500 mt-1">Phòng: {hd.diaDiem || '—'} | Ngày: {hd.ngayBaoVe ? new Date(hd.ngayBaoVe).toLocaleDateString('vi-VN') : '—'}</div>
                   
                   <div className="absolute top-2 right-2 hidden group-hover:flex gap-2">
@@ -266,7 +289,17 @@ function QuanLyDeTaiHD({ maHoiDong }) {
   const [selectedDT, setSelectedDT] = useState("");
 
   const { data: deTais } = useQuery({ queryKey: ['detai-hd', maHoiDong], queryFn: () => api.get(`/de-tai?maHoiDong=${maHoiDong}&per_page=100`).then(res => res.data.data) });
-  const { data: detaiChuaHD } = useQuery({ queryKey: ['detai-no-hd'], queryFn: () => api.get(`/de-tai?per_page=100`).then(res => res.data.data.filter(d => !d.maHoiDong)) });
+  const { data: detaiChuaHD } = useQuery({ 
+  queryKey: ['detai-no-hd'], 
+  queryFn: () => api.get(`/de-tai?per_page=100`).then(res => {
+    // Chỉ lấy đề tài: Chưa có HĐ VÀ Không bị đình chỉ VÀ Không bị loại
+    return res.data.data.filter(d => 
+      !d.maHoiDong && 
+      d.trangThai !== 'khong_dat' && // Chặn nếu trạng thái cuối là không đạt
+      d.trangThaiGiuaKy !== 'dinh_chi'
+    );
+  }) 
+});
 
   const ganDTMut = useMutation({
     mutationFn: (maDeTai) => api.post(`/hoi-dong/${maHoiDong}/gan-de-tai`, { maDeTai, thuTuTrongHD: (deTais?.length || 0) + 1 }),
@@ -309,7 +342,7 @@ function QuanLyDeTaiHD({ maHoiDong }) {
                 <div className="font-bold text-blue-700">{dt.tenDeTai || dt.moTa}</div>
                 {/* Hiển thị format: Tên SV - MSSV (xuống dòng nếu có 2 sv) */}
                 <div className="text-xs font-semibold text-slate-600 mt-1 space-y-0.5">
-                  {dt.sinh_vien?.map(sv => (
+                  {dt.sinh_viens?.map(sv => (
                     <div key={sv.mssv}>• {sv.hoTen} - {sv.mssv}</div>
                   ))}
                 </div>
@@ -334,7 +367,7 @@ function QuanLyDeTaiHD({ maHoiDong }) {
               {/* Hiển thị đầy đủ tất cả tên SV trong dropdown */}
               {detaiChuaHD?.map(d => (
                 <option key={d.maDeTai} value={d.maDeTai}>
-                  {d.tenDeTai || d.moTa} (SV: {d.sinh_vien?.map(s => s.hoTen).join(' & ')})
+                  {d.tenDeTai || d.moTa} (SV: {d.sinh_viens?.map(s => s.hoTen).join(' & ')})
                 </option>
               ))}
             </select>

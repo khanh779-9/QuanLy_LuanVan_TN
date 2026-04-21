@@ -20,7 +20,26 @@ export default function AdminPhanCongGVHD() {
     queryKey: ['giangvien-all'],
     queryFn: () => api.get('/giang-vien').then(res => res.data)
   });
+  const handleExport = async () => {
+  try {
+    // Gọi API với responseType là blob để nhận file nhị phân
+    const response = await api.get('/phan-cong/export-gvhd', {
+      responseType: 'blob',
+    });
 
+    // Tạo URL tạm thời cho file
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Danh_sach_phan_cong_GVHD.docx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url); // Giải phóng bộ nhớ
+  } catch (error) {
+    alert("Lỗi khi xuất danh sách GVHD!");
+  }
+  };
   // Trích xuất mảng giảng viên thực sự từ object phân trang
   const gvList = gvPaginationData?.data || [];
 
@@ -76,6 +95,12 @@ export default function AdminPhanCongGVHD() {
           className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-bold disabled:opacity-50 hover:bg-blue-700 transition-colors"
         >
           {phanCongMut.isPending ? "Đang xử lý..." : "Xác nhận phân công GVHD"}
+        </button>
+        <button
+          onClick={handleExport}
+          className="bg-emerald-600 text-white px-4 py-1.5 rounded text-sm font-bold hover:bg-emerald-700 transition-colors flex items-center gap-2"
+        >
+          Xuất file danh sách phân công GVHD
         </button>
       </div>
 

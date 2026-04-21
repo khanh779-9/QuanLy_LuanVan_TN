@@ -74,7 +74,7 @@ export default function AdminNhapLieuPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-slate-900 mb-6">Nhập liệu đăng ký đề tài</h1>
+      <h1 className="text-xl font-semibold text-slate-900 mb-6">Nhập liệu sinh viên đăng ký làm LVTN</h1>
 
       <div className="flex items-center gap-4 mb-4 flex-wrap">
         <input

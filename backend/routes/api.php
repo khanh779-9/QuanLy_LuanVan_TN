@@ -62,6 +62,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/phan-cong/phan-cong-gvhd', [\App\Http\Controllers\PhanCongController::class, 'phancongGVHD']);
     Route::get('/phan-cong/danh-sach-chua-co-gvpb', [\App\Http\Controllers\PhanCongController::class, 'getDanhSachChuaCoGVPB']);
     Route::post('/phan-cong/phan-cong-gvpb', [\App\Http\Controllers\PhanCongController::class, 'phancongGVPB']);
+    Route::get('/phan-cong/export-gvhd', [\App\Http\Controllers\PhanCongController::class, 'exportGVHD']);
+    Route::get('/phan-cong/export-gvpb', [\App\Http\Controllers\PhanCongController::class, 'exportGVPB']);
     //API quản lý hội đồng
     Route::get('/hoi-dong', [\App\Http\Controllers\HoiDongController::class, 'index']);
     Route::post('/hoi-dong', [\App\Http\Controllers\HoiDongController::class, 'store']);
@@ -75,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // API Xuất danh sách
     Route::get('/hoi-dong/export/{maHoiDong}', [\App\Http\Controllers\HoiDongController::class, 'exportDanhSach']);
     Route::get('/hoi-dong/export-all', [\App\Http\Controllers\HoiDongController::class, 'exportTatCaHoiDong']);
+    Route::get('/hoi-dong/export-khong-dat', [\App\Http\Controllers\HoiDongController::class, 'exportKhongDuocBaoVe']);
     // API phân công giảng viên vào hội đồng
     Route::post('/hoi-dong/phan-cong-giang-vien', [\App\Http\Controllers\ThanhVienHoiDongController::class, 'phanCongGiangVien']);
     // API quản lý thành viên hội đồng

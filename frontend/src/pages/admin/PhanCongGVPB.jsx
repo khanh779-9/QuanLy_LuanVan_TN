@@ -34,7 +34,24 @@ export default function AdminPhanCongGVPB() {
       alert("Có lỗi xảy ra: " + (err.response?.data?.message || "Vui lòng thử lại"));
     }
   });
+  const handleExport = async () => {
+  try {
+    const response = await api.get('/phan-cong/export-gvpb', {
+      responseType: 'blob',
+    });
 
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Danh_sach_phan_cong_GVPB.docx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    alert("Lỗi khi xuất danh sách GVPB!");
+  }
+  };
   const handleSelect = (id) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
@@ -73,6 +90,12 @@ export default function AdminPhanCongGVPB() {
           className="bg-orange-600 text-white px-4 py-1.5 rounded font-bold disabled:opacity-50 hover:bg-orange-700 transition-colors"
         >
           {phanCongMut.isPending ? "Đang xử lý..." : "Xác nhận phân công PGVB"}
+        </button>
+        <button
+          onClick={handleExport}
+          className="bg-emerald-600 text-white px-4 py-1.5 rounded text-sm font-bold hover:bg-emerald-700 transition-colors flex items-center gap-2"
+        >
+          Xuất file danh sách phân công GVPB
         </button>
       </div>
 
