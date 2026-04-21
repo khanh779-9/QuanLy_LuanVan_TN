@@ -10,7 +10,7 @@ class HoiDong extends Model
     protected $primaryKey = 'maHoiDong';
 
     protected $fillable = [
-        'tenHoiDong', 'diaDiem',
+        'tenHoiDong', 'diaDiem', 'ngayBaoVe',
     ];
 
     public function thanhVien()

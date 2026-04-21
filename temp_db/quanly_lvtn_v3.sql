@@ -48,6 +48,7 @@ CREATE TABLE hoidong (
   `maHoiDong` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `tenHoiDong` VARCHAR(255) NOT NULL,
   `diaDiem` VARCHAR(255),
+  `ngayBaoVe` DATE,
   created_at TIMESTAMP NULL,
   updated_at TIMESTAMP NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

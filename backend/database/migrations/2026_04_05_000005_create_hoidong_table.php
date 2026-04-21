@@ -12,6 +12,7 @@ return new class extends Migration
             $table->bigIncrements('ma_hoidong');
             $table->string('ten_hoidong', 255);
             $table->string('dia_diem', 255)->nullable();
+            $table->date('ngay_bao_ve')->nullable();
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
         });
