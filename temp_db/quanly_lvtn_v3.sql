@@ -79,7 +79,7 @@ CREATE TABLE detai (
 
   `thuTuTrongHD` INT,
   `ghiChu` TEXT,
-
+  `data_json` TEXT NULL DEFAULT ('{ "gk": { "sinh_viens": null }, "gvhd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null }, "gvpb": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null }, "nhiemVu": { "sinhViens": null, "tieuDe": "", "nhiemVu": "", "taiLieu": "", "ngayGiao": "", "ngayHoanThanh": "", "tenGVHD": "" }, "hd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null } }'),
   created_at TIMESTAMP NULL,
   updated_at TIMESTAMP NULL,
 
@@ -88,8 +88,6 @@ CREATE TABLE detai (
   FOREIGN KEY (`maHoiDong`) REFERENCES hoidong(`maHoiDong`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-alter table detai 
-add column data_json TEXT NULL DEFAULT '{ "gk": { "sinh_viens": null }, "gvhd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null }, "gvpb": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null }, "nhiemVu": { "sinhViens": null, "tieuDe": "", "nhiemVu": "", "taiLieu": "", "ngayGiao": "", "ngayHoanThanh": "", "tenGVHD": "" }, "hd": { "tong_diem": null, "nhanXet": "", "uuDiem": "", "thieuSot": "", "ndDieuChinh": "", "cauHoi": "", "thuyetMinh": "", "sinh_viens": null } }';
 
 
 INSERT INTO detai (

@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cau_hinh', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('config_key', 50)->unique();
-            $table->text('config_value')->nullable();
+            $table->id();
+            $table->string('key', 50)->unique();
+            $table->text('value')->nullable();
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
         });
