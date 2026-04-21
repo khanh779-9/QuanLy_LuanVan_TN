@@ -1,6 +1,6 @@
 import api from "../services/api";
 
-const endpoint = "/hoidong";
+const endpoint = "/hoi-dong";
 
 const getAllHoiDong = () => api.get(endpoint);
 const getHoiDongById = (id) => api.get(`${endpoint}/${id}`);

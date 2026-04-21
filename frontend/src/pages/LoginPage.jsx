@@ -80,7 +80,7 @@ export default function LoginPage() {
               htmlFor="maGV"
               className="block text-sm font-medium text-slate-700 mb-1"
             >
-              Mã giảng viên
+              Mã nội bộ
             </label>
             <input
               id="maGV"
@@ -89,7 +89,7 @@ export default function LoginPage() {
               className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:opacity-50"
               value={maGV}
               onChange={(e) => setMaGV(e.target.value)}
-              placeholder="Nhập mã giảng viên"
+              placeholder="Nhập mã nội bộ"
               disabled={loading}
             />
           </div>

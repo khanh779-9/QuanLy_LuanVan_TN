@@ -19,33 +19,51 @@ export default function GVHoiDong() {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-slate-900 mb-6">Danh sách Hội đồng</h1>
-      <div className="bg-white rounded-lg border border-slate-200 p-8">
-        {loading ? (
-          <div>Đang tải...</div>
-        ) : error ? (
-          <div className="text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">Mã hội đồng</th>
-                <th className="py-2 px-4 border-b">Tên hội đồng</th>
-                <th className="py-2 px-4 border-b">Địa điểm</th>
-              </tr>
-            </thead>
-            <tbody>
-              {hoiDongList.map((hd) => (
-                <tr key={hd.maHoiDong}>
-                  <td className="py-2 px-4 border-b">{hd.maHoiDong}</td>
-                  <td className="py-2 px-4 border-b">{hd.tenHoiDong}</td>
-                  <td className="py-2 px-4 border-b">{hd.diaDiem}</td>
+    <div className="max-w-5xl mx-auto p-6">
+      <h2 className="text-xl font-bold mb-6 text-blue-800">Danh sách Hội đồng chấm điểm</h2>
+      <div className="bg-white rounded-lg border border-slate-200 overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-slate-50">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Mã hội đồng</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Tên hội đồng</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Địa điểm</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              [...Array(5)].map((_, i) => (
+                <tr key={i}>
+                  {[...Array(3)].map((_, ci) => (
+                    <td key={ci} className="px-4 py-3 border-t border-slate-100">
+                      <div className="bg-slate-100 animate-pulse rounded h-4 w-3/4"></div>
+                    </td>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              ))
+            ) : error ? (
+              <tr>
+                <td colSpan={3} className="px-4 py-16 text-center">
+                  <span className="text-red-500 font-semibold">{error}</span>
+                </td>
+              </tr>
+            ) : hoiDongList.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="px-4 py-16 text-center">
+                  <p className="text-slate-500 font-semibold">Không có hội đồng nào.</p>
+                </td>
+              </tr>
+            ) : (
+              hoiDongList.map((hd) => (
+                <tr key={hd.maHoiDong} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100 font-medium">{hd.maHoiDong}</td>
+                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">{hd.tenHoiDong}</td>
+                  <td className="px-4 py-3 text-sm text-slate-700 border-t border-slate-100">{hd.diaDiem}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
