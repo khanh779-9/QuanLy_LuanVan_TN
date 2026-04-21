@@ -36,7 +36,12 @@ function formatTrangThaiGiuaKy(trangThai) {
 export default function GVHDGiuaKyPage() {
   const queryClient = useQueryClient();
   const [editDeTai, setEditDeTai] = useState(null);
-  const [editForm, setEditForm] = useState({});
+  const [editForm, setEditForm] = useState({
+    tong_diem: '',
+    nhanXet: '',
+    dongGop: ['', ''],
+    deNghi: ['', ''],
+  });
   const [showEditModal, setShowEditModal] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [search, setSearch] = useState('');
@@ -133,9 +138,17 @@ export default function GVHDGiuaKyPage() {
 
   function openEdit(deTai) {
     setEditDeTai(deTai);
-    let nhanXet = deTai.nhanXetGiuaKy ?? '';
-    let tong = deTai.diemGiuaKy ?? 0;
-    setEditForm({ tong_diem: tong, nhanXet });
+    const gk = deTai.data_json?.gk ?? {};
+    const sinhViens = Array.isArray(deTai.sinh_viens) ? deTai.sinh_viens : [];
+    const storedSinhViens = Array.isArray(gk.sinh_viens) ? gk.sinh_viens : [];
+    const matchedSinhViens = sinhViens.length > 0 ? sinhViens : storedSinhViens;
+
+    setEditForm({
+      tong_diem: gk.tong_diem ?? deTai.diemGiuaKy ?? '',
+      nhanXet: gk.nhanXet ?? deTai.nhanXetGiuaKy ?? '',
+      dongGop: matchedSinhViens.map((sv, idx) => storedSinhViens[idx]?.dongGop ?? ''),
+      deNghi: matchedSinhViens.map((sv, idx) => storedSinhViens[idx]?.deNghi ?? ''),
+    });
     setSaveSuccess(false);
     setShowEditModal(true);
   }
@@ -381,55 +394,91 @@ export default function GVHDGiuaKyPage() {
         </div>
       </div>
       {showEditModal && editDeTai && (
-        <Modal isOpen={true} onClose={() => setShowEditModal(false)} title="Nhập điểm giữa kỳ" maxWidth="max-w-xl">
-          <div className="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-sky-50 px-4 py-4 mb-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 mb-2">Đề tài đang chấm</p>
-            <p className="text-base font-semibold text-slate-900">{editDeTai.tenDeTai}</p>
-          </div>
-          {Array.isArray(editDeTai.sinh_viens) && editDeTai.sinh_viens.length > 0 && (
-            <div className="mb-4 bg-slate-50 rounded-xl p-4 border border-slate-100">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Sinh viên</p>
-              {editDeTai.sinh_viens.map(sv => (
-                <p key={sv.mssv} className="text-sm text-slate-700">{sv.hoTen} — {sv.mssv}</p>
-              ))}
+        <Modal isOpen={true} onClose={() => setShowEditModal(false)} title="Phiếu chấm Giữa kỳ" maxWidth="max-w-2xl">
+          <div className="max-h-[70vh] overflow-y-auto pr-0">
+            <div className="mb-4 rounded border border-slate-200 p-2">
+              <span className="text-xs font-semibold uppercase text-slate-600">Tên đề tài</span>
+              <p className="mt-1 text-sm font-semibold text-slate-800">{editDeTai.tenDeTai}</p>
             </div>
-          )}
-          <div className="mb-5 rounded-xl border border-slate-100 bg-white p-4">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3 block">Điểm giữa kỳ (0-10)</label>
-            <input
-              type="number"
-              min="0"
-              max="10"
-              step="0.5"
-              value={editForm.tong_diem ?? ''}
-              onChange={e => setEditForm(f => ({ ...f, tong_diem: e.target.value }))}
-              className="border border-slate-300 rounded-xl px-3 py-3 text-sm w-full max-w-[170px] focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
-            />
-            <div className="flex items-center gap-3 mt-4 rounded-xl bg-slate-50 px-3 py-3">
-              <span className="text-sm text-slate-600 flex-1 font-medium">Trạng thái dự kiến</span>
-              {trangThaiGiuaKy && (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${trangThaiGiuaKy === 'dat' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-                  {trangThaiGiuaKy === 'dat' ? 'ĐẠT' : 'KHÔNG ĐẠT'}
-                </span>
-              )}
+
+            {Array.isArray(editDeTai.sinh_viens) && editDeTai.sinh_viens.length > 0 && (
+              <div className="mb-4">
+                <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-700">1. Đánh giá sinh viên</h3>
+                <div className="space-y-2">
+                  {editDeTai.sinh_viens.map((sv, idx) => (
+                    <div key={sv.mssv} className="rounded border border-slate-200 bg-white p-2">
+                      <div className="mb-2 flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-slate-200 text-xs font-bold text-slate-700">
+                          {idx + 1}
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-800">{sv.hoTen} - ({sv.mssv})</h4>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-[1.5fr_0.9fr]">
+                        <div>
+                          <label className="mb-1 block text-xs font-medium text-slate-700">Đóng góp</label>
+                          <textarea
+                            rows={2}
+                            className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-xs placeholder:text-slate-300 focus:outline-none focus:border-blue-400"
+                            placeholder="Nhập đánh giá mức độ đóng góp..."
+                            value={editForm.dongGop?.[idx] ?? ''}
+                            onChange={e => setEditForm(f => {
+                              const arr = [...(f.dongGop || [])];
+                              arr[idx] = e.target.value;
+                              return { ...f, dongGop: arr };
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-1 block text-xs font-medium text-slate-700">Đề nghị</label>
+                          <select
+                            className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
+                            value={editForm.deNghi?.[idx] ?? ''}
+                            onChange={e => setEditForm(f => {
+                              const arr = [...(f.deNghi || [])];
+                              arr[idx] = e.target.value;
+                              return { ...f, deNghi: arr };
+                            })}
+                          >
+                            <option value="">-- Chọn đề nghị --</option>
+                            <option value="Được làm tiếp">Được làm tiếp</option>
+                            <option value="Cần chỉnh sửa">Cần chỉnh sửa</option>
+                            <option value="Không đạt">Không đạt</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-2">
+              <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-700">2. Đánh giá giữa kỳ</h3>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+               
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-xs font-medium text-slate-700">Nhận xét chung</label>
+                  <textarea
+                    rows={3}
+                    value={editForm.nhanXet ?? ''}
+                    onChange={e => setEditForm(f => ({ ...f, nhanXet: e.target.value }))}
+                    className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
+                    placeholder="Nhập nhận xét giữa kỳ..."
+                  />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="mb-4 rounded-xl border border-slate-100 bg-white p-4">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Nhận xét</label>
-            <textarea
-              rows={4}
-              value={editForm.nhanXet ?? ''}
-              onChange={e => setEditForm(f => ({ ...f, nhanXet: e.target.value }))}
-              className="border border-slate-300 rounded-xl px-3 py-3 text-sm w-full focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
-            />
-          </div>
-          <div className="flex gap-2 justify-end mt-4">
+
+          <div className="mt-4 flex justify-end gap-2 border-t border-slate-200 bg-white pt-3">
             <button
-              className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-sm font-medium text-slate-700"
+              className="rounded border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50"
               onClick={() => setShowEditModal(false)}
             >Hủy</button>
             <button
-              className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium disabled:opacity-60"
+              className="rounded bg-blue-600 px-4 py-1.5 text-xs font-medium text-white shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60"
               disabled={updateMut.isPending || saveSuccess}
               onClick={() => {
                 if (!updateMut.isPending && !saveSuccess) {
@@ -438,6 +487,19 @@ export default function GVHDGiuaKyPage() {
                     data: {
                       tong_diem: editForm.tong_diem,
                       nhan_xet: editForm.nhanXet,
+                      data_json: {
+                        gk: {
+                          tong_diem: editForm.tong_diem,
+                          nhanXet: editForm.nhanXet,
+                          sinh_viens: Array.isArray(editDeTai.sinh_viens) ? editDeTai.sinh_viens.map((sv, idx) => ({
+                            mssv: sv.mssv ?? '',
+                            hoTen: sv.hoTen ?? '',
+                            lop: sv.lop ?? null,
+                            dongGop: editForm.dongGop?.[idx] ?? '',
+                            deNghi: editForm.deNghi?.[idx] ?? '',
+                          })) : [],
+                        },
+                      },
                     },
                   });
                 }

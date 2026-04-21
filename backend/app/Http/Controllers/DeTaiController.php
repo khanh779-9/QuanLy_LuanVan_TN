@@ -211,6 +211,7 @@ class DeTaiController extends Controller
 
             // STUDENTS
             'data_json.gvhd.sinh_viens.*.mssv' => 'required|string',
+            'data_json.gvhd.sinh_viens.*.hoTen' => 'nullable|string',
 
             // SCORE
             'data_json.gvhd.sinh_viens.*.diemPhanTich' => 'nullable|numeric|min:0|max:10',
@@ -333,10 +334,11 @@ class DeTaiController extends Controller
 
         $validated = $request->validate([
             'data_json' => 'required|array',
-
+            'data_json.gk.nhanXet' => 'nullable|string',
             // ARRAY
             'data_json.gk.sinh_viens' => 'nullable|array',
             'data_json.gk.sinh_viens.*.mssv' => 'required|string',
+            'data_json.gk.sinh_viens.*.hoTen' => 'nullable|string',
             // SCORE
             'data_json.gk.sinh_viens.*.dongGop' => 'nullable|string',
             'data_json.gk.sinh_viens.*.deNghi' => 'nullable|string',
